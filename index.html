@@ -733,9 +733,10 @@ async function loadHistory(append = false) {
     }
     if (requestId !== historyRequestId) return;
     const windowRange = historyWindow();
-    const page = historyLiveAll ? received.filter(item => item.date < windowRange.from) : received;
-    const knownRefs = new Set(historyLocalItems.concat(historyLiveItems).map(item => item.ref));
-    page.forEach(item => {
+    const serverRefs = new Set(received.map(item => item.ref));
+    historyLocalItems = historyLocalItems.filter(item => !serverRefs.has(item.ref));
+    const knownRefs = new Set(historyLiveItems.map(item => item.ref));
+    received.forEach(item => {
       if (!knownRefs.has(item.ref)) {
         historyLiveItems.push(item);
         knownRefs.add(item.ref);
