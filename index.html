@@ -427,23 +427,17 @@ async function loadHistory(append = false) {
   else {
     historyLoading = true;
     historyAppendLoading = false;
-    if (!historyItems.length) {
-      const cached = readHistoryCache();
-      if (cached) {
-        historyItems = cached.items;
-        historyTotal = cached.total;
-        historyTotals = cached.totals;
-        setStatus('Showing saved list · updating…');
-        renderHistory();
-      } else {
-        historyItems = [];
-        historyTotal = 0;
-        historyTotals = { sent: 0, received: 0, business: 0, personal: 0 };
-        renderLoading();
-      }
+    const cached = readHistoryCache();
+    if (cached) {
+      historyItems = cached.items;
+      historyTotal = cached.total;
+      historyTotals = cached.totals;
+      setStatus('Showing saved list · updating…');
+      renderHistory();
     } else {
       historyItems = [];
       historyTotal = 0;
+      historyTotals = { sent: 0, received: 0, business: 0, personal: 0 };
       renderLoading();
     }
   }
