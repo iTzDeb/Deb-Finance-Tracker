@@ -864,7 +864,8 @@ function historyRow(item) {
   const name = item.counterparty || 'Unnamed transaction';
   const category = item.category || 'Uncategorized';
   const stamp = String(item.stamp || '');
-  const time = stamp.length > 10 ? ` · ${esc(stamp.slice(11, 16))}` : '';
+  const stampedTime = stamp.length > 10 ? stamp.slice(11, 16) : '';
+  const time = stampedTime && stampedTime !== '00:00' ? ` · ${esc(stampedTime)}` : '';
   const pending = item.status === 'PENDING' || item.status === 'NEEDS REVIEW';
   const color = historyCategoryColor(item.category);
   return `<button type="button" class="history-row" data-history-ref="${esc(item.ref)}" aria-label="${pending ? 'Pending review. ' : ''}${credit ? 'Received' : 'Paid'} ${inr(item.amount)} ${esc(name)}${time}">
