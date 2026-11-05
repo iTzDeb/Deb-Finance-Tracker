@@ -425,6 +425,8 @@ async function loadHistory(append = false) {
 
   if (append) historyAppendLoading = true;
   else {
+    const searchWasFocused = document.activeElement?.id === 'historySearch';
+    const searchCursor = searchWasFocused ? $('#historySearch').selectionStart : 0;
     historyLoading = true;
     historyAppendLoading = false;
     const cached = readHistoryCache();
@@ -438,7 +440,13 @@ async function loadHistory(append = false) {
       historyItems = [];
       historyTotal = 0;
       historyTotals = { sent: 0, received: 0, business: 0, personal: 0 };
-      renderLoading();
+      setStatus(`History · ${monthLabel(month)} · updating…`);
+      renderHistory();
+    }
+    if (searchWasFocused) {
+      const search = $('#historySearch');
+      search?.focus({ preventScroll: true });
+      search?.setSelectionRange(searchCursor, searchCursor);
     }
   }
 
@@ -544,7 +552,9 @@ function renderHistoryList() {
   const list = $('#historyList');
   if (!list) return;
   const visible = filteredHistoryItems();
-  if (!historyItems.length && historyTotal === 0 && !historyLoading && !historyAppendLoading) {
+  if (!historyItems.length && (historyLoading || historyAppendLoading)) {
+    list.innerHTML = '<div class="history-state" role="status">Loading…</div>';
+  } else if (!historyItems.length && historyTotal === 0) {
     list.innerHTML = `<div class="empty"><b>No transactions in this period</b>Try another month to see more activity.<br><button class="btn primary history-empty-button" data-month="-1">View previous month</button></div>`;
   } else if (visible.length) {
     const groups = groupByDate(visible);
@@ -589,7 +599,7 @@ function historyRow(item) {
   const time = item.time ? ` · ${item.time}` : '';
   const pending = item.status === 'PENDING' || item.status === 'NEEDS REVIEW';
   const color = historyCategoryColor(item.category);
-  return `<button type="button" class="history-row" data-history-ref="${esc(item.ref)}" aria-label="${credit ? 'Received' : 'Paid'} ${inr(item.amount)} ${esc(name)}${time}">
+  return `<button type="button" class="history-row" data-history-ref="${esc(item.ref)}" aria-label="${pending ? 'Pending review. ' : ''}${credit ? 'Received' : 'Paid'} ${inr(item.amount)} ${esc(name)}${time}">
     <span class="history-avatar" style="--avatar-color:${color}" aria-hidden="true">${esc(historyInitials(name))}</span>
     <span class="history-copy"><span class="history-title">${esc(name)}${pending ? '<i class="history-pending-dot" aria-label="Pending review"></i>' : ''}</span><span class="history-meta">${esc(category)}${time}</span></span>
     <span class="history-amount"><span class="amt ${credit ? 'in' : ''}">${credit ? '+' : '−'}${inr(item.amount)}</span></span>
