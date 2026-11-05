@@ -88,7 +88,7 @@ function categoryIcon(item) {
 const cfg = () => { const saved = JSON.parse(localStorage.getItem('fin_cfg') || '{}'); return { ...saved, url: saved.url || DEFAULT_WEB_APP_URL }; };
 
 let items = [];
-let state = { tab: 'pending', filter: 'all', query: '', month: ymd(new Date()), historyFilter: 'all', historyQuery: '' };
+let state = { tab: 'pending', filter: 'all', query: '', month: ymd(new Date()), historyFilter: 'all', historyQuery: '', historyMonthFilter: false };
 let ctx = null;
 
 // ---------- Network (JSONP: Apps Script responses can't be read by a normal fetch) ----------
@@ -377,6 +377,7 @@ function renderSummary(s) {
 function shiftMonth(n) {
   const [y, m] = state.month.split('-').map(Number);
   state.month = ymd(new Date(y, m - 1 + n, 1));
+  if (state.tab === 'history') state.historyMonthFilter = true;
   state.tab === 'history' ? loadHistory() : loadSummary();
 }
 
@@ -389,10 +390,11 @@ const HISTORY_COLORS = ['#1177cc', '#148254', '#b6342c', '#9a5c08', '#7b55a1', '
 let historyItems = [];
 let historyLocalItems = [];
 let historyLiveItems = [];
-let historyTotal = 0;
-let historyLiveTotal = 0;
 let historyLiveOffset = 0;
 let historyLiveRange = null;
+let historyLiveAll = false;
+let historyLiveHasMore = false;
+let historyLiveComplete = false;
 let historyHasLive = false;
 let historyTotals = { sent: 0, received: 0, business: 0, personal: 0 };
 let historyLoading = false;
@@ -646,19 +648,21 @@ function splitHistoryRange(requested, windowRange) {
   return { local, live: live && live.from <= live.to ? live : null };
 }
 
-// Loads cached rows first, then fetches only the older live portion in pages.
+// Loads cached rows first and pages server history without date bounds in All mode.
 async function loadHistory(append = false) {
-  if (append && (historyAppendLoading || historyLiveOffset >= historyLiveTotal)) return;
+  if (append && (historyAppendLoading || !historyLiveHasMore)) return;
   const requestId = append ? historyRequestId : ++historyRequestId;
   const month = state.month;
   if (!append) {
     historyLoading = true;
     historyAppendLoading = false;
     historyLiveItems = [];
-    historyLiveTotal = 0;
     historyLiveOffset = 0;
     historyHasLive = false;
     historyLiveRange = null;
+    historyLiveAll = !state.historyMonthFilter;
+    historyLiveHasMore = historyLiveAll;
+    historyLiveComplete = !historyLiveHasMore;
   } else historyAppendLoading = true;
 
   let failure = null;
@@ -666,67 +670,87 @@ async function loadHistory(append = false) {
     if (!append) {
       const db = await openHistoryDb();
       const windowRange = historyWindow();
-      const selected = splitHistoryRange(monthRange(month), windowRange);
+      const selectedMonth = monthRange(month);
+      const selected = state.historyMonthFilter
+        ? splitHistoryRange(selectedMonth, windowRange)
+        : { local: windowRange, live: null };
       let localRows = db && selected.local ? await historyReadRange(selected.local.from, selected.local.to) : null;
       if (!Array.isArray(localRows)) localRows = [];
       if (requestId !== historyRequestId) return;
       historyLocalItems = localRows;
       historyItems = localRows.slice();
       historyTotals = historySum(localRows);
-      historyLiveRange = !db ? monthRange(month) : selected.live;
-      historyHasLive = false;
+      historyLiveRange = db ? selected.live : (state.historyMonthFilter ? selectedMonth : null);
+      if (historyLiveRange && historyLiveRange.to > windowRange.to) historyLiveRange.to = windowRange.to;
+      if (historyLiveRange && historyLiveRange.from > historyLiveRange.to) historyLiveRange = null;
+      historyLiveHasMore = historyLiveAll || !!historyLiveRange;
+      historyLiveComplete = !historyLiveHasMore;
       const snapshotAt = await historyReadSnapshotTime();
       if (snapshotAt) historySnapshotAt = snapshotAt;
-      if (historySnapshotPromise && !historySnapshotFailed && !localRows.length && selected.local) {
+      if (historySnapshotPromise && !historySnapshotFailed && !localRows.length && selected.local && !historyLiveAll) {
         historyLoading = false;
         renderHistory();
         return;
       }
       if (localRows.length) {
         setStatus(historySnapshotPromise ? 'Showing saved list · updating…' : 'Showing saved list · updated ' + (historySnapshotAt ? historyTimeLabel(historySnapshotAt) : 'recently'));
-      } else if (!historyLiveRange && historySnapshotPromise) {
+      } else if (!historyLiveAll && !historyLiveRange && historySnapshotPromise) {
         setStatus('Showing saved list · updating…');
         renderHistory();
         return;
       }
-      if (!historyLiveRange && !localRows.length && !snapshotAt && db) historyLiveRange = monthRange(month);
-      historyHasLive = false;
+      if (!historyLiveAll && !historyLiveRange && !localRows.length && !snapshotAt && db) {
+        historyLiveRange = selectedMonth;
+        if (historyLiveRange.to > windowRange.to) historyLiveRange.to = windowRange.to;
+        historyLiveHasMore = historyLiveRange.from <= historyLiveRange.to;
+        historyLiveComplete = !historyLiveHasMore;
+      }
       renderHistory();
-      if (!historyLiveRange) {
+      if (!historyLiveAll && !historyLiveRange) {
         historyLoading = false;
+        historyLiveComplete = true;
         renderHistory();
         return;
       }
     }
 
     const liveRange = historyLiveRange;
-    if (!liveRange) return;
-    const response = await api('history', {
-      ...liveRange,
+    if (!historyLiveAll && !liveRange) return;
+    const params = {
       status: 'all',
       q: '',
       offset: historyLiveOffset,
       limit: HISTORY_PAGE_SIZE
-    });
-    if (!Array.isArray(response.items) || !Number.isInteger(Number(response.total)) || Number(response.total) < 0) {
+    };
+    if (!historyLiveAll) Object.assign(params, liveRange);
+    const response = await api('history', params);
+    if (!Array.isArray(response.items) || typeof response.hasMore !== 'boolean') {
       throw new Error('Invalid history response');
     }
-    const page = response.items.map(normalizeHistoryItem);
-    const total = Number(response.total);
-    if (page.length > HISTORY_PAGE_SIZE || historyLiveOffset + page.length > total || (page.length === 0 && historyLiveOffset < total)) {
+    const received = response.items.map(normalizeHistoryItem);
+    if (received.length > HISTORY_PAGE_SIZE || (response.hasMore && received.length === 0)) {
       throw new Error('Incomplete history page');
     }
     if (requestId !== historyRequestId) return;
-    historyLiveItems = historyLiveItems.concat(page);
-    historyHasLive = true;
-    historyLiveOffset += page.length;
-    historyLiveTotal = total;
-    historyItems = historyLocalItems.concat(historyLiveItems);
-    historyTotal = historyLocalItems.length + historyLiveTotal;
-    if (historyLiveOffset === page.length && response.totals && ['sent', 'received', 'business', 'personal'].every(k => Number.isFinite(Number(response.totals[k])))) {
-      const liveTotals = response.totals;
-      historyTotals = Object.fromEntries(['sent', 'received', 'business', 'personal'].map(k => [k, historyTotals[k] + Number(liveTotals[k])]));
-    } else if (historyLiveOffset === page.length) historyTotals = historySum(historyItems);
+    const windowRange = historyWindow();
+    const page = historyLiveAll ? received.filter(item => item.date < windowRange.from) : received;
+    const knownRefs = new Set(historyLocalItems.concat(historyLiveItems).map(item => item.ref));
+    page.forEach(item => {
+      if (!knownRefs.has(item.ref)) {
+        historyLiveItems.push(item);
+        knownRefs.add(item.ref);
+      }
+    });
+    const firstPage = historyLiveOffset === 0;
+    historyLiveOffset += received.length;
+    historyLiveHasMore = response.hasMore;
+    historyLiveComplete = !response.hasMore;
+    historyHasLive = historyHasLive || page.length > 0;
+    historyItems = historyLocalItems.concat(historyLiveItems).sort((a, b) => b.stamp.localeCompare(a.stamp) || b.ref.localeCompare(a.ref));
+    if (firstPage && response.totals && ['sent', 'received', 'business', 'personal'].every(k => Number.isFinite(Number(response.totals[k])))) {
+      const localTotals = historyLiveAll ? { sent: 0, received: 0, business: 0, personal: 0 } : historySum(historyLocalItems);
+      historyTotals = Object.fromEntries(['sent', 'received', 'business', 'personal'].map(k => [k, localTotals[k] + Number(response.totals[k])]));
+    } else historyTotals = historySum(historyItems);
     historyOffline = false;
   } catch (error) {
     if (requestId === historyRequestId) failure = error;
@@ -751,18 +775,17 @@ async function loadHistory(append = false) {
   else setStatus('Showing saved list · updated ' + (historySnapshotAt ? historyTimeLabel(historySnapshotAt) : historyTimeLabel(Date.now())));
   renderHistory();
 }
-
 // Builds History with the selected month, totals, local filters and search field.
 function renderHistory() {
   $('#view').innerHTML = `
     <div class="page-head">
-      <div><h1>History${historyHasLive ? '<span class="history-live">Live</span>' : ''}</h1><p class="page-description">${monthLabel(state.month)}</p></div>
+      <div><h1>History${historyHasLive ? '<span class="history-live">Live</span>' : ''}</h1><p class="page-description">${state.historyMonthFilter ? monthLabel(state.month) : 'All transactions'}${state.historyMonthFilter ? ' <button class="link" data-history-all-dates="1">All dates</button>' : ''}</p></div>
       <div class="month-controls">
         <button class="icon" data-month="-1" aria-label="Previous month">‹</button>
         <button class="icon" data-month="1" aria-label="Next month">›</button>
       </div>
     </div>
-    <section class="history-totals" aria-label="Transaction totals for ${esc(monthLabel(state.month))}">
+    <section class="history-totals" aria-label="Transaction totals for ${esc(state.historyMonthFilter ? monthLabel(state.month) : 'all transactions')}">
       <div class="history-total"><span>Sent</span><strong>−${inr(historyTotals.sent)}</strong></div>
       <div class="history-total"><span>Received</span><strong class="in">+${inr(historyTotals.received)}</strong></div>
     </section>
@@ -818,8 +841,8 @@ function renderHistoryList() {
   }
 
   if (historyAppendLoading) list.insertAdjacentHTML('beforeend', '<div class="history-state" role="status">Loading…</div>');
-  else if (historyLiveOffset < historyLiveTotal) list.insertAdjacentHTML('beforeend', '<div class="history-state" role="status">Scroll for older transactions</div>');
-  else if (!historyLoading && historyLiveOffset >= historyLiveTotal && (historyHasLive || (historyItems.length && !historyLiveRange))) list.insertAdjacentHTML('beforeend', '<div class="history-state">End of history</div>');
+  else if (historyLiveHasMore) list.insertAdjacentHTML('beforeend', '<div class="history-state" role="status">Scroll for older transactions</div>');
+  else if (historyLiveComplete) list.insertAdjacentHTML('beforeend', '<div class="history-state">End of history</div>');
   requestAnimationFrame(maybeLoadHistory);
 }
 
@@ -839,7 +862,8 @@ function historyRow(item) {
   const credit = item.direction === 'CREDIT';
   const name = item.counterparty || 'Unnamed transaction';
   const category = item.category || 'Uncategorized';
-  const time = item.time ? ` · ${item.time}` : '';
+  const stamp = String(item.stamp || '');
+  const time = stamp.length > 10 ? ` · ${esc(stamp.slice(11, 16))}` : '';
   const pending = item.status === 'PENDING' || item.status === 'NEEDS REVIEW';
   const color = historyCategoryColor(item.category);
   return `<button type="button" class="history-row" data-history-ref="${esc(item.ref)}" aria-label="${pending ? 'Pending review. ' : ''}${credit ? 'Received' : 'Paid'} ${inr(item.amount)} ${esc(name)}${time}">
@@ -876,7 +900,7 @@ function openHistoryDetail(ref) {
 
 // Requests the next older live page when the viewport nears the bottom.
 function maybeLoadHistory() {
-  if (state.tab !== 'history' || historyLoading || historyAppendLoading || historyLiveOffset >= historyLiveTotal) return;
+  if (state.tab !== 'history' || historyLoading || historyAppendLoading || !historyLiveHasMore) return;
   const remaining = document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
   if (remaining < 200) loadHistory(true);
 }
@@ -907,7 +931,7 @@ function writeSettings() {
 
 // ---------- Actions (one click handler for the whole app) ----------
 document.addEventListener('click', async e => {
-  const el = e.target.closest('[data-act],[data-tab],[data-filter],[data-bucket],[data-cat],[data-month],[data-history-filter],[data-history-ref]');
+  const el = e.target.closest('[data-act],[data-tab],[data-filter],[data-bucket],[data-cat],[data-month],[data-history-filter],[data-history-ref],[data-history-all-dates]');
   if (!el) return;
 
   if (el.dataset.tab) {
@@ -923,7 +947,14 @@ document.addEventListener('click', async e => {
     else loadSummary();
     return;
   }
-  if (el.dataset.historyFilter) { state.historyFilter = el.dataset.historyFilter; renderHistoryList(); return; }
+  if (el.dataset.historyFilter) {
+    const resetDateRange = el.dataset.historyFilter === 'all' && state.historyMonthFilter;
+    state.historyFilter = el.dataset.historyFilter;
+    if (resetDateRange) { state.historyMonthFilter = false; loadHistory(); }
+    else renderHistoryList();
+    return;
+  }
+  if (el.dataset.historyAllDates) { state.historyMonthFilter = false; loadHistory(); return; }
   if (el.dataset.historyRef) { openHistoryDetail(el.dataset.historyRef); return; }
   if (el.dataset.filter) { state.filter = el.dataset.filter; renderPending(); return; }
   if (el.dataset.bucket) {
