@@ -28,6 +28,7 @@ main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{positio
 .skel{height:120px;border-radius:13px;background:linear-gradient(90deg,var(--paper),var(--line),var(--paper));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px}@keyframes sh{to{background-position:-200% 0}}.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:520px;margin:auto;background:#17231f;color:#fff;padding:12px 14px;border-radius:11px;text-align:center;display:none;z-index:10;font-size:14px}
 .day-group{margin-bottom:19px}.day-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 3px 8px}.day-heading h2{margin:0;font-size:14px;font-weight:720;letter-spacing:-.01em}.day-heading span{font-size:11px;color:var(--muted)}.day-list{overflow:hidden;border:1px solid var(--line);border-radius:13px;background:var(--paper)}.txn-row{padding:14px 15px;border-bottom:1px solid var(--line)}.txn-row:last-child{border-bottom:0}.txn-icon{width:39px;height:39px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:18px;font-weight:700}.txn-amount{text-align:right;flex:none}.txn-amount .amt{font-size:16px}.txn-direction{margin-top:2px;color:var(--muted);font-size:10px}.txn-status{display:flex;align-items:center;gap:7px;min-width:0;margin:11px 0 0 51px}.txn-status .sug{font-size:11px}.txn-status .suggestion-label{flex:none;font-size:10px}.txn-row .actions{margin:10px 0 0 51px;grid-template-columns:1fr 1fr}.txn-row .btn{padding:8px 10px;font-size:12px}
 .history-totals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 6px}.history-total{padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}.history-total span{display:block;color:var(--muted);font-size:12px}.history-total strong{display:block;margin-top:3px;font-size:20px;line-height:1.2;font-variant-numeric:tabular-nums}.history-breakdown{margin:0 2px 16px;color:var(--muted);font-size:12px}.history-chips{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 9px;margin:0 0 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.history-chips::-webkit-scrollbar{display:none}.history-chip{flex:none;padding:7px 14px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--muted);font-size:13px;font-weight:650;white-space:nowrap}.history-chip.on{border-color:var(--brand);background:var(--brand);color:#fff}.history-search{margin-bottom:13px}.history-row{gap:11px;padding:13px 14px}.history-avatar{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:color-mix(in srgb,var(--avatar-color) 14%,var(--paper));color:var(--avatar-color);font-size:13px;font-weight:780}.history-copy{overflow:hidden}.history-title{display:block;color:var(--ink);font-size:14px;font-weight:720}.history-meta{display:block;font-size:11px}.history-pending-dot{display:inline-block;width:7px;height:7px;margin-left:5px;border-radius:50%;background:var(--amber);vertical-align:1px}.history-amount .amt{font-size:15px}.history-day-net{font-size:12px;font-weight:680;font-variant-numeric:tabular-nums;white-space:nowrap}.history-day-net.positive{color:var(--green)}.history-state{padding:17px 8px;text-align:center;color:var(--muted);font-size:13px}.history-detail{margin:16px 0}.history-reference{padding-top:10px;border-top:1px solid var(--line)}.history-empty-button{margin-top:13px}.history-status-line{min-height:20px;color:var(--muted);font-size:12px}
+.history-live{display:inline-flex;align-items:center;margin-left:8px;padding:3px 8px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px;font-weight:650;vertical-align:middle}.history-cache-status{font-size:12px;color:var(--muted)}
 @media(min-width:700px){body{padding-bottom:84px}main{padding-top:32px}.scrim{align-items:center}.sheet{border-radius:18px;padding-bottom:22px}.tabbar{bottom:14px;border-bottom:1px solid var(--line);border-radius:14px}.overview-strip{gap:12px}.txn-card{padding:18px}.txn-card:hover{border-color:color-mix(in srgb,var(--brand) 36%,var(--line))}}
 @media(max-width:480px){main{padding:20px 14px 28px}.page-head{align-items:flex-start;gap:8px}.review-count{padding:8px 9px}.review-count span{max-width:60px;white-space:normal;line-height:1.2}.overview-strip{gap:7px}.overview-stat{padding:11px 10px}.overview-stat span{font-size:11px}.overview-stat strong{font-size:17px}.seg button{font-size:12px;padding:8px 4px}.filter-row{gap:8px}.search{font-size:16px}.txn-row{padding:12px 10px}.txn-icon{width:35px;height:35px}.txn-status,.txn-row .actions{margin-left:45px}.txn-row .btn{padding:8px 6px;font-size:11px}.amt{font-size:16px}.hero{padding:17px}.month-controls{gap:4px}.history-row{padding:12px 10px;gap:9px}.bank-mark{width:35px;height:35px}.history-amount .amt{font-size:14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
@@ -271,8 +272,17 @@ async function saveItem(item, p) {
   }
   try {
     await api('save', { ref: item.ref, ...p });
+    const updates = { bucket: p.bucket, category: p.category, property: p.property, notes: p.notes, status: 'CONFIRMED' };
+    const cachedItem = historyItems.find(entry => entry.ref === item.ref);
+    if (cachedItem) Object.assign(cachedItem, updates);
+    const localItem = historyLocalItems.find(entry => entry.ref === item.ref);
+    if (localItem) Object.assign(localItem, updates);
+    await historyUpdateCached(item.ref, updates);
+    if (cachedItem && state.tab === 'history') {
+      historyTotals = historySum(historyLocalItems);
+      renderHistory();
+    }
     toast('Saved · ' + p.category);
-    if (state.tab === 'history') loadHistory();
   } catch (err) {
     if (pendingItem) {
       items.splice(idx, 0, pendingItem);
@@ -368,15 +378,26 @@ function shiftMonth(n) {
 
 // ---------- Payment history ----------
 const HISTORY_PAGE_SIZE = 40;
+const HISTORY_DB_NAME = 'fin-cache';
+const HISTORY_DB_VERSION = 1;
 const HISTORY_FILTERS = [['all', 'All'], ['sent', 'Sent'], ['received', 'Received'], ['business', 'Business'], ['personal', 'Personal'], ['pending', 'Pending']];
 const HISTORY_COLORS = ['#1177cc', '#148254', '#b6342c', '#9a5c08', '#7b55a1', '#147e87', '#c05a82', '#64748b', '#a16b20', '#3b72a8', '#53804b', '#855e9b', '#bd6b35', '#357b8f', '#9b4d57', '#5d786a', '#6e70a8'];
 let historyItems = [];
+let historyLocalItems = [];
+let historyLiveItems = [];
 let historyTotal = 0;
+let historyLiveTotal = 0;
+let historyLiveOffset = 0;
+let historyLiveRange = null;
+let historyHasLive = false;
 let historyTotals = { sent: 0, received: 0, business: 0, personal: 0 };
 let historyLoading = false;
 let historyAppendLoading = false;
 let historyRequestId = 0;
-let historySearchTimer = 0;
+let historySnapshotPromise = null;
+let historySnapshotAt = 0;
+let historyOffline = false;
+let historyDbPromise = null;
 
 // Returns the inclusive date range represented by a month key.
 function monthRange(month) {
@@ -385,7 +406,150 @@ function monthRange(month) {
   return { from: `${month}-01`, to: `${month}-${String(lastDay).padStart(2, '0')}` };
 }
 
-// Validates and normalizes one item received from the history API.
+// Returns the rolling ten-calendar-day cache window ending today.
+function historyWindow() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const from = new Date(today);
+  from.setDate(from.getDate() - 9);
+  const format = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return { from: format(from), to: format(today) };
+}
+
+// Opens the IndexedDB stores and resolves null when browser storage is unavailable.
+function openHistoryDb() {
+  if (!('indexedDB' in window)) return Promise.resolve(null);
+  if (historyDbPromise) return historyDbPromise;
+  historyDbPromise = new Promise(resolve => {
+    let request;
+    try { request = indexedDB.open(HISTORY_DB_NAME, HISTORY_DB_VERSION); }
+    catch (_) { resolve(null); return; }
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains('txns')) {
+        const store = db.createObjectStore('txns', { keyPath: 'ref' });
+        store.createIndex('stamp', 'stamp', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('meta')) db.createObjectStore('meta', { keyPath: 'key' });
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => resolve(null);
+    request.onblocked = () => resolve(null);
+  });
+  return historyDbPromise;
+}
+
+// Converts an IndexedDB request into a promise for its result.
+function historyRequest(request) {
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error('History storage request failed'));
+  });
+}
+
+// Resolves when an IndexedDB transaction commits and rejects on abort or error.
+function historyTransactionDone(transaction) {
+  return new Promise((resolve, reject) => {
+    transaction.oncomplete = resolve;
+    transaction.onerror = () => reject(transaction.error || new Error('History storage transaction failed'));
+    transaction.onabort = () => reject(transaction.error || new Error('History storage transaction aborted'));
+  });
+}
+
+// Reads and normalizes a date-bounded range using the stamp index.
+async function historyReadRange(from, to) {
+  const db = await openHistoryDb();
+  if (!db || from > to) return null;
+  try {
+    const transaction = db.transaction('txns', 'readonly');
+    const done = historyTransactionDone(transaction);
+    const range = IDBKeyRange.bound(from, `${to}\uffff`);
+    const request = transaction.objectStore('txns').index('stamp').getAll(range);
+    const rows = await historyRequest(request);
+    await done;
+    return rows.map(normalizeHistoryItem);
+  } catch (_) {
+    return null;
+  }
+}
+
+// Reads the last successful snapshot time from IndexedDB metadata.
+async function historyReadSnapshotTime() {
+  const db = await openHistoryDb();
+  if (!db) return 0;
+  try {
+    const transaction = db.transaction('meta', 'readonly');
+    const done = historyTransactionDone(transaction);
+    const record = await historyRequest(transaction.objectStore('meta').get('snapshot'));
+    await done;
+    return Number(record && record.at) || 0;
+  } catch (_) {
+    return 0;
+  }
+}
+
+// Deletes cached transactions outside the current rolling date window.
+async function historyTrimCache(from, to) {
+  const db = await openHistoryDb();
+  if (!db) return false;
+  try {
+    const transaction = db.transaction('txns', 'readwrite');
+    const done = historyTransactionDone(transaction);
+    const request = transaction.objectStore('txns').openCursor();
+    request.onsuccess = event => {
+      const cursor = event.target.result;
+      if (!cursor) return;
+      const date = String(cursor.value.stamp || '').slice(0, 10);
+      if (date < from || date > to) cursor.delete();
+      cursor.continue();
+    };
+    request.onerror = () => transaction.abort();
+    await done;
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+// Replaces the cached rolling window and records its successful snapshot time atomically.
+async function historyReplaceCache(items, from, to, at) {
+  const db = await openHistoryDb();
+  if (!db) return false;
+  try {
+    const transaction = db.transaction(['txns', 'meta'], 'readwrite');
+    const done = historyTransactionDone(transaction);
+    const txns = transaction.objectStore('txns');
+    txns.clear();
+    items.forEach(item => {
+      const normalized = normalizeHistoryItem(item);
+      if (normalized.date >= from && normalized.date <= to) txns.put(normalized);
+    });
+    transaction.objectStore('meta').put({ key: 'snapshot', at });
+    await done;
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+// Updates an already cached transaction after the server confirms a save.
+async function historyUpdateCached(ref, updates) {
+  const db = await openHistoryDb();
+  if (!db) return false;
+  try {
+    const transaction = db.transaction('txns', 'readwrite');
+    const done = historyTransactionDone(transaction);
+    const store = transaction.objectStore('txns');
+    const record = await historyRequest(store.get(ref));
+    if (record) store.put({ ...record, ...updates });
+    await done;
+    return !!record;
+  } catch (_) {
+    return false;
+  }
+}
+
+// Validates and selects only supported transaction fields from an API item.
 function normalizeHistoryItem(item) {
   if (!item || typeof item !== 'object') throw new Error('Invalid transaction');
   const stamp = String(item.stamp || item.date || '');
@@ -393,70 +557,146 @@ function normalizeHistoryItem(item) {
   const time = stamp.length > 10 ? stamp.slice(11, 16) : '';
   const direction = String(item.direction || '').toUpperCase();
   const amount = Number(item.amount);
-  if (!item.ref || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !['DEBIT', 'CREDIT'].includes(direction) || !Number.isFinite(amount)) {
+  const ref = String(item.ref || '');
+  if (!ref || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !['DEBIT', 'CREDIT'].includes(direction) || !Number.isFinite(amount)) {
     throw new Error('Invalid transaction');
   }
-  return { ...item, ref: String(item.ref), stamp, date, time, direction, amount: Math.abs(amount) };
+  return {
+    ref, stamp, date, time, direction, amount: Math.abs(amount),
+    counterparty: String(item.counterparty || ''), source: String(item.source || ''),
+    account: String(item.account || ''), status: String(item.status || ''),
+    bucket: String(item.bucket || ''), category: String(item.category || ''),
+    property: String(item.property || ''), notes: String(item.notes || '')
+  };
 }
 
-// Returns a valid saved first-page response for the current month, filter and query.
-function readHistoryCache() {
-  try {
-    const cached = JSON.parse(localStorage.getItem('fin_hist_cache') || 'null');
-    const key = [state.month, state.historyFilter, state.historyQuery.trim()].join('|');
-    if (!cached || cached.key !== key || !Array.isArray(cached.items) || !Number.isInteger(cached.total)) return null;
-    const totals = cached.totals;
-    if (!totals || !['sent', 'received', 'business', 'personal'].every(k => Number.isFinite(Number(totals[k])))) return null;
-    return { items: cached.items.map(normalizeHistoryItem), total: cached.total, totals };
-  } catch (_) {
-    return null;
-  }
+// Computes the range-independent Sent, Received, Business and Personal totals locally.
+function historySum(items) {
+  const totals = { sent: 0, received: 0, business: 0, personal: 0 };
+  items.forEach(item => {
+    if (item.direction === 'DEBIT') totals.sent += item.amount;
+    else totals.received += item.amount;
+    if (item.bucket.toLowerCase() === 'business') totals.business += item.amount;
+    if (item.bucket.toLowerCase() === 'personal') totals.personal += item.amount;
+  });
+  return totals;
 }
 
-// Loads or appends one page while ignoring responses made stale by newer filters.
+// Formats an epoch time for the shared status line.
+function historyTimeLabel(at) {
+  return new Date(at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+}
+
+// Refreshes the rolling snapshot without blocking Pending or the visible History list.
+async function refreshHistorySnapshot() {
+  if (!cfg().key || !('indexedDB' in window) || historySnapshotPromise) return historySnapshotPromise;
+  historySnapshotPromise = (async () => {
+    const db = await openHistoryDb();
+    if (!db) return;
+    const range = historyWindow();
+    await historyTrimCache(range.from, range.to);
+    try {
+      const response = await api('snapshot', range);
+      if (!Array.isArray(response.items)) throw new Error('Invalid snapshot response');
+      const rows = response.items.map(normalizeHistoryItem);
+      if (rows.some(item => item.date < range.from || item.date > range.to)) throw new Error('Snapshot outside requested range');
+      const at = Date.now();
+      if (!await historyReplaceCache(rows, range.from, range.to, at)) throw new Error('History storage unavailable');
+      historySnapshotAt = at;
+      historyOffline = false;
+      if (state.tab === 'history') await loadHistory();
+      setStatus('Updated ' + historyTimeLabel(at));
+    } catch (_) {
+      historyOffline = true;
+      const saved = await historyReadRange(range.from, range.to);
+      if (state.tab === 'history') {
+        if (saved && saved.length) {
+          historyItems = saved;
+          historyLocalItems = saved;
+          setStatus('Offline · showing saved list' + (historySnapshotAt ? ' · updated ' + historyTimeLabel(historySnapshotAt) : ''));
+          renderHistory();
+        } else if (!historyLoading) {
+          await loadHistory();
+        }
+      }
+    }
+  })();
+  try { await historySnapshotPromise; }
+  finally { historySnapshotPromise = null; }
+}
+
+// Splits a selected range into its locally cached portion and older live portion.
+function splitHistoryRange(requested, windowRange) {
+  const today = windowRange.to;
+  const to = requested.to > today ? today : requested.to;
+  if (requested.from > to) return { local: null, live: null };
+  const localFrom = requested.from > windowRange.from ? requested.from : windowRange.from;
+  const localTo = to < windowRange.to ? to : windowRange.to;
+  const local = localFrom <= localTo ? { from: localFrom, to: localTo } : null;
+  const liveTo = windowRange.from > requested.from ? new Date(new Date(windowRange.from + 'T00:00:00').getTime() - 86400000).toISOString().slice(0, 10) : '';
+  const live = requested.from < windowRange.from ? { from: requested.from, to: to < liveTo ? to : liveTo } : null;
+  return { local, live: live && live.from <= live.to ? live : null };
+}
+
+// Loads cached rows first, then fetches only the older live portion in pages.
 async function loadHistory(append = false) {
-  if (append && (historyAppendLoading || historyItems.length >= historyTotal)) return;
+  if (append && (historyAppendLoading || historyLiveOffset >= historyLiveTotal)) return;
   const requestId = append ? historyRequestId : ++historyRequestId;
-  const query = state.historyQuery.trim();
-  const filter = state.historyFilter;
   const month = state.month;
-  const range = monthRange(month);
-  const offset = append ? historyItems.length : 0;
-
-  if (append) historyAppendLoading = true;
-  else {
-    const searchWasFocused = document.activeElement?.id === 'historySearch';
-    const searchCursor = searchWasFocused ? $('#historySearch').selectionStart : 0;
+  if (!append) {
     historyLoading = true;
     historyAppendLoading = false;
-    const cached = readHistoryCache();
-    if (cached) {
-      historyItems = cached.items;
-      historyTotal = cached.total;
-      historyTotals = cached.totals;
-      setStatus('Showing saved list · updating…');
-      renderHistory();
-    } else {
-      historyItems = [];
-      historyTotal = 0;
-      historyTotals = { sent: 0, received: 0, business: 0, personal: 0 };
-      setStatus(`History · ${monthLabel(month)} · updating…`);
-      renderHistory();
-    }
-    if (searchWasFocused) {
-      const search = $('#historySearch');
-      search?.focus({ preventScroll: true });
-      search?.setSelectionRange(searchCursor, searchCursor);
-    }
-  }
+    historyLiveItems = [];
+    historyLiveTotal = 0;
+    historyLiveOffset = 0;
+    historyHasLive = false;
+    historyLiveRange = null;
+  } else historyAppendLoading = true;
 
   let failure = null;
   try {
+    if (!append) {
+      const db = await openHistoryDb();
+      const windowRange = historyWindow();
+      const selected = splitHistoryRange(monthRange(month), windowRange);
+      let localRows = db && selected.local ? await historyReadRange(selected.local.from, selected.local.to) : null;
+      if (!Array.isArray(localRows)) localRows = [];
+      if (requestId !== historyRequestId) return;
+      historyLocalItems = localRows;
+      historyItems = localRows.slice();
+      historyTotals = historySum(localRows);
+      historyLiveRange = !db ? monthRange(month) : selected.live;
+      historyHasLive = !!historyLiveRange;
+      const snapshotAt = await historyReadSnapshotTime();
+      if (snapshotAt) historySnapshotAt = snapshotAt;
+      if (historySnapshotPromise && !localRows.length && selected.local) {
+        historyLoading = false;
+        renderHistory();
+        return;
+      }
+      if (localRows.length) {
+        setStatus(historySnapshotPromise ? 'Showing saved list · updating…' : 'Showing saved list · updated ' + (historySnapshotAt ? historyTimeLabel(historySnapshotAt) : 'recently'));
+      } else if (!historyLiveRange && historySnapshotPromise) {
+        setStatus('Showing saved list · updating…');
+        renderHistory();
+        return;
+      }
+      if (!historyLiveRange && !localRows.length && !snapshotAt && db) historyLiveRange = monthRange(month);
+      renderHistory();
+      if (!historyLiveRange) {
+        historyLoading = false;
+        renderHistory();
+        return;
+      }
+    }
+
+    const liveRange = historyLiveRange;
+    if (!liveRange) return;
     const response = await api('history', {
-      ...range,
-      status: filter === 'pending' ? 'pending' : 'all',
-      q: query,
-      offset,
+      ...liveRange,
+      status: 'all',
+      q: '',
+      offset: historyLiveOffset,
       limit: HISTORY_PAGE_SIZE
     });
     if (!Array.isArray(response.items) || !Number.isInteger(Number(response.total)) || Number(response.total) < 0) {
@@ -464,25 +704,20 @@ async function loadHistory(append = false) {
     }
     const page = response.items.map(normalizeHistoryItem);
     const total = Number(response.total);
-    const totals = response.totals;
-    if (!totals || !['sent', 'received', 'business', 'personal'].every(k => Number.isFinite(Number(totals[k])))) {
-      throw new Error('History totals unavailable');
+    if (page.length > HISTORY_PAGE_SIZE || historyLiveOffset + page.length > total || (page.length === 0 && historyLiveOffset < total)) {
+      throw new Error('Incomplete history page');
     }
-    const nextItems = append ? historyItems.concat(page) : page;
-    if (nextItems.length > total || (page.length === 0 && offset < total)) throw new Error('Incomplete history page');
     if (requestId !== historyRequestId) return;
-    historyItems = nextItems;
-    historyTotal = total;
-    historyTotals = Object.fromEntries(['sent', 'received', 'business', 'personal'].map(k => [k, Number(totals[k])]));
-    if (!append) {
-      try {
-        localStorage.setItem('fin_hist_cache', JSON.stringify({
-          key: [month, filter, query].join('|'), items: page, total, totals: historyTotals, at: Date.now()
-        }));
-      } catch (_) {
-        toast('History loaded, but the saved list could not be updated.');
-      }
-    }
+    historyLiveItems = historyLiveItems.concat(page);
+    historyLiveOffset += page.length;
+    historyLiveTotal = total;
+    historyItems = historyLocalItems.concat(historyLiveItems);
+    historyTotal = historyLocalItems.length + historyLiveTotal;
+    if (response.totals && ['sent', 'received', 'business', 'personal'].every(k => Number.isFinite(Number(response.totals[k])))) {
+      const liveTotals = response.totals;
+      historyTotals = Object.fromEntries(['sent', 'received', 'business', 'personal'].map(k => [k, historyTotals[k] + Number(liveTotals[k])]));
+    } else historyTotals = historySum(historyItems);
+    historyOffline = false;
   } catch (error) {
     if (requestId === historyRequestId) failure = error;
   } finally {
@@ -494,25 +729,24 @@ async function loadHistory(append = false) {
 
   if (requestId !== historyRequestId || state.tab !== 'history') return;
   if (failure) {
-    if (historyItems.length) {
-      setStatus('Offline · showing saved list');
-      if (append) toast('Could not load more history. Try again.');
-      renderHistory();
-    } else {
-      setStatus('History unavailable');
+    historyOffline = true;
+    if (historyItems.length) setStatus('Offline · showing saved list' + (historySnapshotAt ? ' · updated ' + historyTimeLabel(historySnapshotAt) : ''));
+    else setStatus('Not connected');
+    if (!historyItems.length && !historyLocalItems.length) {
       $('#view').innerHTML = `<div class="empty"><b>Payment history unavailable</b><p>${esc(failure.message)}</p><button class="btn primary" data-act="history-retry">Try again</button></div>`;
-    }
+    } else renderHistory();
     return;
   }
-  setStatus(`History · ${monthLabel(state.month)}`);
+  if (historyHasLive) setStatus(historyItems.length ? 'History · live and saved' : 'History · live');
+  else setStatus('Showing saved list · updated ' + (historySnapshotAt ? historyTimeLabel(historySnapshotAt) : historyTimeLabel(Date.now())));
   renderHistory();
 }
 
-// Builds the History screen with its range totals, single-select filters and search.
+// Builds History with the selected month, totals, local filters and search field.
 function renderHistory() {
   $('#view').innerHTML = `
     <div class="page-head">
-      <div><h1>History</h1><p class="page-description">${monthLabel(state.month)}</p></div>
+      <div><h1>History${historyHasLive ? '<span class="history-live">Live</span>' : ''}</h1><p class="page-description">${monthLabel(state.month)}</p></div>
       <div class="month-controls">
         <button class="icon" data-month="-1" aria-label="Previous month">‹</button>
         <button class="icon" data-month="1" aria-label="Next month">›</button>
@@ -530,31 +764,34 @@ function renderHistory() {
     <div id="historyList" aria-live="polite"></div>`;
   $('#historySearch').addEventListener('input', event => {
     state.historyQuery = event.target.value;
-    clearTimeout(historySearchTimer);
-    historySearchTimer = setTimeout(() => loadHistory(), 300);
+    renderHistoryList();
   });
   renderHistoryList();
 }
 
-// Applies the active client-side direction or bucket chip to the current API page.
+// Filters and searches every currently loaded recent or live item in the browser.
 function filteredHistoryItems() {
+  const query = state.historyQuery.trim().toLowerCase();
   return historyItems.filter(item => {
     if (state.historyFilter === 'sent' && item.direction !== 'DEBIT') return false;
     if (state.historyFilter === 'received' && item.direction !== 'CREDIT') return false;
-    if (state.historyFilter === 'business' && String(item.bucket || '').toLowerCase() !== 'business') return false;
-    if (state.historyFilter === 'personal' && String(item.bucket || '').toLowerCase() !== 'personal') return false;
-    return true;
+    if (state.historyFilter === 'business' && item.bucket.toLowerCase() !== 'business') return false;
+    if (state.historyFilter === 'personal' && item.bucket.toLowerCase() !== 'personal') return false;
+    if (state.historyFilter === 'pending' && item.status !== 'PENDING' && item.status !== 'NEEDS REVIEW') return false;
+    if (!query) return true;
+    return [item.counterparty, item.source, item.account, item.status, item.bucket,
+      item.category, item.property, item.notes, item.amount, item.ref].join(' ').toLowerCase().includes(query);
   });
 }
 
-// Renders day groups, per-day net totals, and the paging state.
+// Renders day groups, per-day net totals, and live paging status.
 function renderHistoryList() {
   const list = $('#historyList');
   if (!list) return;
   const visible = filteredHistoryItems();
   if (!historyItems.length && (historyLoading || historyAppendLoading)) {
     list.innerHTML = '<div class="history-state" role="status">Loading…</div>';
-  } else if (!historyItems.length && historyTotal === 0) {
+  } else if (!historyItems.length) {
     list.innerHTML = `<div class="empty"><b>No transactions in this period</b>Try another month to see more activity.<br><button class="btn primary history-empty-button" data-month="-1">View previous month</button></div>`;
   } else if (visible.length) {
     const groups = groupByDate(visible);
@@ -566,17 +803,13 @@ function renderHistoryList() {
         <div class="day-list">${dayItems.map(historyRow).join('')}</div>
       </section>`;
     }).join('');
-  } else if (historyItems.length >= historyTotal) {
-    list.innerHTML = '<div class="empty"><b>No transactions match</b>Try another filter or search.</div>';
   } else {
-    list.innerHTML = '<div class="history-state" role="status">Loading…</div>';
+    list.innerHTML = '<div class="empty"><b>No transactions match</b>Try another filter or search.</div>';
   }
 
-  if (historyLoading || historyAppendLoading) {
-    if (visible.length) list.insertAdjacentHTML('beforeend', '<div class="history-state" role="status">Loading…</div>');
-  } else if (historyItems.length >= historyTotal && historyTotal > 0) {
-    list.insertAdjacentHTML('beforeend', '<div class="history-state">End of history</div>');
-  }
+  if (historyAppendLoading) list.insertAdjacentHTML('beforeend', '<div class="history-state" role="status">Loading…</div>');
+  else if (historyLiveOffset < historyLiveTotal) list.insertAdjacentHTML('beforeend', '<div class="history-state" role="status">Scroll for older transactions</div>');
+  else if (historyHasLive && historyLiveTotal > 0) list.insertAdjacentHTML('beforeend', '<div class="history-state">End of live history</div>');
   requestAnimationFrame(maybeLoadHistory);
 }
 
@@ -631,9 +864,9 @@ function openHistoryDetail(ref) {
     <div class="actions"><button class="btn ghost" data-act="close">Close</button><button class="btn primary" data-act="edit" data-ref="${esc(item.ref)}">Edit</button></div>`);
 }
 
-// Requests the next page when the viewport nears the end of the current list.
+// Requests the next older live page when the viewport nears the bottom.
 function maybeLoadHistory() {
-  if (state.tab !== 'history' || historyLoading || historyAppendLoading || historyItems.length >= historyTotal) return;
+  if (state.tab !== 'history' || historyLoading || historyAppendLoading || historyLiveOffset >= historyLiveTotal) return;
   const remaining = document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
   if (remaining < 200) loadHistory(true);
 }
@@ -680,7 +913,7 @@ document.addEventListener('click', async e => {
     else loadSummary();
     return;
   }
-  if (el.dataset.historyFilter) { state.historyFilter = el.dataset.historyFilter; loadHistory(); return; }
+  if (el.dataset.historyFilter) { state.historyFilter = el.dataset.historyFilter; renderHistoryList(); return; }
   if (el.dataset.historyRef) { openHistoryDetail(el.dataset.historyRef); return; }
   if (el.dataset.filter) { state.filter = el.dataset.filter; renderPending(); return; }
   if (el.dataset.bucket) {
@@ -735,14 +968,19 @@ document.addEventListener('click', async e => {
   }
 });
 
-function refresh() { if (state.tab === 'pending') loadPending(); else if (state.tab === 'history') loadHistory(); else loadSummary(); }
+function refresh() {
+  refreshHistorySnapshot();
+  if (state.tab === 'pending') loadPending();
+  else if (state.tab === 'history') loadHistory();
+  else loadSummary();
+}
 $('#btnRefresh').onclick = refresh;
 $('#btnSettings').onclick = openSettings;
 
 // ---------- Start ----------
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 if (!cfg().key) { setStatus('Setup required'); openSettings(); }
-else loadPending();
+else { loadPending(); refreshHistorySnapshot(); }
 </script>
 </body>
 </html>
