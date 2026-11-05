@@ -6,13 +6,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Finance">
-<meta name="theme-color" content="#176b52">
+<meta name="theme-color" content="#1177cc">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png?v=6">
 <title>Finance</title>
 <style>
-:root{color-scheme:light;--bg:#f4f6f2;--paper:#fff;--ink:#17231f;--muted:#65736d;--line:#dfe7e1;--brand:#176b52;--brand-dark:#10543f;--brand-soft:#e5f2eb;--green:#148254;--amber:#9a5c08;--red:#b6342c;--shadow:0 2px 6px rgba(19,45,33,.045)}
-@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#101914;--paper:#1a251e;--ink:#edf4ee;--muted:#a5b2a8;--line:#304137;--brand:#78c6a0;--brand-dark:#a8e1c2;--brand-soft:#233b2e;--green:#71d3a2;--amber:#f2bd66;--red:#ff938a;--shadow:none}}
+:root{color-scheme:light;--bg:#f4f6f2;--paper:#fff;--ink:#17231f;--muted:#65736d;--line:#dfe7e1;--brand:#1177cc;--brand-dark:#075d9e;--brand-soft:#e5f3ff;--green:#148254;--amber:#9a5c08;--red:#b6342c;--shadow:0 2px 6px rgba(19,45,33,.045)}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#101820;--paper:#1a2530;--ink:#edf5fc;--muted:#a6b8c8;--line:#30404e;--brand:#63b6fa;--brand-dark:#a8daff;--brand-soft:#22394a;--green:#71d3a2;--amber:#f2bd66;--red:#ff938a;--shadow:none}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.48 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}body{min-height:100vh;padding-bottom:calc(82px + env(safe-area-inset-bottom))}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed}:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 64%,transparent);outline-offset:3px}
 .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:11px;padding:calc(env(safe-area-inset-top) + 10px) max(16px,calc((100vw - 1060px)/2)) 10px;background:var(--bg);border-bottom:1px solid var(--line)}.brand-lockup{display:flex;align-items:center;gap:10px}.brand-mark{width:37px;height:37px;display:grid;place-items:center;border-radius:12px;background:var(--brand);color:#fff}.brand-mark svg{width:23px;height:23px}.brand{font-size:18px;font-weight:760;letter-spacing:-.03em}.sub{font-size:12px;color:var(--muted)}.grow{flex:1}.icon{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:18px;display:grid;place-items:center;text-decoration:none}
 main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,440px);display:flex;background:var(--paper);border:1px solid var(--line);border-bottom:0;border-radius:17px 17px 0 0;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:5}.tab{flex:1;border:0;border-radius:11px;background:none;color:var(--muted);font-size:12px;font-weight:670;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px}.tab .ti{width:20px;height:20px;display:grid;place-items:center}.tab .ti svg{display:block;width:20px;height:20px}.tab.on{color:var(--brand);background:var(--brand-soft)}
@@ -24,10 +24,11 @@ main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{positio
 .empty{margin:18px 0;text-align:center;padding:36px 18px;border:1px dashed var(--line);border-radius:13px;background:var(--paper);color:var(--muted)}.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:5px}.empty .btn{display:inline-block;width:auto;margin-top:14px}.label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:650}input,textarea{width:100%;padding:12px 13px;font-size:16px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .scrim{position:fixed;inset:0;background:rgba(13,25,19,.55);display:none;align-items:flex-end;justify-content:center;z-index:9}.scrim.on{display:flex}.sheet{width:min(100%,540px);max-height:90vh;overflow:auto;background:var(--paper);border:1px solid var(--line);border-radius:20px 20px 0 0;padding:12px 22px calc(22px + env(safe-area-inset-bottom));animation:up .2s ease-out}.sheet h3{margin:0 0 3px;font-size:23px;letter-spacing:-.035em}.grip{width:36px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 17px}.setup-head{display:flex;gap:13px;align-items:center;margin-bottom:6px}.setup-mark{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:14px;background:var(--brand-soft);color:var(--brand);font-size:23px}.setup-copy{margin:4px 0 16px;color:var(--muted);font-size:14px;max-width:48ch}.field-hint{margin:6px 0 0;color:var(--muted);font-size:12px}.secure-note{display:flex;gap:9px;margin-top:14px;padding:11px 12px;border-radius:10px;background:var(--bg);color:var(--muted);font-size:12px}.secure-note b{color:var(--ink)}.settings-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}.link{background:none;border:0;color:var(--brand);font-size:14px;width:100%;padding:12px;margin-top:5px}
 @keyframes up{from{transform:translateY(22px);opacity:.7}to{transform:none;opacity:1}}.bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:7px}.bar i{display:block;height:100%;border-radius:6px}.lbl2{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-top:12px}.hero{background:var(--brand);color:#fff;border-radius:14px;padding:20px 21px}.hero .meta{color:rgba(255,255,255,.82)}.hero .amt{font-size:clamp(30px,7vw,40px);margin:5px 0 4px}.hero-label{font-size:13px;font-weight:620}.hero-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(255,255,255,.25)}.hero-foot span{font-size:12px;color:rgba(255,255,255,.86)}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px}.stat .meta{font-size:12px}.stat .amt{font-size:18px;margin-top:5px}.month-controls{display:flex;align-items:center;gap:8px}.month-controls .icon{width:36px;height:36px}.section-title{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:4px}.section-title b{font-size:15px}.section-title span{font-size:12px;color:var(--muted)}.spend-panel{margin-top:11px}
+.history-filter{margin-bottom:14px}.history-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 12px;color:var(--muted);font-size:13px}.history-row{display:flex;align-items:center;gap:12px;width:100%;padding:14px 15px;border:0;border-bottom:1px solid var(--line);background:var(--paper);color:var(--ink);text-align:left}.history-row:last-child{border-bottom:0}.history-row:hover{background:color-mix(in srgb,var(--brand) 4%,var(--paper))}.bank-mark{width:39px;height:39px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--brand-soft);color:var(--brand-dark);font-size:10px;font-weight:800;letter-spacing:-.04em}.bank-mark.sbi{background:#e8f1fb;color:#1268a8}.bank-mark.boi{background:#e9f4ed;color:#167247}.bank-mark.kotak{background:#fceced;color:#b22734}.history-copy{min-width:0;flex:1}.history-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:680}.history-meta{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:3px;color:var(--muted);font-size:11px}.history-amount{text-align:right;flex:none}.history-amount .amt{font-size:15px}.history-more{width:100%;margin:4px 0 16px}.history-detail{display:grid;gap:12px;margin:18px 0}.history-detail div{display:flex;justify-content:space-between;gap:16px;font-size:14px}.history-detail dt{color:var(--muted)}.history-detail dd{margin:0;text-align:right;font-weight:620;overflow-wrap:anywhere}
 .skel{height:120px;border-radius:13px;background:linear-gradient(90deg,var(--paper),var(--line),var(--paper));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px}@keyframes sh{to{background-position:-200% 0}}.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:520px;margin:auto;background:#17231f;color:#fff;padding:12px 14px;border-radius:11px;text-align:center;display:none;z-index:10;font-size:14px}
 .day-group{margin-bottom:19px}.day-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 3px 8px}.day-heading h2{margin:0;font-size:14px;font-weight:720;letter-spacing:-.01em}.day-heading span{font-size:11px;color:var(--muted)}.day-list{overflow:hidden;border:1px solid var(--line);border-radius:13px;background:var(--paper)}.txn-row{padding:14px 15px;border-bottom:1px solid var(--line)}.txn-row:last-child{border-bottom:0}.txn-icon{width:39px;height:39px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:18px;font-weight:700}.txn-amount{text-align:right;flex:none}.txn-amount .amt{font-size:16px}.txn-direction{margin-top:2px;color:var(--muted);font-size:10px}.txn-status{display:flex;align-items:center;gap:7px;min-width:0;margin:11px 0 0 51px}.txn-status .sug{font-size:11px}.txn-status .suggestion-label{flex:none;font-size:10px}.txn-row .actions{margin:10px 0 0 51px;grid-template-columns:1fr 1fr}.txn-row .btn{padding:8px 10px;font-size:12px}
 @media(min-width:700px){body{padding-bottom:84px}main{padding-top:32px}.scrim{align-items:center}.sheet{border-radius:18px;padding-bottom:22px}.tabbar{bottom:14px;border-bottom:1px solid var(--line);border-radius:14px}.overview-strip{gap:12px}.txn-card{padding:18px}.txn-card:hover{border-color:color-mix(in srgb,var(--brand) 36%,var(--line))}}
-@media(max-width:480px){main{padding:20px 14px 28px}.page-head{align-items:flex-start;gap:8px}.review-count{padding:8px 9px}.review-count span{max-width:60px;white-space:normal;line-height:1.2}.overview-strip{gap:7px}.overview-stat{padding:11px 10px}.overview-stat span{font-size:11px}.overview-stat strong{font-size:17px}.seg button{font-size:12px;padding:8px 4px}.filter-row{gap:8px}.search{font-size:16px}.txn-row{padding:12px 10px}.txn-icon{width:35px;height:35px}.txn-status,.txn-row .actions{margin-left:45px}.txn-row .btn{padding:8px 6px;font-size:11px}.amt{font-size:16px}.hero{padding:17px}.month-controls{gap:4px}}
+@media(max-width:480px){main{padding:20px 14px 28px}.page-head{align-items:flex-start;gap:8px}.review-count{padding:8px 9px}.review-count span{max-width:60px;white-space:normal;line-height:1.2}.overview-strip{gap:7px}.overview-stat{padding:11px 10px}.overview-stat span{font-size:11px}.overview-stat strong{font-size:17px}.seg button{font-size:12px;padding:8px 4px}.filter-row{gap:8px}.search{font-size:16px}.txn-row{padding:12px 10px}.txn-icon{width:35px;height:35px}.txn-status,.txn-row .actions{margin-left:45px}.txn-row .btn{padding:8px 6px;font-size:11px}.amt{font-size:16px}.hero{padding:17px}.month-controls{gap:4px}.history-row{padding:12px 10px;gap:9px}.bank-mark{width:35px;height:35px}.history-amount .amt{font-size:14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -43,6 +44,7 @@ main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{positio
 <nav class="tabbar" aria-label="Main navigation">
   <button class="tab on" data-tab="pending" id="tabPending" aria-pressed="true" aria-controls="view"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5H6a2 2 0 0 0-2 2v13h16V7a2 2 0 0 0-2-2h-2"/><rect x="8" y="3" width="8" height="4" rx="1.5"/><path d="m8 13 1.5 1.5L12 12m2 1h3m-9 5 1.5 1.5L12 18m2 1h3"/></svg></span>Pending</button>
   <button class="tab" data-tab="month" id="tabMonth" aria-pressed="false" aria-controls="view"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01" stroke-width="2.4"/></svg></span>Month</button>
+  <button class="tab" data-tab="history" id="tabHistory" aria-pressed="false" aria-controls="view"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg></span>History</button>
 </nav>
 <div class="scrim" id="scrim" aria-hidden="true"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -84,7 +86,7 @@ function categoryIcon(item) {
 const cfg = () => { const saved = JSON.parse(localStorage.getItem('fin_cfg') || '{}'); return { ...saved, url: saved.url || DEFAULT_WEB_APP_URL }; };
 
 let items = [];
-let state = { tab: 'pending', filter: 'all', query: '', month: ymd(new Date()) };
+let state = { tab: 'pending', filter: 'all', query: '', month: ymd(new Date()), historyStatus: 'all', historyQuery: '' };
 let ctx = null;
 
 // ---------- Network (JSONP: Apps Script responses can't be read by a normal fetch) ----------
@@ -354,7 +356,165 @@ function renderSummary(s) {
 function shiftMonth(n) {
   const [y, m] = state.month.split('-').map(Number);
   state.month = ymd(new Date(y, m - 1 + n, 1));
-  loadSummary();
+  state.tab === 'history' ? loadHistory() : loadSummary();
+}
+
+// ---------- Payment history ----------
+const HISTORY_PAGE_SIZE = 40;
+let historyItems = [];
+let historyTotal = 0;
+let historyLoading = false;
+let historySearchTimer = 0;
+
+function monthRange(month) {
+  const [year, monthNumber] = month.split('-').map(Number);
+  const lastDay = new Date(year, monthNumber, 0).getDate();
+  return { from: `${month}-01`, to: `${month}-${String(lastDay).padStart(2, '0')}` };
+}
+
+function normalizeHistoryItem(item) {
+  if (!item || typeof item !== 'object') throw new Error('Invalid transaction');
+  const stamp = String(item.stamp || item.date || '');
+  const date = String(item.date || stamp.slice(0, 10));
+  const time = stamp.length > 10 ? stamp.slice(11, 16) : '';
+  const direction = String(item.direction || '').toUpperCase();
+  const amount = Number(item.amount);
+  if (!item.ref || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !['DEBIT', 'CREDIT'].includes(direction) || !Number.isFinite(amount)) {
+    throw new Error('Invalid transaction');
+  }
+  return { ...item, ref: String(item.ref), stamp, date, time, direction, amount: Math.abs(amount) };
+}
+
+async function loadHistory(append = false) {
+  if (historyLoading) return;
+  historyLoading = true;
+  if (!append) renderLoading();
+  const range = monthRange(state.month);
+  const offset = append ? historyItems.length : 0;
+  let failure = null;
+  try {
+    const response = await api('history', {
+      ...range,
+      status: state.historyStatus,
+      q: state.historyQuery.trim(),
+      offset,
+      limit: HISTORY_PAGE_SIZE
+    });
+    if (!Array.isArray(response.items) || !Number.isInteger(Number(response.total)) || Number(response.total) < 0) {
+      throw new Error('Invalid history response');
+    }
+    const page = response.items.map(normalizeHistoryItem);
+    const nextItems = append ? historyItems.concat(page) : page;
+    const total = Number(response.total);
+    if (nextItems.length > total || (page.length === 0 && offset < total)) throw new Error('Incomplete history page');
+    historyItems = nextItems;
+    historyTotal = total;
+  } catch (error) {
+    failure = error;
+  }
+  historyLoading = false;
+  if (state.tab !== 'history') return;
+  if (failure) {
+    setStatus('History unavailable');
+    if (append && historyItems.length) {
+      toast('Could not load more history. Try again.');
+      renderHistory();
+    } else {
+      $('#view').innerHTML = `<div class="empty"><b>Payment history unavailable</b><p>The connected Apps Script must return the history action response before transactions can be shown.</p><button class="btn primary" data-act="history-retry">Try again</button></div>`;
+    }
+    return;
+  }
+  setStatus(`History · ${monthLabel(state.month)}`);
+  renderHistory();
+}
+
+function renderHistory() {
+  const filters = [
+    ['all', 'All'],
+    ['pending', 'Pending'],
+    ['confirmed', 'Confirmed']
+  ];
+  $('#view').innerHTML = `
+    <div class="page-head">
+      <div><h1>Payment History</h1><p class="page-description">${monthLabel(state.month)} · All debits and credits</p></div>
+      <div class="month-controls">
+        <button class="icon" data-month="-1" aria-label="Previous month">‹</button>
+        <button class="icon" data-month="1" aria-label="Next month">›</button>
+      </div>
+    </div>
+    <section class="history-filter" aria-label="Payment history filters">
+      <div class="seg" role="group" aria-label="Filter by status">${filters.map(([value, label]) => `<button data-history-status="${value}" aria-pressed="${state.historyStatus === value}" class="${state.historyStatus === value ? 'on' : ''}">${label}</button>`).join('')}</div>
+      <input class="search" id="historySearch" type="search" aria-label="Search payment history" placeholder="Search payee, bank, category or amount" value="${esc(state.historyQuery)}">
+    </section>
+    <div id="historyList" aria-live="polite"></div>`;
+  $('#historySearch').addEventListener('input', event => {
+    state.historyQuery = event.target.value;
+    clearTimeout(historySearchTimer);
+    historySearchTimer = setTimeout(() => loadHistory(), 300);
+  });
+  renderHistoryList();
+}
+
+function renderHistoryList() {
+  const list = $('#historyList');
+  if (!list) return;
+  if (!historyItems.length) {
+    list.innerHTML = '<div class="empty"><b>No transactions found</b>Try another month, status filter or search.</div>';
+  } else {
+    const groups = groupByDate(historyItems);
+    list.innerHTML = groups.map(([date, dayItems]) => `
+      <section class="day-group" aria-label="${esc(dayHeading(date))}">
+        <div class="day-heading"><h2>${esc(dayHeading(date))}</h2><span>${dayItems.length} ${dayItems.length === 1 ? 'transaction' : 'transactions'}</span></div>
+        <div class="day-list">${dayItems.map(historyRow).join('')}</div>
+      </section>`).join('');
+  }
+  list.insertAdjacentHTML('beforeend', `<div class="history-summary"><span>${historyItems.length} of ${historyTotal} transactions</span>${state.historyStatus === 'all' ? '<span>All activity</span>' : `<span>${state.historyStatus === 'pending' ? 'Awaiting review' : 'Confirmed'}</span>`}</div>`);
+  if (historyItems.length < historyTotal) {
+    list.insertAdjacentHTML('beforeend', `<button class="btn ghost history-more" data-act="history-more">${historyLoading ? 'Loading…' : 'Load more transactions'}</button>`);
+  }
+}
+
+function bankMark(item) {
+  const bank = `${item.account || ''} ${item.source || ''}`.toLowerCase();
+  if (/kotak/.test(bank)) return ['Kotak', 'kotak'];
+  if (/bank of india|\bboi\b/.test(bank)) return ['BOI', 'boi'];
+  if (/state bank|\bsbi\b/.test(bank)) return ['SBI', 'sbi'];
+  const code = String(item.account || item.source || 'Bank').trim().slice(0, 4).toUpperCase();
+  return [code || 'BANK', ''];
+}
+
+function historyRow(item) {
+  const credit = item.direction === 'CREDIT';
+  const [mark, brand] = bankMark(item);
+  const name = item.counterparty || 'Unnamed transaction';
+  const account = item.account || item.source || 'Account';
+  const time = item.time ? ` · ${item.time}` : '';
+  return `<button type="button" class="history-row" data-history-ref="${esc(item.ref)}" aria-label="${credit ? 'Received' : 'Paid'} ${inr(item.amount)} to ${esc(name)}${time}">
+    <span class="bank-mark ${brand}" aria-hidden="true">${esc(mark)}</span>
+    <span class="history-copy"><span class="history-title">${esc(name)}</span><span class="history-meta">${esc(account)}${time}</span></span>
+    <span class="history-amount"><span class="amt ${credit ? 'in' : ''}">${credit ? '+' : '−'}${inr(item.amount)}</span><span class="txn-direction">${credit ? 'Received' : 'Paid'}</span></span>
+  </button>`;
+}
+
+function openHistoryDetail(ref) {
+  const item = historyItems.find(entry => entry.ref === ref);
+  if (!item) return;
+  const credit = item.direction === 'CREDIT';
+  const detail = (label, value) => `<div><dt>${label}</dt><dd>${esc(value || '—')}</dd></div>`;
+  openSheet(`
+    <div class="grip"></div>
+    <div class="setup-head"><div class="setup-mark" aria-hidden="true">${credit ? '↓' : '↑'}</div><div><h3 id="sheetTitle">${esc(item.counterparty || 'Transaction')}</h3><div class="meta">${credit ? 'Received' : 'Paid'} · ${esc(item.stamp)}</div></div></div>
+    <div class="history-detail" role="group" aria-label="Transaction details">
+      ${detail('Amount', `${credit ? '+' : '−'}${inr(item.amount)}`)}
+      ${detail('Account', item.account)}
+      ${detail('Bank / source', item.source)}
+      ${detail('Status', item.status)}
+      ${detail('Category', item.category)}
+      ${detail('Type', item.bucket)}
+      ${detail('Property', item.property)}
+      ${detail('Notes', item.notes)}
+    </div>
+    <button class="btn ghost" data-act="close">Close</button>`);
 }
 
 // ---------- Settings ----------
@@ -382,7 +542,7 @@ function writeSettings() {
 
 // ---------- Actions (one click handler for the whole app) ----------
 document.addEventListener('click', async e => {
-  const el = e.target.closest('[data-act],[data-tab],[data-filter],[data-bucket],[data-cat],[data-month]');
+  const el = e.target.closest('[data-act],[data-tab],[data-filter],[data-bucket],[data-cat],[data-month],[data-history-status],[data-history-ref]');
   if (!el) return;
 
   if (el.dataset.tab) {
@@ -391,9 +551,15 @@ document.addEventListener('click', async e => {
     $('#tabPending').setAttribute('aria-pressed', String(state.tab === 'pending'));
     $('#tabMonth').classList.toggle('on', state.tab === 'month');
     $('#tabMonth').setAttribute('aria-pressed', String(state.tab === 'month'));
-    state.tab === 'pending' ? loadPending() : loadSummary();
+    $('#tabHistory').classList.toggle('on', state.tab === 'history');
+    $('#tabHistory').setAttribute('aria-pressed', String(state.tab === 'history'));
+    if (state.tab === 'pending') loadPending();
+    else if (state.tab === 'history') loadHistory();
+    else loadSummary();
     return;
   }
+  if (el.dataset.historyStatus) { state.historyStatus = el.dataset.historyStatus; loadHistory(); return; }
+  if (el.dataset.historyRef) { openHistoryDetail(el.dataset.historyRef); return; }
   if (el.dataset.filter) { state.filter = el.dataset.filter; renderPending(); return; }
   if (el.dataset.bucket) {
     ctx.bucket = el.dataset.bucket;
@@ -408,6 +574,8 @@ document.addEventListener('click', async e => {
   if (el.dataset.month) { shiftMonth(Number(el.dataset.month)); return; }
 
   switch (el.dataset.act) {
+    case 'history-more': loadHistory(true); break;
+    case 'history-retry': loadHistory(); break;
     case 'accept': {
       const item = items.find(x => x.ref === el.dataset.ref);
       if (item && item.sBucket) {
@@ -445,7 +613,7 @@ document.addEventListener('click', async e => {
   }
 });
 
-function refresh() { state.tab === 'pending' ? loadPending() : loadSummary(); }
+function refresh() { if (state.tab === 'pending') loadPending(); else if (state.tab === 'history') loadHistory(); else loadSummary(); }
 $('#btnRefresh').onclick = refresh;
 $('#btnSettings').onclick = openSettings;
 
