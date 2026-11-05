@@ -274,14 +274,18 @@ async function saveItem(item, p) {
     await api('save', { ref: item.ref, ...p });
     const updates = { bucket: p.bucket, category: p.category, property: p.property, notes: p.notes, status: 'CONFIRMED' };
     const cachedItem = historyItems.find(entry => entry.ref === item.ref);
-    if (cachedItem) Object.assign(cachedItem, updates);
-    const localItem = historyLocalItems.find(entry => entry.ref === item.ref);
-    if (localItem) Object.assign(localItem, updates);
-    await historyUpdateCached(item.ref, updates);
-    if (cachedItem && state.tab === 'history') {
-      historyTotals = historySum(historyLocalItems);
-      renderHistory();
+    const oldBucket = cachedItem && cachedItem.bucket.toLowerCase();
+    if (cachedItem) {
+      if (oldBucket === 'business') historyTotals.business -= cachedItem.amount;
+      if (oldBucket === 'personal') historyTotals.personal -= cachedItem.amount;
+      if (updates.bucket.toLowerCase() === 'business') historyTotals.business += cachedItem.amount;
+      if (updates.bucket.toLowerCase() === 'personal') historyTotals.personal += cachedItem.amount;
+      Object.assign(cachedItem, updates);
     }
+    const localItem = historyLocalItems.find(entry => entry.ref === item.ref);
+    if (localItem && localItem !== cachedItem) Object.assign(localItem, updates);
+    await historyUpdateCached(item.ref, updates);
+    if (cachedItem && state.tab === 'history') renderHistory();
     toast('Saved · ' + p.category);
   } catch (err) {
     if (pendingItem) {
@@ -395,6 +399,7 @@ let historyLoading = false;
 let historyAppendLoading = false;
 let historyRequestId = 0;
 let historySnapshotPromise = null;
+let historySnapshotFailed = false;
 let historySnapshotAt = 0;
 let historyOffline = false;
 let historyDbPromise = null;
@@ -590,6 +595,7 @@ function historyTimeLabel(at) {
 // Refreshes the rolling snapshot without blocking Pending or the visible History list.
 async function refreshHistorySnapshot() {
   if (!cfg().key || !('indexedDB' in window) || historySnapshotPromise) return historySnapshotPromise;
+  historySnapshotFailed = false;
   historySnapshotPromise = (async () => {
     const db = await openHistoryDb();
     if (!db) return;
@@ -603,21 +609,16 @@ async function refreshHistorySnapshot() {
       const at = Date.now();
       if (!await historyReplaceCache(rows, range.from, range.to, at)) throw new Error('History storage unavailable');
       historySnapshotAt = at;
+      historySnapshotFailed = false;
       historyOffline = false;
       if (state.tab === 'history') await loadHistory();
       setStatus('Updated ' + historyTimeLabel(at));
     } catch (_) {
+      historySnapshotFailed = true;
       historyOffline = true;
-      const saved = await historyReadRange(range.from, range.to);
       if (state.tab === 'history') {
-        if (saved && saved.length) {
-          historyItems = saved;
-          historyLocalItems = saved;
-          setStatus('Offline · showing saved list' + (historySnapshotAt ? ' · updated ' + historyTimeLabel(historySnapshotAt) : ''));
-          renderHistory();
-        } else if (!historyLoading) {
-          await loadHistory();
-        }
+        await loadHistory();
+        if (historyOffline && historyItems.length) setStatus('Offline · showing saved list' + (historySnapshotAt ? ' · updated ' + historyTimeLabel(historySnapshotAt) : ''));
       }
     }
   })();
@@ -633,7 +634,9 @@ function splitHistoryRange(requested, windowRange) {
   const localFrom = requested.from > windowRange.from ? requested.from : windowRange.from;
   const localTo = to < windowRange.to ? to : windowRange.to;
   const local = localFrom <= localTo ? { from: localFrom, to: localTo } : null;
-  const liveTo = windowRange.from > requested.from ? new Date(new Date(windowRange.from + 'T00:00:00').getTime() - 86400000).toISOString().slice(0, 10) : '';
+  const cutoff = new Date(windowRange.from + 'T00:00:00');
+  cutoff.setDate(cutoff.getDate() - 1);
+  const liveTo = `${cutoff.getFullYear()}-${String(cutoff.getMonth() + 1).padStart(2, '0')}-${String(cutoff.getDate()).padStart(2, '0')}`;
   const live = requested.from < windowRange.from ? { from: requested.from, to: to < liveTo ? to : liveTo } : null;
   return { local, live: live && live.from <= live.to ? live : null };
 }
@@ -669,7 +672,7 @@ async function loadHistory(append = false) {
       historyHasLive = !!historyLiveRange;
       const snapshotAt = await historyReadSnapshotTime();
       if (snapshotAt) historySnapshotAt = snapshotAt;
-      if (historySnapshotPromise && !localRows.length && selected.local) {
+      if (historySnapshotPromise && !historySnapshotFailed && !localRows.length && selected.local) {
         historyLoading = false;
         renderHistory();
         return;
@@ -713,10 +716,10 @@ async function loadHistory(append = false) {
     historyLiveTotal = total;
     historyItems = historyLocalItems.concat(historyLiveItems);
     historyTotal = historyLocalItems.length + historyLiveTotal;
-    if (response.totals && ['sent', 'received', 'business', 'personal'].every(k => Number.isFinite(Number(response.totals[k])))) {
+    if (historyLiveOffset === page.length && response.totals && ['sent', 'received', 'business', 'personal'].every(k => Number.isFinite(Number(response.totals[k])))) {
       const liveTotals = response.totals;
       historyTotals = Object.fromEntries(['sent', 'received', 'business', 'personal'].map(k => [k, historyTotals[k] + Number(liveTotals[k])]));
-    } else historyTotals = historySum(historyItems);
+    } else if (historyLiveOffset === page.length) historyTotals = historySum(historyItems);
     historyOffline = false;
   } catch (error) {
     if (requestId === historyRequestId) failure = error;
