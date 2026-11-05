@@ -68,9 +68,10 @@ const shortDate = s => { const d = new Date(s + 'T00:00:00'); return isNaN(d) ? 
 function dayHeading(s) {
   const d = new Date(s + 'T00:00:00');
   if (isNaN(d)) return 'Date unavailable';
-  const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-  if (ymd(d) === ymd(new Date())) return 'Today';
-  if (ymd(d) === ymd(yesterday)) return 'Yesterday';
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  if (d.getTime() === today.getTime()) return 'Today';
+  const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+  if (d.getTime() === yesterday.getTime()) return 'Yesterday';
   return d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
 }
 function categoryIcon(item) {
