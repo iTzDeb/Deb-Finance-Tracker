@@ -11,96 +11,62 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>Finance</title>
 <style>
-:root{--bg:#f2f3f7;--card:#fff;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--brand:#2563eb;--green:#16a34a;--amber:#d97706;--red:#dc2626;--chip:#eef2ff;--chip-ink:#3730a3;--shadow:0 1px 2px rgba(15,23,42,.06),0 4px 14px rgba(15,23,42,.05)}
-@media (prefers-color-scheme: dark){:root{--bg:#0b1020;--card:#151c2e;--ink:#e5e9f5;--muted:#94a3b8;--line:#243049;--chip:#1e2a4a;--chip-ink:#c7d2fe;--shadow:none}}
+:root{color-scheme:light;--bg:#f5f7f8;--card:#fff;--ink:#17212b;--muted:#667482;--line:#e1e7eb;--brand:#2563eb;--green:#16845b;--amber:#a95d04;--red:#b42318;--chip:#edf2ff;--chip-ink:#263a8b;--shadow:0 1px 3px rgba(15,23,42,.06)}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#0e1420;--card:#171f2d;--ink:#edf1f7;--muted:#a0adbb;--line:#293545;--brand:#7ba7ff;--green:#56c895;--amber:#f2bd66;--red:#ff8b86;--chip:#202d43;--chip-ink:#c4d6ff;--shadow:none}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
-body{min-height:100vh;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
-.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-.brand{font-size:20px;font-weight:700;letter-spacing:-.01em}
-.sub{font-size:12px;color:var(--muted)}
-.grow{flex:1}
-.icon{width:38px;height:38px;border-radius:12px;border:0;background:var(--card);color:var(--ink);font-size:18px;box-shadow:var(--shadow)}
-main{padding:12px 14px 20px}
-.tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:5}
-.tab{flex:1;border:0;background:none;color:var(--muted);font-size:12px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px}
-.tab .ti{font-size:20px;line-height:1}
-.tab.on{color:var(--brand)}
-.card{background:var(--card);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
-.row{display:flex;gap:10px;align-items:center}
-.between{justify-content:space-between}
-.mt{margin-top:10px}
-.name{font-weight:650;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.meta{font-size:13px;color:var(--muted)}
-.amt{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
-.in{color:var(--green)}
-.who{min-width:0;flex:1;padding-right:8px}
-.pill{font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
-.pill.amber{background:#fef3c7;color:#92400e}
-.pill.red{background:#fee2e2;color:#991b1b}
-@media (prefers-color-scheme: dark){.pill.amber{background:#3b2a0a;color:#fcd34d}.pill.red{background:#3b1313;color:#fca5a5}}
-.sug{display:flex;align-items:center;gap:6px;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
-.dot.high{background:var(--green)}
-.dot.medium{background:var(--amber)}
-.dot.unsure{background:var(--red)}
-.dot.rule{background:var(--brand)}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.btn{border:0;border-radius:14px;padding:13px 10px;font-size:15px;font-weight:650}
-.btn.primary{background:var(--brand);color:#fff}
-.btn.ghost{background:var(--chip);color:var(--chip-ink)}
-.btn:disabled{opacity:.35}
-.btn:active{transform:scale(.98)}
-.seg{display:flex;background:var(--card);border-radius:12px;padding:3px;box-shadow:var(--shadow);gap:2px}
-.seg button{flex:1;border:0;background:none;padding:8px 6px;border-radius:9px;font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap}
-.seg button.on{background:var(--brand);color:#fff}
-.search{width:100%;margin:10px 0 12px;padding:12px 14px;border-radius:14px;border:0;background:var(--card);color:var(--ink);font-size:16px;box-shadow:var(--shadow)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
-.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 12px;font-size:14px}
-.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
-.empty{text-align:center;padding:40px 16px;color:var(--muted)}
-.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:6px}
-.label{font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:600}
-input,textarea{width:100%;padding:13px 14px;font-size:16px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
-.scrim{position:fixed;inset:0;background:rgba(2,6,23,.4);display:none;align-items:flex-end;z-index:9}
-.scrim.on{display:flex}
-.sheet{width:100%;max-height:88vh;overflow:auto;background:var(--card);border-radius:24px 24px 0 0;padding:10px 18px calc(18px + env(safe-area-inset-bottom));animation:up .22s ease-out}
-@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
-.grip{width:38px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
-.sheet h3{margin:0 0 2px;font-size:19px}
-.bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:6px}
-.bar i{display:block;height:100%;border-radius:6px}
-.lbl2{display:flex;justify-content:space-between;font-size:14px;margin-top:12px}
-.hero{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;border-radius:20px;padding:18px;box-shadow:var(--shadow)}
-.hero .meta{color:rgba(255,255,255,.85)}
-.hero .amt{font-size:32px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.stat{background:var(--card);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
-.stat .amt{font-size:18px;margin-top:4px}
-.skel{height:120px;border-radius:18px;background:linear-gradient(90deg,var(--card),var(--line),var(--card));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px}
-@keyframes sh{to{background-position:-200% 0}}
-.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));background:#0f172a;color:#fff;padding:12px 14px;border-radius:14px;text-align:center;display:none;z-index:10;font-size:15px}
-.link{background:none;border:0;color:var(--brand);font-size:15px;width:100%;padding:12px;margin-top:6px}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+body{min-height:100vh;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 60%,transparent);outline-offset:3px}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 10px) max(16px,calc((100vw - 1040px)/2)) 10px;background:var(--bg);border-bottom:1px solid var(--line)}
+.brand{font-size:19px;font-weight:750;letter-spacing:-.03em}.sub{font-size:12px;color:var(--muted)}.grow{flex:1}
+.icon{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:18px;display:grid;place-items:center;text-decoration:none}
+main{width:min(100%,1040px);margin:0 auto;padding:22px 18px 30px}
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,440px);display:flex;background:var(--card);border:1px solid var(--line);border-bottom:0;border-radius:18px 18px 0 0;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:5}
+.tab{flex:1;border:0;border-radius:12px;background:none;color:var(--muted);font-size:12px;font-weight:650;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px}.tab .ti{font-size:18px;line-height:1}.tab.on{color:var(--brand);background:var(--chip)}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:6px 2px 18px}.eyebrow{margin:0 0 3px;color:var(--muted);font-size:11px;font-weight:750;letter-spacing:.1em;text-transform:uppercase}.page-head h1{margin:0;font-size:clamp(23px,4vw,30px);line-height:1.15;letter-spacing:-.035em}.page-description{margin:6px 0 0;color:var(--muted);font-size:14px}
+.review-count{display:flex;align-items:baseline;gap:7px;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);white-space:nowrap}.review-count strong{font-size:20px;font-variant-numeric:tabular-nums}.review-count span{font-size:12px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}.row{display:flex;gap:10px;align-items:center}.between{justify-content:space-between}.mt{margin-top:12px}
+.name{font-weight:680;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.meta{font-size:13px;color:var(--muted)}.amt{font-size:20px;font-weight:720;font-variant-numeric:tabular-nums;white-space:nowrap}.in{color:var(--green)}.who{min-width:0;flex:1;padding-right:8px}
+.pill{font-size:10px;font-weight:750;padding:4px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}.pill.amber{background:#fff4df;color:#87500a}.pill.red{background:#fff0ef;color:#a12620}
+@media(prefers-color-scheme:dark){.pill.amber{background:#3a2b17;color:#f2bd66}.pill.red{background:#3a2022;color:#ffaaa5}}
+.sug{display:flex;align-items:center;gap:6px;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}.dot.high{background:var(--green)}.dot.medium{background:var(--amber)}.dot.unsure{background:var(--red)}.dot.rule{background:var(--brand)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.btn{border:1px solid transparent;border-radius:11px;padding:11px 12px;font-size:14px;font-weight:680;transition:background .15s ease,transform .15s ease}.btn.primary{background:var(--brand);color:#fff}.btn.ghost{background:var(--chip);color:var(--chip-ink)}.btn:disabled{opacity:.42}.btn:active{transform:scale(.985)}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}.seg button{flex:1;border:0;background:none;padding:8px 6px;border-radius:9px;font-size:13px;font-weight:620;color:var(--muted);white-space:nowrap}.seg button.on{background:var(--brand);color:#fff}
+.search{width:100%;margin:12px 0;padding:11px 13px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 11px;font-size:13px}.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.empty{text-align:center;padding:40px 16px;color:var(--muted)}.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:6px}.label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:650}
+input,textarea{width:100%;padding:12px 13px;font-size:16px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.scrim{position:fixed;inset:0;background:rgba(2,6,23,.48);display:none;align-items:flex-end;justify-content:center;z-index:9}.scrim.on{display:flex}.sheet{width:min(100%,560px);max-height:88vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:20px 20px 0 0;padding:12px 18px calc(20px + env(safe-area-inset-bottom));animation:up .2s ease-out}.sheet h3{margin:0 0 2px;font-size:20px;letter-spacing:-.02em}.grip{width:38px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 14px}
+@keyframes up{from{transform:translateY(24px);opacity:.7}to{transform:none;opacity:1}}
+.bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;border-radius:6px}.lbl2{display:flex;justify-content:space-between;font-size:14px;margin-top:12px}
+.hero{background:var(--brand);color:#fff;border-radius:14px;padding:18px}.hero .meta{color:rgba(255,255,255,.86)}.hero .amt{font-size:32px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}.stat .amt{font-size:18px;margin-top:4px}.month-nav{display:flex;align-items:center;gap:8px}.month-nav b{font-size:13px;min-width:0;text-align:center}
+.skel{height:120px;border-radius:14px;background:linear-gradient(90deg,var(--card),var(--line),var(--card));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px}@keyframes sh{to{background-position:-200% 0}}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:520px;margin:auto;background:#17212b;color:#fff;padding:12px 14px;border-radius:12px;text-align:center;display:none;z-index:10;font-size:14px}.link{background:none;border:0;color:var(--brand);font-size:15px;width:100%;padding:12px;margin-top:6px}
+@media(min-width:700px){body{padding-bottom:84px}main{padding-top:30px}.scrim{align-items:center}.sheet{border-radius:18px;padding-bottom:20px}.actions{max-width:440px;margin-left:auto}}
+@media(max-width:420px){main{padding-inline:14px}.page-head{align-items:flex-start}.review-count{padding:7px 9px}.review-count span{max-width:58px;white-space:normal;line-height:1.2}.seg button{font-size:12px;padding-inline:4px}.card{padding:14px}.amt{font-size:18px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
 <header class="top">
-  <div><div class="brand">Finance</div><div class="sub" id="status">Starting…</div></div>
+  <div><div class="brand">Finance</div><div class="sub" id="status" role="status" aria-live="polite" aria-atomic="true">Starting…</div></div>
   <div class="grow"></div>
   <a class="icon" href="import.html" aria-label="Import statement" style="display:grid;place-items:center;text-decoration:none">⤓</a>
   <button class="icon" id="btnRefresh" aria-label="Refresh">↻</button>
   <button class="icon" id="btnSettings" aria-label="Settings">⚙</button>
 </header>
 <main id="view"></main>
-<nav class="tabbar">
-  <button class="tab on" data-tab="pending" id="tabPending"><span class="ti">●</span>Pending</button>
-  <button class="tab" data-tab="month" id="tabMonth"><span class="ti">▦</span>Month</button>
+<nav class="tabbar" aria-label="Main navigation">
+  <button class="tab on" data-tab="pending" id="tabPending" aria-pressed="true" aria-controls="view"><span class="ti" aria-hidden="true">●</span>Pending</button>
+  <button class="tab" data-tab="month" id="tabMonth" aria-pressed="false" aria-controls="view"><span class="ti" aria-hidden="true">▦</span>Month</button>
 </nav>
-<div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
-<div class="toast" id="toast"></div>
+<div class="scrim" id="scrim" aria-hidden="true"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script>
 const BUCKETS = ['Business', 'Personal', 'Internal', 'Deposit'];
+const DEFAULT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzaDUl1tqREjXTGt8liHUWtr-kE2WR_kixf3UA-98K-vt36vOZv2f4rDPSOEohBiv6_/exec';
 const CATS = ['Electricity', 'Plumbing', 'Repairs', 'Groceries', 'Rent', 'Staff',
   'Chai and snacks', 'Cigarettes', 'Fuel', 'Medicine', 'Food out', 'Family support',
   'Self transfer', 'Deposit refund', 'Tenant rent', 'Reimbursement', 'Other'];
@@ -112,7 +78,7 @@ const sumObj = o => Object.values(o).reduce((a, b) => a + b, 0);
 const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 const monthLabel = m => { const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }); };
 const shortDate = s => { const d = new Date(s + 'T00:00:00'); return isNaN(d) ? s : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); };
-const cfg = () => JSON.parse(localStorage.getItem('fin_cfg') || '{}');
+const cfg = () => { const saved = JSON.parse(localStorage.getItem('fin_cfg') || '{}'); return { ...saved, url: saved.url || DEFAULT_WEB_APP_URL }; };
 
 let items = [];
 let state = { tab: 'pending', filter: 'all', query: '', month: ymd(new Date()) };
@@ -149,8 +115,31 @@ function setStatus(msg) { $('#status').textContent = msg; }
 function renderLoading() { $('#view').innerHTML = '<div class="skel"></div><div class="skel"></div>'; }
 
 // ---------- Sheet (bottom panel) ----------
-function openSheet(html) { $('#sheet').innerHTML = html; $('#scrim').classList.add('on'); }
-function closeSheet() { $('#scrim').classList.remove('on'); }
+let sheetTrigger = null;
+function openSheet(html) {
+  sheetTrigger = document.activeElement;
+  $('#sheet').innerHTML = html;
+  $('#sheet').setAttribute('role', 'dialog');
+  $('#sheet').setAttribute('aria-modal', 'true');
+  $('#sheet').setAttribute('aria-labelledby', 'sheetTitle');
+  $('#scrim').setAttribute('aria-hidden', 'false');
+  $('#scrim').classList.add('on');
+  $('#sheet').querySelector('input, button')?.focus({ preventScroll: true });
+}
+function closeSheet() {
+  $('#scrim').classList.remove('on');
+  $('#scrim').setAttribute('aria-hidden', 'true');
+  if (sheetTrigger instanceof HTMLElement) sheetTrigger.focus({ preventScroll: true });
+}
+$('#scrim').addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeSheet(); return; }
+  if (e.key !== 'Tab') return;
+  const controls = [...$('#sheet').querySelectorAll('button:not(:disabled), input:not(:disabled), textarea:not(:disabled)')];
+  if (!controls.length) return;
+  const first = controls[0], last = controls[controls.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
 $('#scrim').addEventListener('click', e => { if (e.target.id === 'scrim') closeSheet(); });
 
 // ---------- Pending ----------
@@ -180,12 +169,16 @@ function renderPending() {
   const review = items.filter(i => i.status === 'NEEDS REVIEW').length;
   const sugg = items.length - review;
   $('#view').innerHTML = `
-    <div class="seg">
-      <button data-filter="all" class="${state.filter === 'all' ? 'on' : ''}">All ${items.length}</button>
-      <button data-filter="review" class="${state.filter === 'review' ? 'on' : ''}">Review ${review}</button>
-      <button data-filter="sugg" class="${state.filter === 'sugg' ? 'on' : ''}">Suggested ${sugg}</button>
+    <div class="page-head">
+      <div><p class="eyebrow">PENDING TRANSACTIONS</p><h1>Review transactions</h1><p class="page-description">Confirm suggestions before they reach your sheet.</p></div>
+      <div class="review-count"><strong>${review}</strong><span>need review</span></div>
     </div>
-    <input class="search" id="q" type="search" placeholder="Search name, note or amount" value="${esc(state.query)}">
+    <div class="seg" role="group" aria-label="Filter transactions">
+      <button data-filter="all" aria-pressed="${state.filter === 'all'}" class="${state.filter === 'all' ? 'on' : ''}">All ${items.length}</button>
+      <button data-filter="review" aria-pressed="${state.filter === 'review'}" class="${state.filter === 'review' ? 'on' : ''}">Review ${review}</button>
+      <button data-filter="sugg" aria-pressed="${state.filter === 'sugg'}" class="${state.filter === 'sugg' ? 'on' : ''}">Suggested ${sugg}</button>
+    </div>
+    <input class="search" id="q" type="search" aria-label="Search transactions" placeholder="Search name, note or amount" value="${esc(state.query)}">
     <div id="list"></div>`;
   $('#q').addEventListener('input', e => { state.query = e.target.value; renderList(); });
   renderList();
@@ -256,7 +249,7 @@ function openEdit(ref) {
   };
   openSheet(`
     <div class="grip"></div>
-    <h3>${esc(item.counterparty || 'Transaction')}</h3>
+    <h3 id="sheetTitle">${esc(item.counterparty || 'Transaction')}</h3>
     <div class="meta">${inr(item.amount)} · ${shortDate(item.date)} · ${item.direction === 'CREDIT' ? 'received' : 'paid'}</div>
     <div class="label">Bucket</div>
     <div class="seg" id="bk">${BUCKETS.map(b => `<button data-bucket="${b}" class="${b === ctx.bucket ? 'on' : ''}">${b}</button>`).join('')}</div>
@@ -297,10 +290,13 @@ function renderSummary(s) {
   const bizOut = sumObj(s.business), perOut = sumObj(s.personal);
   const net = s.businessIncome - bizOut;
   $('#view').innerHTML = `
-    <div class="row between" style="margin:4px 2px 12px">
-      <button class="icon" data-month="-1" aria-label="Previous month">‹</button>
-      <b>${monthLabel(s.month)}</b>
-      <button class="icon" data-month="1" aria-label="Next month">›</button>
+    <div class="page-head month-head">
+      <div><p class="eyebrow">MONTHLY OVERVIEW</p><h1>${monthLabel(s.month)}</h1></div>
+      <div class="month-nav">
+        <button class="icon" data-month="-1" aria-label="Previous month">‹</button>
+        <b aria-live="polite">${monthLabel(s.month)}</b>
+        <button class="icon" data-month="1" aria-label="Next month">›</button>
+      </div>
     </div>
     <div class="hero">
       <div class="meta">Business, in minus out</div>
@@ -331,12 +327,12 @@ function openSettings() {
   const c = cfg();
   openSheet(`
     <div class="grip"></div>
-    <h3>Settings</h3>
+    <h3 id="sheetTitle">Settings</h3>
     <div class="meta">Stored only on this phone.</div>
-    <div class="label">Web app URL</div>
-    <input id="s_url" value="${esc(c.url || '')}" autocapitalize="off" autocorrect="off" spellcheck="false">
-    <div class="label">SMS key</div>
-    <input id="s_key" type="password" value="${esc(c.key || '')}" autocapitalize="off" autocorrect="off">
+    <label class="label" for="s_url">Web app URL</label>
+    <input id="s_url" type="url" value="${esc(c.url || '')}" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <label class="label" for="s_key">SMS key</label>
+    <input id="s_key" type="password" value="${esc(c.key || '')}" autocomplete="off" autocapitalize="off" autocorrect="off">
     <div class="actions">
       <button class="btn ghost" data-act="test">Test connection</button>
       <button class="btn primary" data-act="save-settings">Save</button>
@@ -356,7 +352,9 @@ document.addEventListener('click', async e => {
   if (el.dataset.tab) {
     state.tab = el.dataset.tab;
     $('#tabPending').classList.toggle('on', state.tab === 'pending');
+    $('#tabPending').setAttribute('aria-pressed', String(state.tab === 'pending'));
     $('#tabMonth').classList.toggle('on', state.tab === 'month');
+    $('#tabMonth').setAttribute('aria-pressed', String(state.tab === 'month'));
     state.tab === 'pending' ? loadPending() : loadSummary();
     return;
   }

@@ -9,27 +9,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
-:root{--bg:#f2f3f7;--card:#fff;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--brand:#2563eb;--green:#16a34a;--red:#dc2626}
-@media (prefers-color-scheme: dark){:root{--bg:#0b1020;--card:#151c2e;--ink:#e5e9f5;--muted:#94a3b8;--line:#243049}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,system-ui,sans-serif;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
-.top{position:sticky;top:0;display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;background:var(--card);border-bottom:1px solid var(--line);z-index:2}
-.top a{color:var(--brand);text-decoration:none;font-size:17px}
-.top b{font-size:17px}
-main{padding:14px}
-.card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:12px}
-label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px;font-weight:600}
-select,input[type=file]{width:100%;padding:13px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:16px}
-.meta{font-size:13px;color:var(--muted)}
-.big{font-size:24px;font-weight:700;margin-top:4px}
-.in{color:var(--green)}
-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
-td,th{padding:8px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-td.r,th.r{text-align:right;white-space:nowrap}
-.btn{width:100%;padding:15px;border:0;border-radius:14px;background:var(--brand);color:#fff;font-size:16px;font-weight:650;margin-top:14px}
-.btn:disabled{opacity:.4}
-.err{color:var(--red);font-weight:600}
-.busy{color:var(--brand);font-weight:600}
+:root{color-scheme:light;--bg:#f5f7f8;--card:#fff;--ink:#17212b;--muted:#667482;--line:#e1e7eb;--brand:#2563eb;--green:#16845b;--red:#b42318}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#0e1420;--card:#171f2d;--ink:#edf1f7;--muted:#a0adbb;--line:#293545;--brand:#7ba7ff;--green:#56c895;--red:#ff8b86}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,system-ui,sans-serif;padding-bottom:calc(28px + env(safe-area-inset-bottom))}button,input,select{font:inherit}:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 60%,transparent);outline-offset:3px}
+.top{position:sticky;top:0;display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top) + 12px) max(16px,calc((100vw - 760px)/2));background:var(--card);border-bottom:1px solid var(--line);z-index:2}.top a{color:var(--brand);text-decoration:none;font-size:15px;font-weight:650}.top b{font-size:17px}main{width:min(100%,760px);margin:0 auto;padding:18px 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px;font-weight:650}.meta{font-size:13px;color:var(--muted)}.big{font-size:24px;font-weight:720;margin-top:4px}.in{color:var(--green)}
+select,input[type=file]{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:16px}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}td,th{padding:9px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}td.r,th.r{text-align:right;white-space:nowrap}
+.btn{width:100%;padding:13px;border:0;border-radius:11px;background:var(--brand);color:#fff;font-size:15px;font-weight:680;margin-top:14px;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.err{color:var(--red);font-weight:650}.busy{color:var(--brand);font-weight:650}
+@media(min-width:640px){main{padding-top:24px}.card{padding:20px}table{font-size:14px}td,th{padding:10px 8px}}
 </style>
 </head>
 <body>
@@ -44,7 +31,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
     <label for="file">Statement file (CSV, Excel or PDF)</label>
     <input id="file" type="file" accept=".csv,.txt,.xlsx,.xls,.pdf">
     <div class="meta" style="margin-top:10px">Entries already in your sheet are skipped. New ones are placed in date and time order.</div>
-    <div id="status" class="meta" style="margin-top:12px"></div>
+    <div id="status" class="meta" style="margin-top:12px" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
   <div id="preview"></div>
 </main>
@@ -54,7 +41,8 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const inr = n => '₹' + Math.round(Number(n) || 0).toLocaleString('en-IN');
 const pad = n => String(n).padStart(2, '0');
-const cfg = () => JSON.parse(localStorage.getItem('fin_cfg') || '{}');
+const DEFAULT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzaDUl1tqREjXTGt8liHUWtr-kE2WR_kixf3UA-98K-vt36vOZv2f4rDPSOEohBiv6_/exec';
+const cfg = () => { const saved = JSON.parse(localStorage.getItem('fin_cfg') || '{}'); return { ...saved, url: saved.url || DEFAULT_WEB_APP_URL }; };
 const setStatus = html => { $('#status').innerHTML = html; };
 let txns = [];
 
