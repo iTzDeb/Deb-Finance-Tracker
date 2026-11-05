@@ -573,7 +573,7 @@ function renderHistoryList() {
   }
 
   if (historyLoading || historyAppendLoading) {
-    list.insertAdjacentHTML('beforeend', '<div class="history-state" role="status">Loading…</div>');
+    if (visible.length) list.insertAdjacentHTML('beforeend', '<div class="history-state" role="status">Loading…</div>');
   } else if (historyItems.length >= historyTotal && historyTotal > 0) {
     list.insertAdjacentHTML('beforeend', '<div class="history-state">End of history</div>');
   }
