@@ -11,46 +11,28 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>Finance</title>
 <style>
-:root{color-scheme:light;--bg:#f5f7f8;--card:#fff;--ink:#17212b;--muted:#667482;--line:#e1e7eb;--brand:#2563eb;--green:#16845b;--amber:#a95d04;--red:#b42318;--chip:#edf2ff;--chip-ink:#263a8b;--shadow:0 1px 3px rgba(15,23,42,.06)}
-@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#0e1420;--card:#171f2d;--ink:#edf1f7;--muted:#a0adbb;--line:#293545;--brand:#7ba7ff;--green:#56c895;--amber:#f2bd66;--red:#ff8b86;--chip:#202d43;--chip-ink:#c4d6ff;--shadow:none}}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
-body{min-height:100vh;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
-button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed}
-:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 60%,transparent);outline-offset:3px}
-.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 10px) max(16px,calc((100vw - 1040px)/2)) 10px;background:var(--bg);border-bottom:1px solid var(--line)}
-.brand{font-size:19px;font-weight:750;letter-spacing:-.03em}.sub{font-size:12px;color:var(--muted)}.grow{flex:1}
-.icon{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:18px;display:grid;place-items:center;text-decoration:none}
-main{width:min(100%,1040px);margin:0 auto;padding:22px 18px 30px}
-.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,440px);display:flex;background:var(--card);border:1px solid var(--line);border-bottom:0;border-radius:18px 18px 0 0;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:5}
-.tab{flex:1;border:0;border-radius:12px;background:none;color:var(--muted);font-size:12px;font-weight:650;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px}.tab .ti{font-size:18px;line-height:1}.tab.on{color:var(--brand);background:var(--chip)}
-.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:6px 2px 18px}.eyebrow{margin:0 0 3px;color:var(--muted);font-size:11px;font-weight:750;letter-spacing:.1em;text-transform:uppercase}.page-head h1{margin:0;font-size:clamp(23px,4vw,30px);line-height:1.15;letter-spacing:-.035em}.page-description{margin:6px 0 0;color:var(--muted);font-size:14px}
-.review-count{display:flex;align-items:baseline;gap:7px;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);white-space:nowrap}.review-count strong{font-size:20px;font-variant-numeric:tabular-nums}.review-count span{font-size:12px;color:var(--muted)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}.row{display:flex;gap:10px;align-items:center}.between{justify-content:space-between}.mt{margin-top:12px}
-.name{font-weight:680;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.meta{font-size:13px;color:var(--muted)}.amt{font-size:20px;font-weight:720;font-variant-numeric:tabular-nums;white-space:nowrap}.in{color:var(--green)}.who{min-width:0;flex:1;padding-right:8px}
-.pill{font-size:10px;font-weight:750;padding:4px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}.pill.amber{background:#fff4df;color:#87500a}.pill.red{background:#fff0ef;color:#a12620}
-@media(prefers-color-scheme:dark){.pill.amber{background:#3a2b17;color:#f2bd66}.pill.red{background:#3a2022;color:#ffaaa5}}
-.sug{display:flex;align-items:center;gap:6px;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}.dot.high{background:var(--green)}.dot.medium{background:var(--amber)}.dot.unsure{background:var(--red)}.dot.rule{background:var(--brand)}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.btn{border:1px solid transparent;border-radius:11px;padding:11px 12px;font-size:14px;font-weight:680;transition:background .15s ease,transform .15s ease}.btn.primary{background:var(--brand);color:#fff}.btn.ghost{background:var(--chip);color:var(--chip-ink)}.btn:disabled{opacity:.42}.btn:active{transform:scale(.985)}
-.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}.seg button{flex:1;border:0;background:none;padding:8px 6px;border-radius:9px;font-size:13px;font-weight:620;color:var(--muted);white-space:nowrap}.seg button.on{background:var(--brand);color:#fff}
-.search{width:100%;margin:12px 0;padding:11px 13px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:16px}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 11px;font-size:13px}.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
-.empty{text-align:center;padding:40px 16px;color:var(--muted)}.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:6px}.label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:650}
-input,textarea{width:100%;padding:12px 13px;font-size:16px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
-.scrim{position:fixed;inset:0;background:rgba(2,6,23,.48);display:none;align-items:flex-end;justify-content:center;z-index:9}.scrim.on{display:flex}.sheet{width:min(100%,560px);max-height:88vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:20px 20px 0 0;padding:12px 18px calc(20px + env(safe-area-inset-bottom));animation:up .2s ease-out}.sheet h3{margin:0 0 2px;font-size:20px;letter-spacing:-.02em}.grip{width:38px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 14px}
-@keyframes up{from{transform:translateY(24px);opacity:.7}to{transform:none;opacity:1}}
-.bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;border-radius:6px}.lbl2{display:flex;justify-content:space-between;font-size:14px;margin-top:12px}
-.hero{background:var(--brand);color:#fff;border-radius:14px;padding:18px}.hero .meta{color:rgba(255,255,255,.86)}.hero .amt{font-size:32px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}.stat .amt{font-size:18px;margin-top:4px}.month-nav{display:flex;align-items:center;gap:8px}.month-nav b{font-size:13px;min-width:0;text-align:center}
-.skel{height:120px;border-radius:14px;background:linear-gradient(90deg,var(--card),var(--line),var(--card));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px}@keyframes sh{to{background-position:-200% 0}}
-.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:520px;margin:auto;background:#17212b;color:#fff;padding:12px 14px;border-radius:12px;text-align:center;display:none;z-index:10;font-size:14px}.link{background:none;border:0;color:var(--brand);font-size:15px;width:100%;padding:12px;margin-top:6px}
-@media(min-width:700px){body{padding-bottom:84px}main{padding-top:30px}.scrim{align-items:center}.sheet{border-radius:18px;padding-bottom:20px}.actions{max-width:440px;margin-left:auto}}
-@media(max-width:420px){main{padding-inline:14px}.page-head{align-items:flex-start}.review-count{padding:7px 9px}.review-count span{max-width:58px;white-space:normal;line-height:1.2}.seg button{font-size:12px;padding-inline:4px}.card{padding:14px}.amt{font-size:18px}}
+:root{color-scheme:light;--bg:#f4f6f2;--paper:#fff;--ink:#17231f;--muted:#65736d;--line:#dfe7e1;--brand:#176b52;--brand-dark:#10543f;--brand-soft:#e5f2eb;--green:#148254;--amber:#9a5c08;--red:#b6342c;--shadow:0 2px 6px rgba(19,45,33,.045)}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#101914;--paper:#1a251e;--ink:#edf4ee;--muted:#a5b2a8;--line:#304137;--brand:#78c6a0;--brand-dark:#a8e1c2;--brand-soft:#233b2e;--green:#71d3a2;--amber:#f2bd66;--red:#ff938a;--shadow:none}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.48 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}body{min-height:100vh;padding-bottom:calc(82px + env(safe-area-inset-bottom))}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed}:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 64%,transparent);outline-offset:3px}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:11px;padding:calc(env(safe-area-inset-top) + 10px) max(16px,calc((100vw - 1060px)/2)) 10px;background:var(--bg);border-bottom:1px solid var(--line)}.brand-lockup{display:flex;align-items:center;gap:10px}.brand-mark{width:37px;height:37px;display:grid;place-items:center;border-radius:12px;background:var(--brand);color:#fff;font-size:19px;font-weight:750}.brand{font-size:18px;font-weight:760;letter-spacing:-.03em}.sub{font-size:12px;color:var(--muted)}.grow{flex:1}.icon{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:18px;display:grid;place-items:center;text-decoration:none}
+main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,440px);display:flex;background:var(--paper);border:1px solid var(--line);border-bottom:0;border-radius:17px 17px 0 0;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:5}.tab{flex:1;border:0;border-radius:11px;background:none;color:var(--muted);font-size:12px;font-weight:670;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px}.tab .ti{font-size:17px;line-height:1}.tab.on{color:var(--brand);background:var(--brand-soft)}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:5px 2px 20px}.page-head h1{margin:0;font-size:clamp(25px,4vw,34px);line-height:1.13;letter-spacing:-.04em}.page-description{margin:7px 0 0;color:var(--muted);font-size:14px}.review-count{display:flex;align-items:baseline;gap:7px;padding:9px 13px;border:1px solid var(--line);border-radius:11px;background:var(--paper);white-space:nowrap}.review-count strong{font-size:21px;font-variant-numeric:tabular-nums}.review-count span{font-size:12px;color:var(--muted)}
+.overview-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}.overview-stat{min-width:0;padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}.overview-stat span{display:block;color:var(--muted);font-size:12px}.overview-stat strong{display:block;margin-top:3px;font-size:20px;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.03em}.overview-stat.attention{border-color:color-mix(in srgb,var(--amber) 35%,var(--line));background:color-mix(in srgb,var(--amber) 6%,var(--paper))}
+.filter-row{display:flex;align-items:center;gap:12px;margin:0 0 12px}.seg{display:flex;min-width:0;flex:1;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px}.seg button{flex:1;min-width:0;border:0;background:none;padding:9px 7px;border-radius:8px;font-size:13px;font-weight:640;color:var(--muted);white-space:nowrap}.seg button.on{background:var(--brand-soft);color:var(--brand-dark)}.search{width:100%;margin:0 0 14px;padding:11px 13px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:15px}.search::placeholder{color:var(--muted)}
+.txn-card{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow)}.txn-top{display:flex;align-items:flex-start;gap:12px}.merchant-mark{flex:none;width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:var(--brand-soft);color:var(--brand);font-size:15px;font-weight:750}.txn-main{min-width:0;flex:1}.txn-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.name{font-weight:690;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.txn-meta{margin-top:3px;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.amt{font-size:18px;font-weight:730;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.02em}.in{color:var(--green)}.txn-note{margin-top:5px;color:var(--muted);font-size:12px}.suggestion{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 0;padding:10px 12px;border-radius:10px;background:var(--bg)}.suggestion-label{font-size:11px;color:var(--muted)}.sug{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:620;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}.dot.high{background:var(--green)}.dot.medium{background:var(--amber)}.dot.unsure{background:var(--red)}.dot.rule{background:var(--brand)}.pill{font-size:10px;font-weight:740;padding:4px 8px;border-radius:999px;white-space:nowrap}.pill.amber{background:#fff2dc;color:#87500a}.pill.red{background:#fdecea;color:#a12620}@media(prefers-color-scheme:dark){.pill.amber{background:#3a2b17;color:#f2bd66}.pill.red{background:#3a2022;color:#ffaaa5}}
+.actions{display:grid;grid-template-columns:1.35fr 1fr;gap:9px;margin-top:13px}.btn{border:1px solid transparent;border-radius:10px;padding:11px 12px;font-size:14px;font-weight:680;transition:background .15s ease,transform .15s ease;text-align:center;text-decoration:none}.btn.primary{background:var(--brand);color:#fff}.btn.primary:hover{background:var(--brand-dark)}.btn.ghost{background:var(--paper);border-color:var(--line);color:var(--ink)}.btn:disabled{opacity:.42}.btn:active{transform:scale(.985)}
+.empty{margin:18px 0;text-align:center;padding:36px 18px;border:1px dashed var(--line);border-radius:13px;background:var(--paper);color:var(--muted)}.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:5px}.empty .btn{display:inline-block;width:auto;margin-top:14px}.label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:650}input,textarea{width:100%;padding:12px 13px;font-size:16px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.scrim{position:fixed;inset:0;background:rgba(13,25,19,.55);display:none;align-items:flex-end;justify-content:center;z-index:9}.scrim.on{display:flex}.sheet{width:min(100%,540px);max-height:90vh;overflow:auto;background:var(--paper);border:1px solid var(--line);border-radius:20px 20px 0 0;padding:12px 22px calc(22px + env(safe-area-inset-bottom));animation:up .2s ease-out}.sheet h3{margin:0 0 3px;font-size:23px;letter-spacing:-.035em}.grip{width:36px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 17px}.setup-head{display:flex;gap:13px;align-items:center;margin-bottom:6px}.setup-mark{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:14px;background:var(--brand-soft);color:var(--brand);font-size:23px}.setup-copy{margin:4px 0 16px;color:var(--muted);font-size:14px;max-width:48ch}.field-hint{margin:6px 0 0;color:var(--muted);font-size:12px}.secure-note{display:flex;gap:9px;margin-top:14px;padding:11px 12px;border-radius:10px;background:var(--bg);color:var(--muted);font-size:12px}.secure-note b{color:var(--ink)}.settings-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}.link{background:none;border:0;color:var(--brand);font-size:14px;width:100%;padding:12px;margin-top:5px}
+@keyframes up{from{transform:translateY(22px);opacity:.7}to{transform:none;opacity:1}}.bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:7px}.bar i{display:block;height:100%;border-radius:6px}.lbl2{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-top:12px}.hero{background:var(--brand);color:#fff;border-radius:14px;padding:20px 21px}.hero .meta{color:rgba(255,255,255,.82)}.hero .amt{font-size:clamp(30px,7vw,40px);margin:5px 0 4px}.hero-label{font-size:13px;font-weight:620}.hero-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(255,255,255,.25)}.hero-foot span{font-size:12px;color:rgba(255,255,255,.86)}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px}.stat .meta{font-size:12px}.stat .amt{font-size:18px;margin-top:5px}.month-controls{display:flex;align-items:center;gap:8px}.month-controls .icon{width:36px;height:36px}.section-title{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:4px}.section-title b{font-size:15px}.section-title span{font-size:12px;color:var(--muted)}.spend-panel{margin-top:11px}
+.skel{height:120px;border-radius:13px;background:linear-gradient(90deg,var(--paper),var(--line),var(--paper));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px}@keyframes sh{to{background-position:-200% 0}}.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:520px;margin:auto;background:#17231f;color:#fff;padding:12px 14px;border-radius:11px;text-align:center;display:none;z-index:10;font-size:14px}
+@media(min-width:700px){body{padding-bottom:84px}main{padding-top:32px}.scrim{align-items:center}.sheet{border-radius:18px;padding-bottom:22px}.tabbar{bottom:14px;border-bottom:1px solid var(--line);border-radius:14px}.overview-strip{gap:12px}.txn-card{padding:18px}.txn-card:hover{border-color:color-mix(in srgb,var(--brand) 36%,var(--line))}}
+@media(max-width:480px){main{padding:20px 14px 28px}.page-head{align-items:flex-start;gap:8px}.review-count{padding:8px 9px}.review-count span{max-width:60px;white-space:normal;line-height:1.2}.overview-strip{gap:7px}.overview-stat{padding:11px 10px}.overview-stat span{font-size:11px}.overview-stat strong{font-size:17px}.seg button{font-size:12px;padding:8px 4px}.filter-row{gap:8px}.search{font-size:16px}.txn-card{padding:13px}.merchant-mark{width:38px;height:38px}.amt{font-size:16px}.hero{padding:17px}.month-controls{gap:4px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
 <header class="top">
-  <div><div class="brand">Finance</div><div class="sub" id="status" role="status" aria-live="polite" aria-atomic="true">Starting…</div></div>
+  <div class="brand-lockup"><span class="brand-mark" aria-hidden="true">₹</span><div><div class="brand">Finance</div><div class="sub" id="status" role="status" aria-live="polite" aria-atomic="true">Starting…</div></div></div>
   <div class="grow"></div>
   <a class="icon" href="import.html" aria-label="Import statement" style="display:grid;place-items:center;text-decoration:none">⤓</a>
   <button class="icon" id="btnRefresh" aria-label="Refresh">↻</button>
@@ -168,24 +150,35 @@ async function loadPending() {
 function renderPending() {
   const review = items.filter(i => i.status === 'NEEDS REVIEW').length;
   const sugg = items.length - review;
+  const openValue = items.reduce((total, item) => total + (Number(item.amount) || 0), 0);
   $('#view').innerHTML = `
     <div class="page-head">
-      <div><p class="eyebrow">PENDING TRANSACTIONS</p><h1>Review transactions</h1><p class="page-description">Confirm suggestions before they reach your sheet.</p></div>
+      <div><h1>Review your transactions</h1><p class="page-description">Check each match before it is saved to your sheet.</p></div>
       <div class="review-count"><strong>${review}</strong><span>need review</span></div>
     </div>
-    <div class="seg" role="group" aria-label="Filter transactions">
-      <button data-filter="all" aria-pressed="${state.filter === 'all'}" class="${state.filter === 'all' ? 'on' : ''}">All ${items.length}</button>
-      <button data-filter="review" aria-pressed="${state.filter === 'review'}" class="${state.filter === 'review' ? 'on' : ''}">Review ${review}</button>
-      <button data-filter="sugg" aria-pressed="${state.filter === 'sugg'}" class="${state.filter === 'sugg' ? 'on' : ''}">Suggested ${sugg}</button>
+    <section class="overview-strip" aria-label="Pending transaction totals">
+      <div class="overview-stat attention"><span>Need a decision</span><strong>${review}</strong></div>
+      <div class="overview-stat"><span>Ready to confirm</span><strong>${sugg}</strong></div>
+      <div class="overview-stat"><span>Open transaction value</span><strong>${inr(openValue)}</strong></div>
+    </section>
+    <div class="filter-row">
+      <div class="seg" role="group" aria-label="Filter transactions">
+        <button data-filter="all" aria-pressed="${state.filter === 'all'}" class="${state.filter === 'all' ? 'on' : ''}">All ${items.length}</button>
+        <button data-filter="review" aria-pressed="${state.filter === 'review'}" class="${state.filter === 'review' ? 'on' : ''}">Review ${review}</button>
+        <button data-filter="sugg" aria-pressed="${state.filter === 'sugg'}" class="${state.filter === 'sugg' ? 'on' : ''}">Suggested ${sugg}</button>
+      </div>
     </div>
-    <input class="search" id="q" type="search" aria-label="Search transactions" placeholder="Search name, note or amount" value="${esc(state.query)}">
-    <div id="list"></div>`;
+    <input class="search" id="q" type="search" aria-label="Search transactions" placeholder="Search payee, note or amount" value="${esc(state.query)}">
+    <div id="list" aria-live="polite"></div>`;
   $('#q').addEventListener('input', e => { state.query = e.target.value; renderList(); });
   renderList();
 }
 
 function renderList() {
-  if (!items.length) { $('#list').innerHTML = '<div class="empty"><b>All clear</b>Nothing needs your attention.</div>'; return; }
+  if (!items.length) {
+    $('#list').innerHTML = '<div class="empty"><b>You’re all caught up</b>New transactions will appear here when they need a category.<br><a class="btn primary" href="import.html">Import a statement</a></div>';
+    return;
+  }
   const q = state.query.trim().toLowerCase();
   const list = items.filter(i => {
     if (state.filter === 'review' && i.status !== 'NEEDS REVIEW') return false;
@@ -193,7 +186,10 @@ function renderList() {
     if (!q) return true;
     return `${i.counterparty} ${i.notes} ${i.amount}`.toLowerCase().includes(q);
   });
-  if (!list.length) { $('#list').innerHTML = '<div class="empty">Nothing matches this filter.</div>'; return; }
+  if (!list.length) {
+    $('#list').innerHTML = '<div class="empty"><b>No matching transactions</b>Try another search or choose a different filter.</div>';
+    return;
+  }
   $('#list').innerHTML = list.map(card).join('');
 }
 
@@ -201,24 +197,29 @@ function card(i) {
   const hasSug = !!i.sBucket;
   const canAccept = hasSug && i.confidence !== 'unsure';
   const credit = i.direction === 'CREDIT';
+  const name = i.counterparty || 'Unnamed transaction';
+  const mark = name.trim().split(/\s+/).slice(0, 2).map(part => part[0] || '').join('').toUpperCase() || '₹';
   const pill = i.status === 'PENDING'
     ? '<span class="pill amber">Suggested</span>'
     : '<span class="pill red">Needs review</span>';
   const sug = hasSug
     ? `<span class="sug"><i class="dot ${esc(i.confidence)}"></i>${esc(i.sBucket)} · ${esc(i.sCategory)}${i.sProperty ? ' · ' + esc(i.sProperty) : ''}</span>`
-    : '<span class="meta">No suggestion yet</span>';
-  return `<article class="card">
-    <div class="row between">
-      <div class="who">
-        <div class="name">${esc(i.counterparty || 'Unnamed')}</div>
-        <div class="meta">${shortDate(i.date)} · ${esc(i.account)}${i.notes ? ' · ' + esc(i.notes) : ''}</div>
+    : '<span class="sug">Choose a category in Edit</span>';
+  return `<article class="txn-card">
+    <div class="txn-top">
+      <div class="merchant-mark" aria-hidden="true">${esc(mark)}</div>
+      <div class="txn-main">
+        <div class="txn-title-row">
+          <div class="txn-main"><div class="name">${esc(name)}</div><div class="txn-meta">${shortDate(i.date)} · ${esc(i.account || 'Account')}</div></div>
+          <div class="amt ${credit ? 'in' : ''}">${credit ? '+' : '−'}${inr(i.amount)}</div>
+        </div>
+        ${i.notes ? `<div class="txn-note">${esc(i.notes)}</div>` : ''}
       </div>
-      <div class="amt ${credit ? 'in' : ''}">${credit ? '+' : '−'}${inr(i.amount)}</div>
     </div>
-    <div class="row between mt">${pill}${sug}</div>
+    <div class="suggestion"><div><div class="suggestion-label">Suggested category</div>${sug}</div>${pill}</div>
     <div class="actions">
-      <button class="btn primary" data-act="accept" data-ref="${esc(i.ref)}" ${canAccept ? '' : 'disabled'}>Accept</button>
-      <button class="btn ghost" data-act="edit" data-ref="${esc(i.ref)}">Edit</button>
+      <button class="btn primary" data-act="accept" data-ref="${esc(i.ref)}" ${canAccept ? '' : 'disabled'}>${canAccept ? 'Confirm & save' : 'Edit to categorize'}</button>
+      <button class="btn ghost" data-act="edit" data-ref="${esc(i.ref)}">Edit details</button>
     </div>
   </article>`;
 }
@@ -291,28 +292,27 @@ function renderSummary(s) {
   const net = s.businessIncome - bizOut;
   $('#view').innerHTML = `
     <div class="page-head month-head">
-      <div><p class="eyebrow">MONTHLY OVERVIEW</p><h1>${monthLabel(s.month)}</h1></div>
-      <div class="month-nav">
+      <div><h1>${monthLabel(s.month)}</h1><p class="page-description">A clear view of where your money went.</p></div>
+      <div class="month-controls">
         <button class="icon" data-month="-1" aria-label="Previous month">‹</button>
-        <b aria-live="polite">${monthLabel(s.month)}</b>
         <button class="icon" data-month="1" aria-label="Next month">›</button>
       </div>
     </div>
-    <div class="hero">
-      <div class="meta">Business, in minus out</div>
+    <section class="hero" aria-label="Business monthly result">
+      <div class="hero-label">Business result</div>
       <div class="amt">${net < 0 ? '−' : ''}${inr(Math.abs(net))}</div>
-      <div class="meta">Income ${inr(s.businessIncome)} · business spend ${inr(bizOut)}</div>
+      <div class="meta">Income minus business spending</div>
+      <div class="hero-foot"><span>Income ${inr(s.businessIncome)}</span><span>Business spend ${inr(bizOut)}</span></div>
+    </section>
+    <div class="grid2 mt" aria-label="Other monthly totals">
+      <div class="stat"><div class="meta">Money received</div><div class="amt in">${inr(s.received)}</div></div>
+      <div class="stat"><div class="meta">Personal spending</div><div class="amt">${inr(perOut)}</div></div>
     </div>
+    <section class="card spend-panel"><div class="section-title"><b>Business spending</b><span>${inr(bizOut)} total</span></div>${bars(s.business, bizOut, 'var(--brand)')}</section>
+    <section class="card spend-panel"><div class="section-title"><b>Personal spending</b><span>${inr(perOut)} total</span></div>${bars(s.personal, perOut, 'var(--amber)')}</section>
     <div class="grid2 mt">
-      <div class="stat"><div class="meta">Received</div><div class="amt in">${inr(s.received)}</div></div>
-      <div class="stat"><div class="meta">Personal spend</div><div class="amt">${inr(perOut)}</div></div>
-    </div>
-    <div class="card mt"><b>Business spend</b>${bars(s.business, bizOut, '#2563eb')}</div>
-    <div class="card"><b>Personal spend</b>${bars(s.personal, perOut, '#d97706')}</div>
-    <div class="card">
-      <div class="meta">Moved between your accounts (not counted)</div>
-      <div class="amt">${inr(s.internal)}</div>
-      <div class="meta mt">${s.pendingCount} still to review</div>
+      <div class="stat"><div class="meta">Transfers between accounts</div><div class="amt">${inr(s.internal)}</div></div>
+      <div class="stat"><div class="meta">Waiting for review</div><div class="amt">${s.pendingCount}</div></div>
     </div>`;
 }
 
@@ -327,17 +327,18 @@ function openSettings() {
   const c = cfg();
   openSheet(`
     <div class="grip"></div>
-    <h3 id="sheetTitle">Settings</h3>
-    <div class="meta">Stored only on this phone.</div>
-    <label class="label" for="s_url">Web app URL</label>
+    <div class="setup-head"><div class="setup-mark" aria-hidden="true">↗</div><div><h3 id="sheetTitle">Connect your sheet</h3><div class="meta">A quick one-time setup</div></div></div>
+    <p class="setup-copy">Enter the key for your Apps Script so pending transactions and monthly totals can sync with Google Sheets.</p>
+    <label class="label" for="s_url">Apps Script web app URL</label>
     <input id="s_url" type="url" value="${esc(c.url || '')}" autocapitalize="off" autocorrect="off" spellcheck="false">
     <label class="label" for="s_key">SMS key</label>
-    <input id="s_key" type="password" value="${esc(c.key || '')}" autocomplete="off" autocapitalize="off" autocorrect="off">
-    <div class="actions">
-      <button class="btn ghost" data-act="test">Test connection</button>
-      <button class="btn primary" data-act="save-settings">Save</button>
+    <input id="s_key" type="password" value="${esc(c.key || '')}" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Enter your key">
+    <div class="secure-note"><span aria-hidden="true">🔒</span><span><b>Your key stays on this device.</b> It is saved in this browser, not in the app’s source code.</span></div>
+    <div class="settings-actions">
+      <button class="btn ghost" data-act="test">Check connection</button>
+      <button class="btn primary" data-act="save-settings">Save settings</button>
     </div>
-    <button class="link" data-act="close">Close</button>`);
+    ${c.key ? '<button class="link" data-act="close">Cancel</button>' : ''}`);
 }
 
 function writeSettings() {
@@ -415,7 +416,7 @@ $('#btnSettings').onclick = openSettings;
 
 // ---------- Start ----------
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-if (!cfg().url || !cfg().key) openSettings();
+if (!cfg().key) { setStatus('Setup required'); openSettings(); }
 else loadPending();
 </script>
 </body>
