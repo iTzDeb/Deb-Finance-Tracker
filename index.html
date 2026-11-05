@@ -674,7 +674,7 @@ async function loadHistory(append = false) {
       historyItems = localRows.slice();
       historyTotals = historySum(localRows);
       historyLiveRange = !db ? monthRange(month) : selected.live;
-      historyHasLive = !!historyLiveRange;
+      historyHasLive = false;
       const snapshotAt = await historyReadSnapshotTime();
       if (snapshotAt) historySnapshotAt = snapshotAt;
       if (historySnapshotPromise && !historySnapshotFailed && !localRows.length && selected.local) {
@@ -690,7 +690,7 @@ async function loadHistory(append = false) {
         return;
       }
       if (!historyLiveRange && !localRows.length && !snapshotAt && db) historyLiveRange = monthRange(month);
-      historyHasLive = !!historyLiveRange;
+      historyHasLive = false;
       renderHistory();
       if (!historyLiveRange) {
         historyLoading = false;
@@ -718,6 +718,7 @@ async function loadHistory(append = false) {
     }
     if (requestId !== historyRequestId) return;
     historyLiveItems = historyLiveItems.concat(page);
+    historyHasLive = true;
     historyLiveOffset += page.length;
     historyLiveTotal = total;
     historyItems = historyLocalItems.concat(historyLiveItems);
