@@ -18,7 +18,8 @@
 main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,440px);display:flex;background:var(--paper);border:1px solid var(--line);border-bottom:0;border-radius:17px 17px 0 0;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:5}.tab{flex:1;border:0;border-radius:11px;background:none;color:var(--muted);font-size:12px;font-weight:670;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px}.tab .ti{width:20px;height:20px;display:grid;place-items:center}.tab .ti svg{display:block;width:20px;height:20px}.tab.on{color:var(--brand);background:var(--brand-soft)}
 .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:5px 2px 20px}.page-head h1{margin:0;font-size:clamp(25px,4vw,34px);line-height:1.13;letter-spacing:-.04em}.page-description{margin:7px 0 0;color:var(--muted);font-size:14px}.review-count{display:flex;align-items:baseline;gap:7px;padding:9px 13px;border:1px solid var(--line);border-radius:11px;background:var(--paper);white-space:nowrap}.review-count strong{font-size:21px;font-variant-numeric:tabular-nums}.review-count span{font-size:12px;color:var(--muted)}
 .overview-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}.overview-stat{min-width:0;padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}.overview-stat span{display:block;color:var(--muted);font-size:12px}.overview-stat strong{display:block;margin-top:3px;font-size:20px;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.03em}.overview-stat.attention{border-color:color-mix(in srgb,var(--amber) 35%,var(--line));background:color-mix(in srgb,var(--amber) 6%,var(--paper))}
-.filter-row{display:flex;align-items:center;gap:12px;margin:0 0 12px}.seg{display:flex;min-width:0;flex:1;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px}.seg button{flex:1;min-width:0;border:0;background:none;padding:9px 7px;border-radius:8px;font-size:13px;font-weight:640;color:var(--muted);white-space:nowrap}.seg button.on{background:var(--brand-soft);color:var(--brand-dark)}.search{width:100%;margin:0 0 14px;padding:11px 13px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:15px}.search::placeholder{color:var(--muted)}
+.filter-row{display:flex;align-items:center;gap:12px;margin:0 0 12px}.seg{display:flex;min-width:0;flex:1;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px}.seg button{flex:1;min-width:0;border:0;background:none;padding:9px 7px;border-radius:8px;font-size:13px;font-weight:640;color:var(--muted);white-space:nowrap}.seg button.on{background:var(--brand-soft);color:var(--brand-dark)}
+.pending-view-toggle{margin:0 0 12px}.payee-groups{display:grid;gap:9px}.payee-group{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 12px;width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);text-align:left}.payee-group:hover{border-color:color-mix(in srgb,var(--brand) 40%,var(--line))}.payee-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;font-weight:720}.payee-count,.payee-suggestion{color:var(--muted);font-size:12px}.payee-total{grid-column:2;grid-row:1 / span 2;font-size:16px;font-weight:730;font-variant-numeric:tabular-nums;white-space:nowrap}.payee-suggestion{grid-column:1 / -1;padding-top:4px}.payee-bulk-intro{margin:8px 0 16px;color:var(--muted);font-size:13px}.search{width:100%;margin:0 0 14px;padding:11px 13px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:15px}.search::placeholder{color:var(--muted)}
 .txn-card{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow)}.txn-top{display:flex;align-items:flex-start;gap:12px}.merchant-mark{flex:none;width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:var(--brand-soft);color:var(--brand);font-size:15px;font-weight:750}.txn-main{min-width:0;flex:1}.txn-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.name{font-weight:690;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.txn-meta{margin-top:3px;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.amt{font-size:18px;font-weight:730;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.02em}.in{color:var(--green)}.txn-note{margin-top:5px;color:var(--muted);font-size:12px}.suggestion{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 0;padding:10px 12px;border-radius:10px;background:var(--bg)}.suggestion-label{font-size:11px;color:var(--muted)}.sug{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:620;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}.dot.high{background:var(--green)}.dot.medium{background:var(--amber)}.dot.unsure{background:var(--red)}.dot.rule{background:var(--brand)}.pill{font-size:10px;font-weight:740;padding:4px 8px;border-radius:999px;white-space:nowrap}.pill.amber{background:#fff2dc;color:#87500a}.pill.red{background:#fdecea;color:#a12620}@media(prefers-color-scheme:dark){.pill.amber{background:#3a2b17;color:#f2bd66}.pill.red{background:#3a2022;color:#ffaaa5}}
 .actions{display:grid;grid-template-columns:1.35fr 1fr;gap:9px;margin-top:13px}.btn{border:1px solid transparent;border-radius:10px;padding:11px 12px;font-size:14px;font-weight:680;transition:background .15s ease,transform .15s ease;text-align:center;text-decoration:none}.btn.primary{background:var(--brand);color:#fff}.btn.primary:hover{background:var(--brand-dark)}.btn.ghost{background:var(--paper);border-color:var(--line);color:var(--ink)}.btn:disabled{opacity:.42}.btn:active{transform:scale(.985)}
 .empty{margin:18px 0;text-align:center;padding:36px 18px;border:1px dashed var(--line);border-radius:13px;background:var(--paper);color:var(--muted)}.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:5px}.empty .btn{display:inline-block;width:auto;margin-top:14px}.label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:650}input,textarea{width:100%;padding:12px 13px;font-size:16px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
@@ -90,7 +91,7 @@ function categoryIcon(item) {
 const cfg = () => { const saved = JSON.parse(localStorage.getItem('fin_cfg') || '{}'); return { ...saved, url: saved.url || DEFAULT_WEB_APP_URL }; };
 
 let items = [];
-let state = { tab: 'pending', filter: 'all', query: '', month: ymd(new Date()), historyFilter: 'all', historyQuery: '', historyPeriod: null };
+let state = { tab: 'pending', filter: 'all', query: '', pendingView: 'rows', month: ymd(new Date()), historyFilter: 'all', historyQuery: '', historyPeriod: null };
 let ctx = null;
 
 // ---------- Network (JSONP: Apps Script responses can't be read by a normal fetch) ----------
@@ -195,6 +196,10 @@ function renderPending() {
         <button data-filter="sugg" aria-pressed="${state.filter === 'sugg'}" class="${state.filter === 'sugg' ? 'on' : ''}">Suggested ${sugg}</button>
       </div>
     </div>
+    <div class="seg pending-view-toggle" role="group" aria-label="Pending view">
+      <button data-pending-view="rows" aria-pressed="${state.pendingView === 'rows'}" class="${state.pendingView === 'rows' ? 'on' : ''}">Rows</button>
+      <button data-pending-view="payee" aria-pressed="${state.pendingView === 'payee'}" class="${state.pendingView === 'payee' ? 'on' : ''}">Group by payee</button>
+    </div>
     <input class="search" id="q" type="search" aria-label="Search transactions" placeholder="Search payee, note or amount" value="${esc(state.query)}">
     <div id="list" aria-live="polite"></div>`;
   $('#q').addEventListener('input', e => { state.query = e.target.value; renderList(); });
@@ -217,12 +222,102 @@ function renderList() {
     $('#list').innerHTML = '<div class="empty"><b>No matching transactions</b>Try another search or choose a different filter.</div>';
     return;
   }
+  if (state.pendingView === 'payee') {
+    const matchingPayees = new Set(list.map(item => pendingPayeeKey(item.counterparty)));
+    const groups = groupPendingByPayee(items).filter(group => matchingPayees.has(group.key));
+    $('#list').innerHTML = `<div class="payee-groups">${groups.map(payeeGroupCard).join('')}</div>`;
+    return;
+  }
   const groups = groupByDate(list);
   $('#list').innerHTML = groups.map(([date, dayItems]) => `
     <section class="day-group" aria-label="${esc(dayHeading(date))}">
       <div class="day-heading"><h2>${esc(dayHeading(date))}</h2><span>${dayItems.length} ${dayItems.length === 1 ? 'transaction' : 'transactions'}</span></div>
       <div class="day-list">${dayItems.map(card).join('')}</div>
     </section>`).join('');
+}
+
+// Normalizes the payee label for consistent grouping in the Pending view.
+function pendingPayeeKey(payee) {
+  return String(payee || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+// Groups only open Pending and Needs Review rows by payee.
+function groupPendingByPayee(entries) {
+  const groups = new Map();
+  entries.forEach(item => {
+    if (item.status !== 'PENDING' && item.status !== 'NEEDS REVIEW') return;
+    const payee = String(item.counterparty || '').trim();
+    const key = pendingPayeeKey(payee);
+    if (!key) return;
+    if (!groups.has(key)) groups.set(key, { key, payee, items: [] });
+    groups.get(key).items.push(item);
+  });
+  return [...groups.values()].sort((a, b) => a.payee.localeCompare(b.payee));
+}
+
+// Renders the payee summary and its distinct machine suggestions.
+function payeeGroupCard(group) {
+  const suggestions = [...new Set(group.items.filter(item => item.sBucket || item.sCategory)
+    .map(item => [item.sBucket, item.sCategory].filter(Boolean).join(' · ')))];
+  const suggestion = suggestions.length
+    ? `<span class="payee-suggestion">Suggestion: ${suggestions.map(esc).join(' / ')}</span>`
+    : '';
+  const amount = group.items.reduce((total, item) => total + (Number(item.amount) || 0), 0);
+  return `<button type="button" class="payee-group" data-payee-key="${esc(group.key)}" aria-label="${esc(group.payee)}, ${group.items.length} open rows, ${inr(amount)}${suggestions.length ? ', suggestion ' + esc(suggestions.join(', ')) : ''}">
+    <span><span class="payee-name">${esc(group.payee)}</span><span class="payee-count">${group.items.length} open ${group.items.length === 1 ? 'row' : 'rows'}</span></span>
+    <span class="payee-total">${inr(amount)}</span>${suggestion}
+  </button>`;
+}
+
+// Opens one category form for all currently open rows matching a payee.
+function openPayeeBulkSheet(key) {
+  const group = groupPendingByPayee(items).find(entry => entry.key === key);
+  if (!group) return;
+  const suggestions = [...new Map(group.items.filter(item => item.sBucket && item.sCategory)
+    .map(item => [`${item.sBucket}\u0000${item.sCategory}`, { bucket: item.sBucket, category: item.sCategory }])).values()];
+  const suggestion = suggestions.length === 1 ? suggestions[0] : null;
+  ctx = { bulkPayeeGroup: group, bucket: suggestion && BUCKETS.includes(suggestion.bucket) ? suggestion.bucket : 'Personal', category: suggestion && CATS.includes(suggestion.category) ? suggestion.category : 'Other' };
+  const amount = group.items.reduce((total, item) => total + (Number(item.amount) || 0), 0);
+  openSheet(`
+    <div class="grip"></div><h3 id="sheetTitle">${esc(group.payee)}</h3>
+    <p class="payee-bulk-intro">Set once for ${group.items.length} open ${group.items.length === 1 ? 'row' : 'rows'} · ${inr(amount)} total. This applies to every open row for this payee.</p>
+    <div class="label">Bucket</div>
+    <div class="seg" id="bk">${BUCKETS.map(bucket => `<button data-bucket="${esc(bucket)}" class="${bucket === ctx.bucket ? 'on' : ''}">${esc(bucket)}</button>`).join('')}</div>
+    <div class="label">Category</div>
+    <div class="chips" id="ct">${CATS.map(category => `<button class="chip ${category === ctx.category ? 'on' : ''}" data-cat="${esc(category)}">${esc(category)}</button>`).join('')}</div>
+    <div class="actions"><button class="btn ghost" data-act="close">Cancel</button><button class="btn primary" data-act="save-payee-group">Apply to all</button></div>`);
+}
+
+// Saves one bucket/category choice to all open rows for the payee.
+async function savePayeeGroup(group, values) {
+  try {
+    const response = await api('bulkSave', { payeeKey: group.key, bucket: values.bucket, category: values.category });
+    if (!Number.isInteger(response.updated) || !Array.isArray(response.refs) || response.refs.length !== response.updated) {
+      throw new Error('Invalid bulk save response');
+    }
+    const refs = new Set(response.refs.map(String));
+    const updates = { bucket: values.bucket, category: values.category, status: 'CONFIRMED' };
+    await Promise.all([...refs].map(async ref => {
+      const historyItem = historyItems.find(item => item.ref === ref);
+      const localItem = historyLocalItems.find(item => item.ref === ref);
+      const previous = historyItem || localItem;
+      if (previous) {
+        const before = historySum([previous]);
+        Object.assign(previous, updates);
+        const after = historySum([previous]);
+        Object.keys(historyTotals).forEach(key => { historyTotals[key] += after[key] - before[key]; });
+      }
+      if (historyItem && localItem && historyItem !== localItem) Object.assign(localItem, updates);
+      await historyUpdateCached(ref, updates);
+    }));
+    items = items.filter(item => !refs.has(String(item.ref)));
+    localStorage.setItem('fin_cache', JSON.stringify({ at: Date.now(), items }));
+    if (state.tab === 'pending') renderPending();
+    if (state.tab === 'history') renderHistory();
+    toast(`Updated ${response.updated} open ${response.updated === 1 ? 'row' : 'rows'}`);
+  } catch (error) {
+    toast('Not saved: ' + error.message);
+  }
 }
 
 function groupByDate(entries) {
@@ -992,7 +1087,7 @@ function writeSettings() {
 
 // ---------- Actions (one click handler for the whole app) ----------
 document.addEventListener('click', async e => {
-  const el = e.target.closest('[data-act],[data-tab],[data-filter],[data-bucket],[data-cat],[data-month],[data-history-filter],[data-history-ref],[data-history-preset],[data-history-month]');
+  const el = e.target.closest('[data-act],[data-tab],[data-filter],[data-pending-view],[data-payee-key],[data-bucket],[data-cat],[data-month],[data-history-filter],[data-history-ref],[data-history-preset],[data-history-month]');
   if (!el) return;
 
   if (el.dataset.tab) {
@@ -1008,6 +1103,8 @@ document.addEventListener('click', async e => {
     else loadSummary();
     return;
   }
+  if (el.dataset.pendingView) { state.pendingView = el.dataset.pendingView; renderPending(); return; }
+  if (el.dataset.payeeKey) { openPayeeBulkSheet(el.dataset.payeeKey); return; }
   if (el.dataset.historyFilter) { state.historyFilter = el.dataset.historyFilter; renderHistoryList(); return; }
   if (el.dataset.historyPreset) { state.historyPeriod = historyPeriodFor(el.dataset.historyPreset); closeSheet(); loadHistory(); return; }
   if (el.dataset.historyMonth) { state.historyPeriod = historyPeriodFor(el.dataset.historyMonth); closeSheet(); loadHistory(); return; }
@@ -1026,6 +1123,13 @@ document.addEventListener('click', async e => {
   if (el.dataset.month) { shiftMonth(Number(el.dataset.month)); return; }
 
   switch (el.dataset.act) {
+    case 'save-payee-group': {
+      const group = ctx && ctx.bulkPayeeGroup;
+      if (!group || !BUCKETS.includes(ctx.bucket) || !CATS.includes(ctx.category)) { toast('Choose a bucket and category first'); return; }
+      closeSheet();
+      await savePayeeGroup(group, { bucket: ctx.bucket, category: ctx.category });
+      break;
+    }
     case 'history-dates': openHistoryDateSheet(); break;
     case 'history-reset-date': state.historyPeriod = null; loadHistory(); break;
     case 'history-apply-range': {
