@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Finance">
+<meta name="theme-color" content="#1d4ed8">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Finance</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#111827;--muted:#6b7280;--blue:#1d4ed8;--green:#15803d;--red:#b91c1c;--amber:#b45309;--line:#e5e7eb}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px -apple-system,system-ui,sans-serif}
+body{padding-bottom:env(safe-area-inset-bottom)}
+header{position:sticky;top:0;background:var(--blue);color:#fff;padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;display:flex;justify-content:space-between;align-items:center;z-index:2}
+header h1{font-size:18px;margin:0}
+.hbtns{display:flex;gap:8px}
+.hbtns button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:8px;padding:6px 12px;font-size:16px}
+nav{display:flex;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1}
+nav button{flex:1;padding:12px;border:0;background:none;font-size:15px;color:var(--muted)}
+nav button.on{color:var(--blue);font-weight:600;box-shadow:inset 0 -2px var(--blue)}
+main{padding:12px 12px 40px}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.amt{font-size:24px;font-weight:700}
+.in{color:var(--green)}
+.meta{color:var(--muted);font-size:13px;margin-top:2px}
+.chip{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:13px;margin-top:8px}
+.chip.unsure{background:#fef3c7;color:var(--amber)}
+.row{display:flex;gap:8px;margin-top:12px}
+.btn{flex:1;padding:12px;border-radius:10px;border:0;font-size:15px;font-weight:600}
+.primary{background:var(--blue);color:#fff}
+.ghost{background:#eef2ff;color:var(--blue)}
+.btn:disabled{opacity:.4}
+.badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;white-space:nowrap}
+.b-review{background:#fee2e2;color:var(--red)}
+.b-pending{background:#fef3c7;color:var(--amber)}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:flex-end;z-index:5}
+.sheet.on{display:flex}
+.panel{background:#fff;width:100%;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
+select,input,textarea{width:100%;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.lbl{display:flex;justify-content:space-between;font-size:14px;margin:8px 0 4px}
+.bar{height:8px;background:var(--line);border-radius:6px;margin-bottom:10px}
+.bar i{display:block;height:8px;border-radius:6px}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(24px + env(safe-area-inset-bottom));background:#111827;color:#fff;padding:12px;border-radius:12px;display:none;text-align:center;z-index:9}
+</style>
+</head>
+<body>
+<header>
+  <h1>Finance</h1>
+  <div class="hbtns"><button id="refresh">⟳</button><button id="gear">⚙︎</button></div>
+</header>
+<nav>
+  <button id="tabPending" class="on">Pending</button>
+  <button id="tabSummary">Month</button>
+</nav>
+<main id="view"></main>
+<div id="sheet" class="sheet"><div class="panel" id="panel"></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+const BUCKETS = ['Business', 'Personal', 'Internal', 'Deposit'];
+const CATEGORIES = ['Electricity', 'Plumbing', 'Repairs', 'Groceries', 'Rent', 'Staff',
+  'Chai and snacks', 'Cigarettes', 'Fuel', 'Medicine', 'Food out', 'Family support',
+  'Self transfer', 'Deposit refund', 'Tenant rent', 'Reimbursement', 'Other'];
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => '₹' + Math.round(Number(n) || 0).toLocaleString('en-IN');
+const sum = o => Object.values(o).reduce((a, b) => a + b, 0);
+const thisMonth = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+const monthLabel = m => { const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }); };
+const opts = (list, sel) => list.map(x => `<option ${x === sel ? 'selected' : ''}>${esc(x)}</option>`).join('');
+const cfg = () => JSON.parse(localStorage.getItem('fin_cfg') || '{}');
+
+let items = [], month = thisMonth(), tab = 'pending';
+
+// ---------- Network (JSONP: Apps Script cannot be read by a normal fetch from another site) ----------
+function jsonp(params) {
+  return new Promise((resolve, reject) => {
+    const name = 'cb_' + Math.random().toString(36).slice(2);
+    const s = document.createElement('script');
+    const finish = () => { delete window[name]; s.remove(); clearTimeout(timer); };
+    const timer = setTimeout(() => { finish(); reject(new Error('timed out')); }, 25000);
+    window[name] = d => { finish(); resolve(d); };
+    s.onerror = () => { finish(); reject(new Error('network error')); };
+    s.src = cfg().url + '?' + new URLSearchParams({ ...params, callback: name }).toString();
+    document.body.appendChild(s);
+  });
+}
+
+async function api(action, extra = {}) {
+  const c = cfg();
+  if (!c.url || !c.key) throw new Error('open Settings first');
+  const r = await jsonp({ key: c.key, action, ...extra });
+  if (!r.ok) throw new Error(r.error || 'failed');
+  return r;
+}
+
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2200);
+}
+
+// ---------- Panels ----------
+function openPanel(html) { $('#panel').innerHTML = html; $('#sheet').classList.add('on'); }
+function closePanel() { $('#sheet').classList.remove('on'); }
+$('#sheet').addEventListener('click', e => { if (e.target.id === 'sheet') closePanel(); });
+
+function openSettings(first) {
+  const c = cfg();
+  openPanel(`<h3 style="margin:0 0 4px">Settings</h3>
+    <div class="meta">Stored only on this phone. Use the Apps Script web app address (ending in /exec).</div>
+    <label>Web app URL</label><input id="s_u" value="${esc(c.url || '')}" autocapitalize="off" autocorrect="off">
+    <label>SMS key</label><input id="s_k" value="${esc(c.key || '')}" autocapitalize="off" autocorrect="off">
+    <div class="row"><button class="btn ghost" onclick="closePanel()">${first ? 'Later' : 'Cancel'}</button>
+    <button class="btn primary" onclick="saveSettings()">Save</button></div>`);
+}
+function saveSettings() {
+  localStorage.setItem('fin_cfg', JSON.stringify({ url: $('#s_u').value.trim(), key: $('#s_k').value.trim() }));
+  closePanel(); refresh();
+}
+
+// ---------- Pending ----------
+async function loadPending() {
+  $('#view').innerHTML = '<p class="meta">Loading…</p>';
+  try {
+    items = (await api('pending')).items;
+    renderPending();
+  } catch (e) {
+    $('#view').innerHTML = `<div class="card"><b>Couldn't load</b><div class="meta">${esc(e.message)}</div>
+      <div class="row"><button class="btn primary" onclick="openSettings(false)">Settings</button></div></div>`;
+  }
+}
+
+function suggestionChip(i) {
+  if (!i.sBucket) return '';
+  const cls = i.confidence === 'unsure' ? 'chip unsure' : 'chip';
+  const prop = i.sProperty ? ' · ' + esc(i.sProperty) : '';
+  return `<div><span class="${cls}">Suggests ${esc(i.sBucket)} · ${esc(i.sCategory)}${prop} (${esc(i.confidence)})</span></div>`;
+}
+
+function card(i, idx) {
+  const canAccept = i.sBucket && i.confidence !== 'unsure';
+  const credit = i.direction === 'CREDIT';
+  return `<div class="card">
+    <div class="row" style="justify-content:space-between;align-items:center;margin:0">
+      <span class="amt ${credit ? 'in' : ''}">${credit ? '+' : '−'}${money(i.amount)}</span>
+      <span class="badge ${i.status === 'PENDING' ? 'b-pending' : 'b-review'}">${esc(i.status)}</span>
+    </div>
+    <div style="margin-top:6px;font-weight:600">${esc(i.counterparty || '(no name)')}</div>
+    <div class="meta">${esc(i.date)} · ${esc(i.source)}</div>
+    ${i.notes ? `<div class="meta">${esc(i.notes)}</div>` : ''}
+    ${suggestionChip(i)}
+    <div class="row">
+      <button class="btn primary" ${canAccept ? '' : 'disabled'} onclick="accept(${idx})">Accept</button>
+      <button class="btn ghost" onclick="edit(${idx})">Edit</button>
+    </div>
+  </div>`;
+}
+
+function renderPending() {
+  if (!items.length) {
+    $('#view').innerHTML = '<div class="card"><b>All clear</b><div class="meta">Nothing needs review.</div></div>';
+    return;
+  }
+  const groups = [['NEEDS REVIEW', 'Needs review'], ['PENDING', 'Suggested']];
+  $('#view').innerHTML = groups.map(([st, label]) => {
+    const rows = items.map((i, idx) => [i, idx]).filter(([i]) => i.status === st);
+    if (!rows.length) return '';
+    return `<h3 class="meta" style="margin:14px 4px 6px">${label} · ${rows.length}</h3>` +
+      rows.map(([i, idx]) => card(i, idx)).join('');
+  }).join('');
+}
+
+async function accept(idx) {
+  const i = items[idx];
+  await saveRow({ ref: i.ref, bucket: i.sBucket, category: i.sCategory, property: i.sProperty || '' }, idx);
+}
+
+async function saveRow(p, idx) {
+  try {
+    await api('save', p);
+    items.splice(idx, 1);
+    renderPending();
+    toast('Saved');
+  } catch (e) {
+    toast('Not saved: ' + e.message);
+  }
+}
+
+function edit(idx) {
+  const i = items[idx];
+  openPanel(`<h3 style="margin:0 0 4px">${esc(i.counterparty || 'Transaction')}</h3>
+    <div class="meta">${money(i.amount)} · ${esc(i.date)}</div>
+    <label>Bucket</label><select id="f_b">${opts(BUCKETS, i.bucket || i.sBucket || 'Personal')}</select>
+    <label>Category</label><select id="f_c">${opts(CATEGORIES, i.category || i.sCategory || 'Other')}</select>
+    <label>Property (unit number)</label><input id="f_p" value="${esc(i.property || i.sProperty || '')}" inputmode="numeric">
+    <label>Notes</label><textarea id="f_n" rows="2">${esc(i.notes || '')}</textarea>
+    <div class="row"><button class="btn ghost" onclick="closePanel()">Cancel</button>
+    <button class="btn primary" onclick="submitEdit(${idx})">Save and confirm</button></div>`);
+}
+
+async function submitEdit(idx) {
+  const i = items[idx];
+  const p = {
+    ref: i.ref,
+    bucket: $('#f_b').value,
+    category: $('#f_c').value,
+    property: $('#f_p').value.trim(),
+    notes: $('#f_n').value.trim()
+  };
+  closePanel();
+  await saveRow(p, idx);
+}
+
+// ---------- Month summary ----------
+async function loadSummary() {
+  $('#view').innerHTML = '<p class="meta">Loading…</p>';
+  try {
+    renderSummary((await api('summary', { month })).summary);
+  } catch (e) {
+    $('#view').innerHTML = `<div class="card"><b>Couldn't load</b><div class="meta">${esc(e.message)}</div></div>`;
+  }
+}
+
+function bars(obj, total, color) {
+  const rows = Object.entries(obj).sort((a, b) => b[1] - a[1]);
+  if (!rows.length) return '<p class="meta">None this month</p>';
+  return rows.map(([k, v]) => `
+    <div class="lbl"><span>${esc(k)}</span><span>${money(v)}</span></div>
+    <div class="bar"><i style="width:${total ? Math.round(v / total * 100) : 0}%;background:${color}"></i></div>`).join('');
+}
+
+function renderSummary(s) {
+  const bizExp = sum(s.business), perExp = sum(s.personal);
+  $('#view').innerHTML = `
+    <div class="row" style="align-items:center;justify-content:space-between;margin:4px 4px 12px">
+      <button class="btn ghost" style="flex:0" onclick="shift(-1)">‹</button>
+      <b>${monthLabel(s.month)}</b>
+      <button class="btn ghost" style="flex:0" onclick="shift(1)">›</button>
+    </div>
+    <div class="card">
+      <div class="meta">Business income</div><div class="amt in">${money(s.businessIncome)}</div>
+      <div class="meta" style="margin-top:10px">Business expenses</div><div class="amt">${money(bizExp)}</div>
+      <div class="meta" style="margin-top:10px">Personal spending</div><div class="amt">${money(perExp)}</div>
+    </div>
+    <div class="card"><b>Business by category</b><div style="margin-top:10px">${bars(s.business, bizExp, '#1d4ed8')}</div></div>
+    <div class="card"><b>Personal by category</b><div style="margin-top:10px">${bars(s.personal, perExp, '#b45309')}</div></div>
+    <div class="card">
+      <div class="meta">All money received</div><div class="amt">${money(s.received)}</div>
+      <div class="meta" style="margin-top:10px">Moved between own accounts (not counted)</div><div class="amt">${money(s.internal)}</div>
+      <div class="meta" style="margin-top:10px">Still to review: ${s.pendingCount}</div>
+    </div>`;
+}
+
+function shift(n) {
+  const [y, m] = month.split('-').map(Number);
+  month = thisMonth(new Date(y, m - 1 + n, 1));
+  loadSummary();
+}
+
+// ---------- Navigation ----------
+function setTab() {
+  $('#tabPending').classList.toggle('on', tab === 'pending');
+  $('#tabSummary').classList.toggle('on', tab === 'summary');
+}
+function refresh() { tab === 'pending' ? loadPending() : loadSummary(); }
+
+$('#tabPending').onclick = () => { tab = 'pending'; setTab(); loadPending(); };
+$('#tabSummary').onclick = () => { tab = 'summary'; setTab(); loadSummary(); };
+$('#refresh').onclick = refresh;
+$('#gear').onclick = () => openSettings(false);
+
+// ---------- Start ----------
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+if (!cfg().url) openSettings(true); else loadPending();
+</script>
+</body>
+</html>
