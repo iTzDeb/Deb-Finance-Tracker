@@ -25,8 +25,9 @@ main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{positio
 .scrim{position:fixed;inset:0;background:rgba(13,25,19,.55);display:none;align-items:flex-end;justify-content:center;z-index:9}.scrim.on{display:flex}.sheet{width:min(100%,540px);max-height:90vh;overflow:auto;background:var(--paper);border:1px solid var(--line);border-radius:20px 20px 0 0;padding:12px 22px calc(22px + env(safe-area-inset-bottom));animation:up .2s ease-out}.sheet h3{margin:0 0 3px;font-size:23px;letter-spacing:-.035em}.grip{width:36px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 17px}.setup-head{display:flex;gap:13px;align-items:center;margin-bottom:6px}.setup-mark{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:14px;background:var(--brand-soft);color:var(--brand);font-size:23px}.setup-copy{margin:4px 0 16px;color:var(--muted);font-size:14px;max-width:48ch}.field-hint{margin:6px 0 0;color:var(--muted);font-size:12px}.secure-note{display:flex;gap:9px;margin-top:14px;padding:11px 12px;border-radius:10px;background:var(--bg);color:var(--muted);font-size:12px}.secure-note b{color:var(--ink)}.settings-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}.link{background:none;border:0;color:var(--brand);font-size:14px;width:100%;padding:12px;margin-top:5px}
 @keyframes up{from{transform:translateY(22px);opacity:.7}to{transform:none;opacity:1}}.bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:7px}.bar i{display:block;height:100%;border-radius:6px}.lbl2{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-top:12px}.hero{background:var(--brand);color:#fff;border-radius:14px;padding:20px 21px}.hero .meta{color:rgba(255,255,255,.82)}.hero .amt{font-size:clamp(30px,7vw,40px);margin:5px 0 4px}.hero-label{font-size:13px;font-weight:620}.hero-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(255,255,255,.25)}.hero-foot span{font-size:12px;color:rgba(255,255,255,.86)}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px}.stat .meta{font-size:12px}.stat .amt{font-size:18px;margin-top:5px}.month-controls{display:flex;align-items:center;gap:8px}.month-controls .icon{width:36px;height:36px}.section-title{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:4px}.section-title b{font-size:15px}.section-title span{font-size:12px;color:var(--muted)}.spend-panel{margin-top:11px}
 .skel{height:120px;border-radius:13px;background:linear-gradient(90deg,var(--paper),var(--line),var(--paper));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px}@keyframes sh{to{background-position:-200% 0}}.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:520px;margin:auto;background:#17231f;color:#fff;padding:12px 14px;border-radius:11px;text-align:center;display:none;z-index:10;font-size:14px}
+.day-group{margin-bottom:19px}.day-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 3px 8px}.day-heading h2{margin:0;font-size:14px;font-weight:720;letter-spacing:-.01em}.day-heading span{font-size:11px;color:var(--muted)}.day-list{overflow:hidden;border:1px solid var(--line);border-radius:13px;background:var(--paper)}.txn-row{padding:14px 15px;border-bottom:1px solid var(--line)}.txn-row:last-child{border-bottom:0}.txn-icon{width:39px;height:39px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:18px;font-weight:700}.txn-amount{text-align:right;flex:none}.txn-amount .amt{font-size:16px}.txn-direction{margin-top:2px;color:var(--muted);font-size:10px}.txn-status{display:flex;align-items:center;gap:7px;min-width:0;margin:11px 0 0 51px}.txn-status .sug{font-size:11px}.txn-status .suggestion-label{flex:none;font-size:10px}.txn-row .actions{margin:10px 0 0 51px;grid-template-columns:1fr 1fr}.txn-row .btn{padding:8px 10px;font-size:12px}
 @media(min-width:700px){body{padding-bottom:84px}main{padding-top:32px}.scrim{align-items:center}.sheet{border-radius:18px;padding-bottom:22px}.tabbar{bottom:14px;border-bottom:1px solid var(--line);border-radius:14px}.overview-strip{gap:12px}.txn-card{padding:18px}.txn-card:hover{border-color:color-mix(in srgb,var(--brand) 36%,var(--line))}}
-@media(max-width:480px){main{padding:20px 14px 28px}.page-head{align-items:flex-start;gap:8px}.review-count{padding:8px 9px}.review-count span{max-width:60px;white-space:normal;line-height:1.2}.overview-strip{gap:7px}.overview-stat{padding:11px 10px}.overview-stat span{font-size:11px}.overview-stat strong{font-size:17px}.seg button{font-size:12px;padding:8px 4px}.filter-row{gap:8px}.search{font-size:16px}.txn-card{padding:13px}.merchant-mark{width:38px;height:38px}.amt{font-size:16px}.hero{padding:17px}.month-controls{gap:4px}}
+@media(max-width:480px){main{padding:20px 14px 28px}.page-head{align-items:flex-start;gap:8px}.review-count{padding:8px 9px}.review-count span{max-width:60px;white-space:normal;line-height:1.2}.overview-strip{gap:7px}.overview-stat{padding:11px 10px}.overview-stat span{font-size:11px}.overview-stat strong{font-size:17px}.seg button{font-size:12px;padding:8px 4px}.filter-row{gap:8px}.search{font-size:16px}.txn-row{padding:12px 10px}.txn-icon{width:35px;height:35px}.txn-status,.txn-row .actions{margin-left:45px}.txn-row .btn{padding:8px 6px;font-size:11px}.amt{font-size:16px}.hero{padding:17px}.month-controls{gap:4px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -60,6 +61,26 @@ const sumObj = o => Object.values(o).reduce((a, b) => a + b, 0);
 const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 const monthLabel = m => { const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }); };
 const shortDate = s => { const d = new Date(s + 'T00:00:00'); return isNaN(d) ? s : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); };
+function dayHeading(s) {
+  const d = new Date(s + 'T00:00:00');
+  if (isNaN(d)) return 'Date unavailable';
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+  if (ymd(d) === ymd(new Date())) return 'Today';
+  if (ymd(d) === ymd(yesterday)) return 'Yesterday';
+  return d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
+}
+function categoryIcon(item) {
+  const category = String(item.sCategory || item.category || '').toLowerCase();
+  if (/grocer/.test(category)) return '🛒';
+  if (/fuel/.test(category)) return '⛽';
+  if (/rent|property/.test(category)) return '⌂';
+  if (/medicine/.test(category)) return '✚';
+  if (/food|chai|snack/.test(category)) return '☕';
+  if (/electric/.test(category)) return 'ϟ';
+  if (/repair|plumb/.test(category)) return '⌁';
+  if (/transfer|deposit/.test(category)) return '↔';
+  return item.direction === 'CREDIT' ? '↓' : '↑';
+}
 const cfg = () => { const saved = JSON.parse(localStorage.getItem('fin_cfg') || '{}'); return { ...saved, url: saved.url || DEFAULT_WEB_APP_URL }; };
 
 let items = [];
@@ -153,7 +174,7 @@ function renderPending() {
   const openValue = items.reduce((total, item) => total + (Number(item.amount) || 0), 0);
   $('#view').innerHTML = `
     <div class="page-head">
-      <div><h1>Review your transactions</h1><p class="page-description">Check each match before it is saved to your sheet.</p></div>
+      <div><h1>Transactions</h1><p class="page-description">Review each match before it is added to your sheet.</p></div>
       <div class="review-count"><strong>${review}</strong><span>need review</span></div>
     </div>
     <section class="overview-strip" aria-label="Pending transaction totals">
@@ -190,7 +211,18 @@ function renderList() {
     $('#list').innerHTML = '<div class="empty"><b>No matching transactions</b>Try another search or choose a different filter.</div>';
     return;
   }
-  $('#list').innerHTML = list.map(card).join('');
+  const sorted = [...list].sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || String(b.time || '').localeCompare(String(a.time || '')));
+  const groups = new Map();
+  sorted.forEach(item => {
+    const date = String(item.date || '');
+    if (!groups.has(date)) groups.set(date, []);
+    groups.get(date).push(item);
+  });
+  $('#list').innerHTML = [...groups].map(([date, dayItems]) => `
+    <section class="day-group" aria-label="${esc(dayHeading(date))}">
+      <div class="day-heading"><h2>${esc(dayHeading(date))}</h2><span>${dayItems.length} ${dayItems.length === 1 ? 'transaction' : 'transactions'}</span></div>
+      <div class="day-list">${dayItems.map(card).join('')}</div>
+    </section>`).join('');
 }
 
 function card(i) {
@@ -198,25 +230,23 @@ function card(i) {
   const canAccept = hasSug && i.confidence !== 'unsure';
   const credit = i.direction === 'CREDIT';
   const name = i.counterparty || 'Unnamed transaction';
-  const mark = name.trim().split(/\s+/).slice(0, 2).map(part => part[0] || '').join('').toUpperCase() || '₹';
   const pill = i.status === 'PENDING'
     ? '<span class="pill amber">Suggested</span>'
     : '<span class="pill red">Needs review</span>';
   const sug = hasSug
     ? `<span class="sug"><i class="dot ${esc(i.confidence)}"></i>${esc(i.sBucket)} · ${esc(i.sCategory)}${i.sProperty ? ' · ' + esc(i.sProperty) : ''}</span>`
     : '<span class="sug">Choose a category in Edit</span>';
-  return `<article class="txn-card">
+  return `<article class="txn-row">
     <div class="txn-top">
-      <div class="merchant-mark" aria-hidden="true">${esc(mark)}</div>
+      <div class="txn-icon" aria-hidden="true">${categoryIcon(i)}</div>
       <div class="txn-main">
         <div class="txn-title-row">
-          <div class="txn-main"><div class="name">${esc(name)}</div><div class="txn-meta">${shortDate(i.date)} · ${esc(i.account || 'Account')}</div></div>
-          <div class="amt ${credit ? 'in' : ''}">${credit ? '+' : '−'}${inr(i.amount)}</div>
+          <div class="txn-main"><div class="name">${esc(name)}</div><div class="txn-meta">${esc(i.account || 'Account')}${i.notes ? ' · ' + esc(i.notes) : ''}</div></div>
+          <div class="txn-amount"><div class="amt ${credit ? 'in' : ''}">${credit ? '+' : '−'}${inr(i.amount)}</div><div class="txn-direction ${credit ? 'in' : ''}">${credit ? 'Received' : 'Paid'}</div></div>
         </div>
-        ${i.notes ? `<div class="txn-note">${esc(i.notes)}</div>` : ''}
       </div>
     </div>
-    <div class="suggestion"><div><div class="suggestion-label">Suggested category</div>${sug}</div>${pill}</div>
+    <div class="txn-status">${pill}<span class="suggestion-label">${hasSug ? 'Suggested' : 'Category'}:</span>${sug}</div>
     <div class="actions">
       <button class="btn primary" data-act="accept" data-ref="${esc(i.ref)}" ${canAccept ? '' : 'disabled'}>${canAccept ? 'Confirm & save' : 'Edit to categorize'}</button>
       <button class="btn ghost" data-act="edit" data-ref="${esc(i.ref)}">Edit details</button>
