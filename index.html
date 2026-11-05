@@ -819,7 +819,7 @@ function renderHistoryList() {
 
   if (historyAppendLoading) list.insertAdjacentHTML('beforeend', '<div class="history-state" role="status">Loading…</div>');
   else if (historyLiveOffset < historyLiveTotal) list.insertAdjacentHTML('beforeend', '<div class="history-state" role="status">Scroll for older transactions</div>');
-  else if (historyHasLive && historyLiveTotal > 0) list.insertAdjacentHTML('beforeend', '<div class="history-state">End of live history</div>');
+  else if (!historyLoading && historyLiveOffset >= historyLiveTotal && (historyHasLive || (historyItems.length && !historyLiveRange))) list.insertAdjacentHTML('beforeend', '<div class="history-state">End of history</div>');
   requestAnimationFrame(maybeLoadHistory);
 }
 
