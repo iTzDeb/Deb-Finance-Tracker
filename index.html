@@ -211,18 +211,23 @@ function renderList() {
     $('#list').innerHTML = '<div class="empty"><b>No matching transactions</b>Try another search or choose a different filter.</div>';
     return;
   }
-  const sorted = [...list].sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || String(b.time || '').localeCompare(String(a.time || '')));
+  const groups = groupByDate(list);
+  $('#list').innerHTML = groups.map(([date, dayItems]) => `
+    <section class="day-group" aria-label="${esc(dayHeading(date))}">
+      <div class="day-heading"><h2>${esc(dayHeading(date))}</h2><span>${dayItems.length} ${dayItems.length === 1 ? 'transaction' : 'transactions'}</span></div>
+      <div class="day-list">${dayItems.map(card).join('')}</div>
+    </section>`).join('');
+}
+
+function groupByDate(entries) {
+  const sorted = [...entries].sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || String(b.time || '').localeCompare(String(a.time || '')));
   const groups = new Map();
   sorted.forEach(item => {
     const date = String(item.date || '');
     if (!groups.has(date)) groups.set(date, []);
     groups.get(date).push(item);
   });
-  $('#list').innerHTML = [...groups].map(([date, dayItems]) => `
-    <section class="day-group" aria-label="${esc(dayHeading(date))}">
-      <div class="day-heading"><h2>${esc(dayHeading(date))}</h2><span>${dayItems.length} ${dayItems.length === 1 ? 'transaction' : 'transactions'}</span></div>
-      <div class="day-list">${dayItems.map(card).join('')}</div>
-    </section>`).join('');
+  return [...groups];
 }
 
 function card(i) {
