@@ -746,7 +746,7 @@ async function loadHistory(append = false) {
     historyLiveOffset += received.length;
     historyLiveHasMore = response.hasMore;
     historyLiveComplete = !response.hasMore;
-    historyHasLive = historyHasLive || page.length > 0;
+    historyHasLive = historyHasLive || received.length > 0;
     historyItems = historyLocalItems.concat(historyLiveItems).sort((a, b) => b.stamp.localeCompare(a.stamp) || b.ref.localeCompare(a.ref));
     if (firstPage && response.totals && ['sent', 'received', 'business', 'personal'].every(k => Number.isFinite(Number(response.totals[k])))) {
       const localTotals = historyLiveAll ? { sent: 0, received: 0, business: 0, personal: 0 } : historySum(historyLocalItems);
