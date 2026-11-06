@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="icon-180.png?v=6">
 <title>Finance</title>
 <style>
-:root{color-scheme:light;--bg:#f4f6f2;--paper:#fff;--ink:#17231f;--muted:#65736d;--line:#dfe7e1;--brand:#1177cc;--brand-dark:#075d9e;--brand-soft:#e5f3ff;--green:#148254;--amber:#9a5c08;--red:#b6342c;--shadow:0 2px 6px rgba(19,45,33,.045)}
+:root{color-scheme:light;--bg:#f4f6f2;--paper:#fff;--ink:#17231f;--muted:#65736d;--line:#dfe7e1;--brand:#1177cc;--brand-dark:#075d9e;--brand-soft:#e5f3ff;--green:#148254;--amber:#9a5c08;--red:#b6342c;--shadow:none}
 @media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#101820;--paper:#1a2530;--ink:#edf5fc;--muted:#a6b8c8;--line:#30404e;--brand:#63b6fa;--brand-dark:#a8daff;--brand-soft:#22394a;--green:#71d3a2;--amber:#f2bd66;--red:#ff938a;--shadow:none}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.48 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}body{min-height:100vh;padding-bottom:calc(82px + env(safe-area-inset-bottom))}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed}:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 64%,transparent);outline-offset:3px}
 .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:11px;padding:calc(env(safe-area-inset-top) + 10px) max(16px,calc((100vw - 1060px)/2)) 10px;background:var(--bg);border-bottom:1px solid var(--line)}.brand-lockup{display:flex;align-items:center;gap:10px}.brand-mark{width:37px;height:37px;display:grid;place-items:center;border-radius:12px;background:var(--brand);color:#fff}.brand-mark svg{width:23px;height:23px}.brand{font-size:18px;font-weight:760;letter-spacing:-.03em}.sub{font-size:12px;color:var(--muted)}.grow{flex:1}.icon{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:18px;display:grid;place-items:center;text-decoration:none}
@@ -20,10 +20,10 @@ main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{positio
 .overview-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}.overview-stat{min-width:0;padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}.overview-stat span{display:block;color:var(--muted);font-size:12px}.overview-stat strong{display:block;margin-top:3px;font-size:20px;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.03em}.overview-stat.attention{border-color:color-mix(in srgb,var(--amber) 35%,var(--line));background:color-mix(in srgb,var(--amber) 6%,var(--paper))}
 .filter-row{display:flex;align-items:center;gap:12px;margin:0 0 12px}.seg{display:flex;min-width:0;flex:1;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px}.seg button{flex:1;min-width:0;border:0;background:none;padding:9px 7px;border-radius:8px;font-size:13px;font-weight:640;color:var(--muted);white-space:nowrap}.seg button.on{background:var(--brand-soft);color:var(--brand-dark)}
 .pending-view-toggle{margin:0 0 12px}.payee-groups{display:grid;gap:9px}.payee-group{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 12px;width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);text-align:left}.payee-group:hover{border-color:color-mix(in srgb,var(--brand) 40%,var(--line))}.payee-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;font-weight:720}.payee-count,.payee-suggestion{color:var(--muted);font-size:12px}.payee-total{grid-column:2;grid-row:1 / span 2;font-size:16px;font-weight:730;font-variant-numeric:tabular-nums;white-space:nowrap}.payee-suggestion{grid-column:1 / -1;padding-top:4px}.payee-bulk-intro{margin:8px 0 16px;color:var(--muted);font-size:13px}.search{width:100%;margin:0 0 14px;padding:11px 13px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:15px}.search::placeholder{color:var(--muted)}
-.txn-card{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow)}.txn-top{display:flex;align-items:flex-start;gap:12px}.merchant-mark{flex:none;width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:var(--brand-soft);color:var(--brand);font-size:15px;font-weight:750}.txn-main{min-width:0;flex:1}.txn-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.name{font-weight:690;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.txn-meta{margin-top:3px;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.amt{font-size:18px;font-weight:730;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.02em}.in{color:var(--green)}.txn-note{margin-top:5px;color:var(--muted);font-size:12px}.suggestion{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 0;padding:10px 12px;border-radius:10px;background:var(--bg)}.suggestion-label{font-size:11px;color:var(--muted)}.sug{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:620;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}.dot.high{background:var(--green)}.dot.medium{background:var(--amber)}.dot.unsure{background:var(--red)}.dot.rule{background:var(--brand)}.pill{font-size:10px;font-weight:740;padding:4px 8px;border-radius:999px;white-space:nowrap}.pill.amber{background:#fff2dc;color:#87500a}.pill.red{background:#fdecea;color:#a12620}@media(prefers-color-scheme:dark){.pill.amber{background:#3a2b17;color:#f2bd66}.pill.red{background:#3a2022;color:#ffaaa5}}
+.txn-card{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:16px;margin-bottom:10px;}.txn-top{display:flex;align-items:flex-start;gap:12px}.merchant-mark{flex:none;width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:var(--brand-soft);color:var(--brand);font-size:15px;font-weight:750}.txn-main{min-width:0;flex:1}.txn-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.name{font-weight:690;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.txn-meta{margin-top:3px;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.amt{font-size:18px;font-weight:730;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.02em}.in{color:var(--green)}.txn-note{margin-top:5px;color:var(--muted);font-size:12px}.suggestion{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 0;padding:10px 12px;border-radius:10px;background:var(--bg)}.suggestion-label{font-size:11px;color:var(--muted)}.sug{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:620;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}.dot.high{background:var(--green)}.dot.medium{background:var(--amber)}.dot.unsure{background:var(--red)}.dot.rule{background:var(--brand)}.pill{font-size:10px;font-weight:740;padding:4px 8px;border-radius:999px;white-space:nowrap}.pill.amber{background:#fff2dc;color:#87500a}.pill.red{background:#fdecea;color:#a12620}@media(prefers-color-scheme:dark){.pill.amber{background:#3a2b17;color:#f2bd66}.pill.red{background:#3a2022;color:#ffaaa5}}
 .actions{display:grid;grid-template-columns:1.35fr 1fr;gap:9px;margin-top:13px}.btn{border:1px solid transparent;border-radius:10px;padding:11px 12px;font-size:14px;font-weight:680;transition:background .15s ease,transform .15s ease;text-align:center;text-decoration:none}.btn.primary{background:var(--brand);color:#fff}.btn.primary:hover{background:var(--brand-dark)}.btn.ghost{background:var(--paper);border-color:var(--line);color:var(--ink)}.btn:disabled{opacity:.42}.btn:active{transform:scale(.985)}
 .empty{margin:18px 0;text-align:center;padding:36px 18px;border:1px dashed var(--line);border-radius:13px;background:var(--paper);color:var(--muted)}.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:5px}.empty .btn{display:inline-block;width:auto;margin-top:14px}.label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:650}input,textarea{width:100%;padding:12px 13px;font-size:16px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
-.scrim{position:fixed;inset:0;background:rgba(13,25,19,.55);display:none;align-items:flex-end;justify-content:center;z-index:9}.scrim.on{display:flex}.sheet{width:min(100%,540px);max-height:90vh;overflow:auto;background:var(--paper);border:1px solid var(--line);border-radius:20px 20px 0 0;padding:12px 22px calc(22px + env(safe-area-inset-bottom));animation:up .2s ease-out}.sheet h3{margin:0 0 3px;font-size:23px;letter-spacing:-.035em}.grip{width:36px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 17px}.setup-head{display:flex;gap:13px;align-items:center;margin-bottom:6px}.setup-mark{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:14px;background:var(--brand-soft);color:var(--brand);font-size:23px}.setup-copy{margin:4px 0 16px;color:var(--muted);font-size:14px;max-width:48ch}.field-hint{margin:6px 0 0;color:var(--muted);font-size:12px}.secure-note{display:flex;gap:9px;margin-top:14px;padding:11px 12px;border-radius:10px;background:var(--bg);color:var(--muted);font-size:12px}.secure-note b{color:var(--ink)}.settings-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}.link{background:none;border:0;color:var(--brand);font-size:14px;width:100%;padding:12px;margin-top:5px}
+.scrim{position:fixed;inset:0;background:rgba(13,25,19,.55);display:none;align-items:flex-end;justify-content:center;z-index:9}.scrim.on{display:flex}.sheet{width:min(100%,540px);max-height:90vh;overflow:auto;background:var(--paper);border:1px solid var(--line);border-radius:20px 20px 0 0;padding:12px 22px calc(22px + env(safe-area-inset-bottom));box-shadow:0 12px 36px rgba(0,0,0,.18);animation:up .2s ease-out}.sheet h3{margin:0 0 3px;font-size:23px;letter-spacing:-.035em}.grip{width:36px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 17px}.setup-head{display:flex;gap:13px;align-items:center;margin-bottom:6px}.setup-mark{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:14px;background:var(--brand-soft);color:var(--brand);font-size:23px}.setup-copy{margin:4px 0 16px;color:var(--muted);font-size:14px;max-width:48ch}.field-hint{margin:6px 0 0;color:var(--muted);font-size:12px}.secure-note{display:flex;gap:9px;margin-top:14px;padding:11px 12px;border-radius:10px;background:var(--bg);color:var(--muted);font-size:12px}.secure-note b{color:var(--ink)}.settings-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}.link{background:none;border:0;color:var(--brand);font-size:14px;width:100%;padding:12px;margin-top:5px}
 @keyframes up{from{transform:translateY(22px);opacity:.7}to{transform:none;opacity:1}}.bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:7px}.bar i{display:block;height:100%;border-radius:6px}.lbl2{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-top:12px}.hero{background:var(--brand);color:#fff;border-radius:14px;padding:20px 21px}.hero .meta{color:rgba(255,255,255,.82)}.hero .amt{font-size:clamp(30px,7vw,40px);margin:5px 0 4px}.hero-label{font-size:13px;font-weight:620}.hero-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(255,255,255,.25)}.hero-foot span{font-size:12px;color:rgba(255,255,255,.86)}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px}.stat .meta{font-size:12px}.stat .amt{font-size:18px;margin-top:5px}.month-controls{display:flex;align-items:center;gap:8px}.month-controls .icon{width:36px;height:36px}.section-title{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:4px}.section-title b{font-size:15px}.section-title span{font-size:12px;color:var(--muted)}.spend-panel{margin-top:11px}
 .history-filter{margin-bottom:14px}.history-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 12px;color:var(--muted);font-size:13px}.history-row{display:flex;align-items:center;gap:12px;width:100%;padding:14px 15px;border:0;border-bottom:1px solid var(--line);background:var(--paper);color:var(--ink);text-align:left}.history-row:last-child{border-bottom:0}.history-row:hover{background:color-mix(in srgb,var(--brand) 4%,var(--paper))}.bank-mark{width:39px;height:39px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--brand-soft);color:var(--brand-dark);font-size:10px;font-weight:800;letter-spacing:-.04em}.bank-mark.sbi{background:#e8f1fb;color:#1268a8}.bank-mark.boi{background:#e9f4ed;color:#167247}.bank-mark.kotak{background:#fceced;color:#b22734}.history-copy{min-width:0;flex:1}.history-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:680}.history-meta{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:3px;color:var(--muted);font-size:11px}.history-amount{text-align:right;flex:none}.history-amount .amt{font-size:15px}.history-more{width:100%;margin:4px 0 16px}.history-detail{display:grid;gap:12px;margin:18px 0}.history-detail div{display:flex;justify-content:space-between;gap:16px;font-size:14px}.history-detail dt{color:var(--muted)}.history-detail dd{margin:0;text-align:right;font-weight:620;overflow-wrap:anywhere}
 .skel{height:120px;border-radius:13px;background:linear-gradient(90deg,var(--paper),var(--line),var(--paper));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px}@keyframes sh{to{background-position:-200% 0}}.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:520px;margin:auto;background:#17231f;color:#fff;padding:12px 14px;border-radius:11px;text-align:center;display:none;z-index:10;font-size:14px}
@@ -38,7 +38,7 @@ main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{positio
 </head>
 <body>
 <header class="top">
-  <div class="brand-lockup"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5H6a2 2 0 0 0-2 2v13h16V7a2 2 0 0 0-2-2h-2"/><rect x="8" y="3" width="8" height="4" rx="1.5"/><path d="M8 12h8M8 16h8"/></svg></span><div><div class="brand">Finance</div><div class="sub" id="status" role="status" aria-live="polite" aria-atomic="true">Starting…</div></div></div>
+  <div class="brand-lockup"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5H6a2 2 0 0 0-2 2v13h16V7a2 2 0 0 0-2-2h-2"/><rect x="8" y="3" width="8" height="4" rx="1.5"/><path d="M8 12h8M8 16h8"/></svg></span><div><div class="brand">Finance</div><div class="sub" id="status" role="status" aria-live="polite" aria-atomic="true">Starting…</div><div class="sub" id="debugStatus" hidden></div></div></div>
   <div class="grow"></div>
   <a class="icon" href="import.html" aria-label="Import statement" style="display:grid;place-items:center;text-decoration:none">⤓</a>
   <button class="icon" id="btnRefresh" aria-label="Refresh">↻</button>
@@ -93,6 +93,7 @@ const cfg = () => { const saved = JSON.parse(localStorage.getItem('fin_cfg') || 
 let items = [];
 let state = { tab: 'pending', filter: 'all', query: '', pendingView: 'rows', month: ymd(new Date()), historyFilter: 'all', historyQuery: '', historyPeriod: null };
 let ctx = null;
+let pendingVisibleCount = 40;
 
 // ---------- Network (JSONP: Apps Script responses can't be read by a normal fetch) ----------
 function jsonp(params) {
@@ -111,7 +112,10 @@ function jsonp(params) {
 async function api(action, extra = {}) {
   const c = cfg();
   if (!c.url || !c.key) throw new Error('open Settings first');
-  const r = await jsonp({ key: c.key, action, ...extra });
+  const started = performance.now();
+  let r;
+  try { r = await jsonp({ key: c.key, action, ...extra }); }
+  finally { showApiDuration(performance.now() - started); }
   if (!r.ok) throw new Error(r.error || 'failed');
   return r;
 }
@@ -122,6 +126,13 @@ function toast(msg) {
   clearTimeout(t._h); t._h = setTimeout(() => (t.style.display = 'none'), 2200);
 }
 function setStatus(msg) { $('#status').textContent = msg; }
+// Updates the opt-in display of the latest JSONP duration.
+function showApiDuration(ms) {
+  const line = $('#debugStatus');
+  const enabled = localStorage.getItem('fin_debug') === '1';
+  line.hidden = !enabled;
+  if (enabled) line.textContent = `Last server call: ${Math.round(ms)} ms`;
+}
 function renderLoading() { $('#view').innerHTML = '<div class="skel"></div><div class="skel"></div>'; }
 
 // ---------- Sheet (bottom panel) ----------
@@ -152,6 +163,26 @@ $('#scrim').addEventListener('keydown', e => {
 });
 $('#scrim').addEventListener('click', e => { if (e.target.id === 'scrim') closeSheet(); });
 
+// Draws selection chips from the current edit-sheet state.
+function renderChoiceChips(container) {
+  if (!container || !ctx) return;
+  const group = container.dataset.choiceGroup;
+  const values = group === 'bucket' ? BUCKETS : CATS;
+  container.innerHTML = values.map(value => `<button type="button" class="${group === 'category' ? 'chip ' : ''}${ctx[group] === value ? 'on' : ''}" data-value="${esc(value)}" aria-pressed="${ctx[group] === value}">${esc(value)}</button>`).join('');
+}
+// Delegates chip selection to the container while keeping state authoritative.
+function bindChoiceChips(container) {
+  container.addEventListener('click', event => {
+    const button = event.target.closest('button[data-value]');
+    if (!button || !container.contains(button)) return;
+    const group = container.dataset.choiceGroup;
+    if ((group === 'bucket' ? BUCKETS : CATS).includes(button.dataset.value)) {
+      ctx[group] = button.dataset.value;
+      renderChoiceChips(container);
+    }
+  });
+}
+
 // ---------- Pending ----------
 async function loadPending() {
   const cached = JSON.parse(localStorage.getItem('fin_cache') || 'null');
@@ -162,6 +193,7 @@ async function loadPending() {
   try {
     const r = await api('pending');
     items = r.items;
+    pendingVisibleCount = 40;
     localStorage.setItem('fin_cache', JSON.stringify({ at: Date.now(), items }));
     setStatus('Updated ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }));
     renderPending();
@@ -190,20 +222,27 @@ function renderPending() {
       <div class="overview-stat"><span>Open transaction value</span><strong>${inr(openValue)}</strong></div>
     </section>
     <div class="filter-row">
-      <div class="seg" role="group" aria-label="Filter transactions">
-        <button data-filter="all" aria-pressed="${state.filter === 'all'}" class="${state.filter === 'all' ? 'on' : ''}">All ${items.length}</button>
-        <button data-filter="review" aria-pressed="${state.filter === 'review'}" class="${state.filter === 'review' ? 'on' : ''}">Review ${review}</button>
-        <button data-filter="sugg" aria-pressed="${state.filter === 'sugg'}" class="${state.filter === 'sugg' ? 'on' : ''}">Suggested ${sugg}</button>
-      </div>
+      <div class="seg" id="pendingFilters" role="group" aria-label="Filter transactions"></div>
     </div>
-    <div class="seg pending-view-toggle" role="group" aria-label="Pending view">
-      <button data-pending-view="rows" aria-pressed="${state.pendingView === 'rows'}" class="${state.pendingView === 'rows' ? 'on' : ''}">Rows</button>
-      <button data-pending-view="payee" aria-pressed="${state.pendingView === 'payee'}" class="${state.pendingView === 'payee' ? 'on' : ''}">Group by payee</button>
-    </div>
+    <div class="seg pending-view-toggle" id="pendingViewToggle" role="group" aria-label="Pending view"></div>
     <input class="search" id="q" type="search" aria-label="Search transactions" placeholder="Search payee, note or amount" value="${esc(state.query)}">
     <div id="list" aria-live="polite"></div>`;
-  $('#q').addEventListener('input', e => { state.query = e.target.value; renderList(); });
+  renderPendingControls();
+  $('#q').addEventListener('input', e => { state.query = e.target.value; pendingVisibleCount = 40; renderList(); });
   renderList();
+}
+
+// Redraws Pending controls without replacing the page or search field.
+function renderPendingControls() {
+  const review = items.filter(item => item.status === 'NEEDS REVIEW').length;
+  const suggested = items.length - review;
+  $('#pendingFilters').innerHTML = `
+    <button data-filter="all" aria-pressed="${state.filter === 'all'}" class="${state.filter === 'all' ? 'on' : ''}">All ${items.length}</button>
+    <button data-filter="review" aria-pressed="${state.filter === 'review'}" class="${state.filter === 'review' ? 'on' : ''}">Review ${review}</button>
+    <button data-filter="sugg" aria-pressed="${state.filter === 'sugg'}" class="${state.filter === 'sugg' ? 'on' : ''}">Suggested ${suggested}</button>`;
+  $('#pendingViewToggle').innerHTML = `
+    <button data-pending-view="rows" aria-pressed="${state.pendingView === 'rows'}" class="${state.pendingView === 'rows' ? 'on' : ''}">Rows</button>
+    <button data-pending-view="payee" aria-pressed="${state.pendingView === 'payee'}" class="${state.pendingView === 'payee' ? 'on' : ''}">Group by payee</button>`;
 }
 
 function renderList() {
@@ -223,17 +262,18 @@ function renderList() {
     return;
   }
   if (state.pendingView === 'payee') {
-    const matchingPayees = new Set(list.map(item => pendingPayeeKey(item.counterparty)));
-    const groups = groupPendingByPayee(items).filter(group => matchingPayees.has(group.key));
-    $('#list').innerHTML = `<div class="payee-groups">${groups.map(payeeGroupCard).join('')}</div>`;
+    const groups = groupPendingByPayee(list);
+    const visibleGroups = groups.slice(0, pendingVisibleCount);
+    $('#list').innerHTML = `<div class="payee-groups">${visibleGroups.map(payeeGroupCard).join('')}</div>${groups.length > visibleGroups.length ? '<button class="btn ghost history-more" data-act="pending-more">Show more</button>' : ''}`;
     return;
   }
-  const groups = groupByDate(list);
+  const visibleItems = list.slice(0, pendingVisibleCount);
+  const groups = groupByDate(visibleItems);
   $('#list').innerHTML = groups.map(([date, dayItems]) => `
     <section class="day-group" aria-label="${esc(dayHeading(date))}">
       <div class="day-heading"><h2>${esc(dayHeading(date))}</h2><span>${dayItems.length} ${dayItems.length === 1 ? 'transaction' : 'transactions'}</span></div>
       <div class="day-list">${dayItems.map(card).join('')}</div>
-    </section>`).join('');
+    </section>`).join('') + (list.length > visibleItems.length ? '<button class="btn ghost history-more" data-act="pending-more">Show more</button>' : '');
 }
 
 // Normalizes the payee label for consistent grouping in the Pending view.
@@ -282,10 +322,14 @@ function openPayeeBulkSheet(key) {
     <div class="grip"></div><h3 id="sheetTitle">${esc(group.payee)}</h3>
     <p class="payee-bulk-intro">Set once for ${group.items.length} open ${group.items.length === 1 ? 'row' : 'rows'} · ${inr(amount)} total. This applies to every open row for this payee.</p>
     <div class="label">Bucket</div>
-    <div class="seg" id="bk">${BUCKETS.map(bucket => `<button data-bucket="${esc(bucket)}" class="${bucket === ctx.bucket ? 'on' : ''}">${esc(bucket)}</button>`).join('')}</div>
+    <div class="seg choice-chips" id="bk" data-choice-group="bucket"></div>
     <div class="label">Category</div>
-    <div class="chips" id="ct">${CATS.map(category => `<button class="chip ${category === ctx.category ? 'on' : ''}" data-cat="${esc(category)}">${esc(category)}</button>`).join('')}</div>
+    <div class="chips choice-chips" id="ct" data-choice-group="category"></div>
     <div class="actions"><button class="btn ghost" data-act="close">Cancel</button><button class="btn primary" data-act="save-payee-group">Apply to all</button></div>`);
+  renderChoiceChips($('#bk'));
+  renderChoiceChips($('#ct'));
+  bindChoiceChips($('#bk'));
+  bindChoiceChips($('#ct'));
 }
 
 // Saves one bucket/category choice to all open rows for the payee.
@@ -308,6 +352,7 @@ async function savePayeeGroup(group, values) {
         Object.keys(historyTotals).forEach(key => { historyTotals[key] += after[key] - before[key]; });
       }
       if (historyItem && localItem && historyItem !== localItem) Object.assign(localItem, updates);
+      historyFilterCache.clear();
       await historyUpdateCached(ref, updates);
     }));
     items = items.filter(item => !refs.has(String(item.ref)));
@@ -370,6 +415,7 @@ async function saveItem(item, p) {
   try {
     await api('save', { ref: item.ref, ...p });
     const updates = { bucket: p.bucket, category: p.category, property: p.property, notes: p.notes, status: 'CONFIRMED' };
+    historyFilterCache.clear();
     const cachedItem = historyItems.find(entry => entry.ref === item.ref);
     if (cachedItem) {
       const previous = historySum([cachedItem]);
@@ -406,9 +452,9 @@ function openEdit(ref) {
     <h3 id="sheetTitle">${esc(item.counterparty || 'Transaction')}</h3>
     <div class="meta">${inr(item.amount)} · ${shortDate(item.date)} · ${item.direction === 'CREDIT' ? 'received' : 'paid'}</div>
     <div class="label">Bucket</div>
-    <div class="seg" id="bk">${BUCKETS.map(b => `<button data-bucket="${b}" class="${b === ctx.bucket ? 'on' : ''}">${b}</button>`).join('')}</div>
+    <div class="seg choice-chips" id="bk" data-choice-group="bucket"></div>
     <div class="label">Category</div>
-    <div class="chips" id="ct">${CATS.map(c => `<button class="chip ${c === ctx.category ? 'on' : ''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+    <div class="chips choice-chips" id="ct" data-choice-group="category"></div>
     <div class="label">Property (unit number)</div>
     <input id="f_prop" inputmode="numeric" value="${esc(ctx.property)}" placeholder="e.g. 170, or leave blank">
     <div class="label">Notes</div>
@@ -417,6 +463,10 @@ function openEdit(ref) {
       <button class="btn ghost" data-act="close">Cancel</button>
       <button class="btn primary" data-act="save-edit">Save & confirm</button>
     </div>`);
+  renderChoiceChips($('#bk'));
+  renderChoiceChips($('#ct'));
+  bindChoiceChips($('#bk'));
+  bindChoiceChips($('#ct'));
 }
 
 // ---------- Month ----------
@@ -499,6 +549,8 @@ let historySnapshotFailed = false;
 let historySnapshotAt = 0;
 let historyOffline = false;
 let historyDbPromise = null;
+let historyFilterCache = new Map();
+let historyObserver = null;
 
 // Returns the inclusive date range represented by a month key.
 function monthRange(month) {
@@ -807,9 +859,10 @@ function splitHistoryRange(requested, windowRange) {
 
 // Loads the selected local date range first, then pages any older live results.
 async function loadHistory(append = false) {
-  if (append && (historyAppendLoading || !historyLiveHasMore)) return;
+  if (append && (historyLoading || historyAppendLoading || !historyLiveHasMore)) return;
   const requestId = append ? historyRequestId : ++historyRequestId;
   if (!append) {
+    historyFilterCache.clear();
     historyLoading = true;
     historyAppendLoading = false;
     historyLiveItems = [];
@@ -870,6 +923,7 @@ async function loadHistory(append = false) {
     const response = await api('history', params);
     if (!Array.isArray(response.items) || typeof response.hasMore !== 'boolean') throw new Error('Invalid history response');
     const received = response.items.map(normalizeHistoryItem);
+    historyFilterCache.clear();
     if (received.length > HISTORY_PAGE_SIZE || (response.hasMore && received.length === 0)) throw new Error('Incomplete history page');
     if (requestId !== historyRequestId) return;
     const serverRefs = new Set(received.map(item => item.ref));
@@ -903,12 +957,14 @@ async function loadHistory(append = false) {
     else setStatus('Not connected');
     if (!historyItems.length && !historyLocalItems.length) {
       $('#view').innerHTML = `<div class="empty"><b>Payment history unavailable</b><p>${esc(failure.message)}</p><button class="btn primary" data-act="history-retry">Try again</button></div>`;
-    } else renderHistory();
+    } else if (append) renderHistoryList();
+    else renderHistory();
     return;
   }
   if (historyHasLive) setStatus(historyItems.length ? 'History · live and saved' : 'History · live');
   else setStatus('Showing saved list · updated ' + (historySnapshotAt ? historyTimeLabel(historySnapshotAt) : historyTimeLabel(Date.now())));
-  renderHistory();
+  if (append) renderHistoryList();
+  else renderHistory();
 }
 // Builds History with its date chip, active-period totals, filters, and search.
 function renderHistory() {
@@ -924,18 +980,33 @@ function renderHistory() {
     </section>
     <div class="history-breakdown">Business ${inr(historyTotals.business)} <span aria-hidden="true">·</span> Personal ${inr(historyTotals.personal)}</div>
     <div class="history-internal">Moved between your accounts ${inr(historyTotals.internal)}</div>
-    <div class="history-chips" role="group" aria-label="Filter payment history">
-      ${HISTORY_FILTERS.map(([value, label]) => `<button class="history-chip ${state.historyFilter === value ? 'on' : ''}" data-history-filter="${value}" aria-pressed="${state.historyFilter === value}">${label}</button>`).join('')}
-    </div>
+    <div class="history-chips" id="historyTypeFilters" role="group" aria-label="Filter payment history"></div>
     <input class="search history-search" id="historySearch" type="search" aria-label="Search payment history" placeholder="Search payee, bank, category or amount" value="${esc(state.historyQuery)}">
     <div id="historyList" aria-live="polite"></div>`;
+  const filters = $('#historyTypeFilters');
+  renderHistoryFilters(filters);
+  filters.addEventListener('click', event => {
+    const button = event.target.closest('button[data-value]');
+    if (!button || !filters.contains(button)) return;
+    state.historyFilter = button.dataset.value;
+    renderHistoryFilters(filters);
+    renderHistoryList();
+  });
   $('#historySearch').addEventListener('input', event => { state.historyQuery = event.target.value; renderHistoryList(); });
   renderHistoryList();
 }
+
+// Draws History filter chips from the active filter state.
+function renderHistoryFilters(container) {
+  container.innerHTML = HISTORY_FILTERS.map(([value, label]) => `<button type="button" class="history-chip ${state.historyFilter === value ? 'on' : ''}" data-value="${esc(value)}" aria-pressed="${state.historyFilter === value}">${esc(label)}</button>`).join('');
+}
+
 // Filters and searches every currently loaded recent or live item in the browser.
 function filteredHistoryItems() {
   const query = state.historyQuery.trim().toLowerCase();
-  return historyItems.filter(item => {
+  const key = `${state.historyPeriod ? state.historyPeriod.from + ':' + state.historyPeriod.to : 'all'}:${state.historyFilter}`;
+  if (!query && historyFilterCache.has(key)) return historyFilterCache.get(key);
+  const filtered = historyItems.filter(item => {
     if (state.historyFilter === 'sent' && item.direction !== 'DEBIT') return false;
     if (state.historyFilter === 'received' && item.direction !== 'CREDIT') return false;
     if (state.historyFilter === 'business' && item.bucket.toLowerCase() !== 'business') return false;
@@ -945,17 +1016,21 @@ function filteredHistoryItems() {
     return [item.counterparty, item.source, item.account, item.status, item.bucket,
       item.category, item.property, item.notes, item.amount, item.ref].join(' ').toLowerCase().includes(query);
   });
+  if (!query) historyFilterCache.set(key, filtered);
+  return filtered;
 }
 
 // Renders month or day groups, net totals, and live paging status.
 function renderHistoryList() {
   const list = $('#historyList');
   if (!list) return;
+  if (historyObserver) { historyObserver.disconnect(); historyObserver = null; }
   const visible = filteredHistoryItems();
+  let content = '';
   if (!historyItems.length && (historyLoading || historyAppendLoading)) {
-    list.innerHTML = '<div class="history-state" role="status">Loading…</div>';
+    content = '<div class="history-state" role="status">Loading…</div>';
   } else if (!historyItems.length) {
-    list.innerHTML = '<div class="empty"><b>No transactions in this period</b><button class="btn primary history-empty-button" data-act="history-dates">Change dates</button></div>';
+    content = '<div class="empty"><b>No transactions in this period</b><button class="btn primary history-empty-button" data-act="history-dates">Change dates</button></div>';
   } else if (visible.length) {
     const renderDay = ([date, dayItems]) => {
       const net = historyNet(dayItems);
@@ -966,20 +1041,30 @@ function renderHistoryList() {
       </section>`;
     };
     if (!state.historyPeriod) {
-      list.innerHTML = groupByMonth(visible).map(([month, monthItems]) => {
+      content = groupByMonth(visible).map(([month, monthItems]) => {
         const net = historyNet(monthItems);
         const netText = `${net > 0 ? '+' : net < 0 ? '−' : ''}${inr(Math.abs(net))}`;
         return `<section class="history-month-group"><div class="history-month-heading"><h2>${esc(monthLabel(month))}</h2><span>${netText}</span></div>${groupByDate(monthItems).map(renderDay).join('')}</section>`;
       }).join('');
-    } else list.innerHTML = groupByDate(visible).map(renderDay).join('');
+    } else content = groupByDate(visible).map(renderDay).join('');
   } else {
-    list.innerHTML = '<div class="empty"><b>No transactions match</b>Try another filter or search.</div>';
+    content = '<div class="empty"><b>No transactions match</b>Try another filter or search.</div>';
   }
-
-  if (historyAppendLoading) list.insertAdjacentHTML('beforeend', '<div class="history-state" role="status">Loading…</div>');
-  else if (historyLiveHasMore) list.insertAdjacentHTML('beforeend', '<div class="history-state" role="status">Scroll for older transactions</div>');
-  else if (historyLiveComplete) list.insertAdjacentHTML('beforeend', '<div class="history-state">End of history</div>');
-  requestAnimationFrame(maybeLoadHistory);
+  const footer = historyAppendLoading
+    ? '<div class="history-state" role="status">Loading…</div>'
+    : historyLiveHasMore
+      ? ('IntersectionObserver' in window
+        ? '<div id="historySentinel" class="history-state" role="status">Scroll for older transactions</div>'
+        : '<button class="link" data-act="history-more">Load older transactions</button>')
+      : historyLiveComplete ? '<div class="history-state">End of history</div>' : '';
+  list.innerHTML = content + footer;
+  const sentinel = $('#historySentinel');
+  if (sentinel) {
+    historyObserver = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) loadHistory(true);
+    }, { rootMargin: '200px' });
+    historyObserver.observe(sentinel);
+  }
 }
 
 // Groups transactions by their local calendar month in newest-first order.
@@ -1054,14 +1139,6 @@ function openHistoryDetail(ref) {
     <div class="actions"><button class="btn ghost" data-act="close">Close</button><button class="btn primary" data-act="edit" data-ref="${esc(item.ref)}">Edit</button></div>`);
 }
 
-// Requests the next older live page when the viewport nears the bottom.
-function maybeLoadHistory() {
-  if (state.tab !== 'history' || historyLoading || historyAppendLoading || !historyLiveHasMore) return;
-  const remaining = document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
-  if (remaining < 200) loadHistory(true);
-}
-
-window.addEventListener('scroll', maybeLoadHistory, { passive: true });
 // ---------- Settings ----------
 function openSettings() {
   const c = cfg();
@@ -1087,7 +1164,7 @@ function writeSettings() {
 
 // ---------- Actions (one click handler for the whole app) ----------
 document.addEventListener('click', async e => {
-  const el = e.target.closest('[data-act],[data-tab],[data-filter],[data-pending-view],[data-payee-key],[data-bucket],[data-cat],[data-month],[data-history-filter],[data-history-ref],[data-history-preset],[data-history-month]');
+  const el = e.target.closest('[data-act],[data-tab],[data-filter],[data-pending-view],[data-payee-key],[data-month],[data-history-ref],[data-history-preset],[data-history-month]');
   if (!el) return;
 
   if (el.dataset.tab) {
@@ -1103,23 +1180,12 @@ document.addEventListener('click', async e => {
     else loadSummary();
     return;
   }
-  if (el.dataset.pendingView) { state.pendingView = el.dataset.pendingView; renderPending(); return; }
+  if (el.dataset.pendingView) { state.pendingView = el.dataset.pendingView; pendingVisibleCount = 40; renderPendingControls(); renderList(); return; }
   if (el.dataset.payeeKey) { openPayeeBulkSheet(el.dataset.payeeKey); return; }
-  if (el.dataset.historyFilter) { state.historyFilter = el.dataset.historyFilter; renderHistoryList(); return; }
   if (el.dataset.historyPreset) { state.historyPeriod = historyPeriodFor(el.dataset.historyPreset); closeSheet(); loadHistory(); return; }
   if (el.dataset.historyMonth) { state.historyPeriod = historyPeriodFor(el.dataset.historyMonth); closeSheet(); loadHistory(); return; }
   if (el.dataset.historyRef) { openHistoryDetail(el.dataset.historyRef); return; }
-  if (el.dataset.filter) { state.filter = el.dataset.filter; renderPending(); return; }
-  if (el.dataset.bucket) {
-    ctx.bucket = el.dataset.bucket;
-    document.querySelectorAll('#bk button').forEach(b => b.classList.toggle('on', b === el));
-    return;
-  }
-  if (el.dataset.cat) {
-    ctx.category = el.dataset.cat;
-    document.querySelectorAll('#ct button').forEach(b => b.classList.toggle('on', b === el));
-    return;
-  }
+  if (el.dataset.filter) { state.filter = el.dataset.filter; pendingVisibleCount = 40; renderPendingControls(); renderList(); return; }
   if (el.dataset.month) { shiftMonth(Number(el.dataset.month)); return; }
 
   switch (el.dataset.act) {
@@ -1139,6 +1205,7 @@ document.addEventListener('click', async e => {
       closeSheet(); loadHistory(); break;
     }
     case 'history-more': loadHistory(true); break;
+    case 'pending-more': pendingVisibleCount += 40; renderList(); break;
     case 'history-retry': loadHistory(); break;
     case 'accept': {
       const item = items.find(x => x.ref === el.dataset.ref);
