@@ -127,11 +127,23 @@ function toast(msg) {
 }
 function setStatus(msg) { $('#status').textContent = msg; }
 // Updates the opt-in display of the latest JSONP duration.
-function showApiDuration(ms) {
+let lastApiDurationMs = null;
+let historyDebug = { cachePaintMs: null, networkMs: null, serverMs: null };
+
+// Renders the last API and History timings only when debugging is enabled.
+function renderApiDebug() {
   const line = $('#debugStatus');
   const enabled = localStorage.getItem('fin_debug') === '1';
   line.hidden = !enabled;
-  if (enabled) line.textContent = `Last server call: ${Math.round(ms)} ms`;
+  if (!enabled) return;
+  const value = ms => Number.isFinite(ms) ? `${Math.round(ms)} ms` : '—';
+  line.textContent = `Last server call: ${value(lastApiDurationMs)} · History: cache paint ${value(historyDebug.cachePaintMs)}, network ${value(historyDebug.networkMs)}, server ${value(historyDebug.serverMs)}`;
+}
+
+// Retains the existing JSONP duration measurement while refreshing the debug line.
+function showApiDuration(ms) {
+  lastApiDurationMs = ms;
+  renderApiDebug();
 }
 function renderLoading() { $('#view').innerHTML = '<div class="skel"></div><div class="skel"></div>'; }
 
@@ -861,7 +873,10 @@ function splitHistoryRange(requested, windowRange) {
 async function loadHistory(append = false) {
   if (append && (historyLoading || historyAppendLoading || !historyLiveHasMore)) return;
   const requestId = append ? historyRequestId : ++historyRequestId;
+  const cacheStartedAt = performance.now();
   if (!append) {
+    historyDebug = { cachePaintMs: null, networkMs: null, serverMs: null };
+    renderApiDebug();
     historyFilterCache.clear();
     historyLoading = true;
     historyAppendLoading = false;
@@ -908,6 +923,7 @@ async function loadHistory(append = false) {
       historyLiveHasMore = historyLiveAll || !!historyLiveRange;
       historyLiveComplete = !historyLiveHasMore;
       renderHistory();
+      if (db && selected.local) recordHistoryCachePaint(cacheStartedAt, requestId);
       if (!historyLiveAll && !historyLiveRange) {
         historyLoading = false;
         historyLiveComplete = true;
@@ -920,7 +936,19 @@ async function loadHistory(append = false) {
     if (!historyLiveAll && !liveRange) return;
     const params = { status: 'all', q: '', offset: historyLiveOffset, limit: HISTORY_PAGE_SIZE };
     if (!historyLiveAll) Object.assign(params, liveRange);
-    const response = await api('history', params);
+    const networkStartedAt = performance.now();
+    let response;
+    try { response = await api('history', params); }
+    finally {
+      if (requestId === historyRequestId) {
+        historyDebug.networkMs = performance.now() - networkStartedAt;
+        renderApiDebug();
+      }
+    }
+    if (requestId === historyRequestId) {
+      historyDebug.serverMs = Number.isFinite(response.serverMs) ? response.serverMs : null;
+      renderApiDebug();
+    }
     if (!Array.isArray(response.items) || typeof response.hasMore !== 'boolean') throw new Error('Invalid history response');
     const received = response.items.map(normalizeHistoryItem);
     historyFilterCache.clear();
@@ -966,6 +994,15 @@ async function loadHistory(append = false) {
   if (append) renderHistoryList();
   else renderHistory();
 }
+// Records the first rendered local-cache frame for the current History request.
+function recordHistoryCachePaint(startedAt, requestId) {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (requestId !== historyRequestId) return;
+    historyDebug.cachePaintMs = performance.now() - startedAt;
+    renderApiDebug();
+  }));
+}
+
 // Builds History with its date chip, active-period totals, filters, and search.
 function renderHistory() {
   const rangeLabel = state.historyPeriod ? state.historyPeriod.label : 'All dates';

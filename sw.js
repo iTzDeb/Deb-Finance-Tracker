@@ -1,4 +1,4 @@
-const CACHE = 'finance-v15';
+const CACHE = 'finance-v16';
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html', './manifest.json'])));
   self.skipWaiting();
