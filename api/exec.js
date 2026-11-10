@@ -44,10 +44,13 @@ export default async function handler(req) {
 
   if (!APP_KEY) return respond({ ok: false, error: 'server not configured' });
   if (params.key !== APP_KEY) return respond({ ok: false, error: 'unauthorized' });
-  if (!EXEC_ACTIONS.has(params.action)) return respond({ ok: false, error: 'unknown action' });
+
+  // Legacy SMS forwarders send ?src=KOTAK_SMS&sms=... with no action param.
+  const action = params.action || ((params.sms || params.messages) ? 'ingest' : '');
+  if (!EXEC_ACTIONS.has(action)) return respond({ ok: false, error: 'unknown action' });
 
   try {
-    const data = await dispatch(params.action, params);
+    const data = await dispatch(action, params);
     return respond({ ok: true, ...data });
   } catch (err) {
     return respond({ ok: false, error: err.message || 'failed' });

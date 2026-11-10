@@ -100,6 +100,24 @@ test('parseKotakSMS_ handles a Kotak debit', () => {
   assert.equal(t.party, 'CHAIWALA');
 });
 
+// Real Kotak credit alert as forwarded by the Android app: numeric dd-mm-yy
+// date, "UPI Ref:" with a colon, and forwarder metadata appended after it.
+test('parseKotakSMS_ handles a Kotak credit with forwarding metadata', () => {
+  const sms = 'JM-KOTAKB-S\nReceived Rs.7000.00 in your Kotak Bank AC 7991 from Ravisankar Mohanty on 10-11-26.'
+    + 'UPI Ref:631488715714\nSIM1_airtel_+917065777086\nSublId：\n2026-11-10 21:15:28\nAviva V2307';
+  const t = parseKotakSMS_(sms);
+  assert.equal(t.direction, 'CREDIT');
+  assert.equal(t.amount, '7000.00');
+  assert.equal(t.date, '2026-11-10');
+  assert.equal(t.ref, '631488715714');
+  assert.equal(t.party, 'Ravisankar Mohanty');
+  assert.equal(t.account, 'Kotak');
+});
+
+test('parseSMS_ refuses Kotak alerts so they are never logged as BOI', () => {
+  assert.equal(parseSMS_('Received Rs.7000.00 in your Kotak Bank AC 7991 from X on 10-11-26.UPI Ref:631488715714'), null);
+});
+
 test('parseSBISMS_ only accepts the 2175 account', () => {
   const t = parseSBISMS_('A/c XX2175 Debited Rs.1000.00 on 15/01/26. Transferred to Asit. Avl Bal Rs. 5000');
   assert.equal(t.direction, 'DEBIT');
