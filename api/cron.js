@@ -1,5 +1,6 @@
-// Vercel cron entrypoint. Called by Vercel Cron with ?job=<name> and a
-// X-Cron-Secret / CRON_SECRET. Jobs: sync (rules), suggest (AI), digest (Telegram).
+// Vercel cron entrypoint (Node runtime). Called by Vercel Cron with ?job=<name>
+// and the CRON_SECRET either in the query string or an x-cron-secret header.
+// Jobs: sync (rules), suggest (AI), digest (Telegram).
 //
 //   GET /api/cron?job=sync&secret=...
 
@@ -10,29 +11,28 @@ import { CRON_SECRET } from '../lib/config.js';
 
 const JOBS = { sync: syncRows, suggest: suggestOpenRows, digest: sendDigest };
 
-export default async function handler(req) {
-  const url = new URL(req.url);
+function send(res, body, status = 200) {
+  res.statusCode = status;
+  res.setHeader('content-type', 'application/json; charset=utf-8');
+  res.setHeader('cache-control', 'no-store');
+  res.end(JSON.stringify(body));
+}
+
+export default async function handler(req, res) {
+  const url = new URL(req.url, 'http://localhost');
   const job = url.searchParams.get('job');
-  const secret = url.searchParams.get('secret') || req.headers.get('x-cron-secret') || '';
+  const secret = url.searchParams.get('secret') || req.headers['x-cron-secret'] || '';
   if (!CRON_SECRET || secret !== CRON_SECRET) {
-    return new Response(JSON.stringify({ ok: false, error: 'unauthorized' }), {
-      status: 401, headers: { 'content-type': 'application/json' }
-    });
+    return send(res, { ok: false, error: 'unauthorized' }, 401);
   }
+
   const fn = JOBS[job];
-  if (!fn) {
-    return new Response(JSON.stringify({ ok: false, error: 'unknown job' }), {
-      status: 404, headers: { 'content-type': 'application/json' }
-    });
-  }
+  if (!fn) return send(res, { ok: false, error: 'unknown job' }, 404);
+
   try {
     const data = await fn();
-    return new Response(JSON.stringify({ ok: true, job, ...data }), {
-      status: 200, headers: { 'content-type': 'application/json' }
-    });
+    return send(res, { ok: true, job, ...data });
   } catch (err) {
-    return new Response(JSON.stringify({ ok: false, job, error: err.message || 'failed' }), {
-      status: 500, headers: { 'content-type': 'application/json' }
-    });
+    return send(res, { ok: false, job, error: err.message || 'failed' }, 500);
   }
 }
