@@ -1,0 +1,16 @@
+{
+  "name": "deb-finance-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vercel Functions backend for the Deb Finance Tracker PWA (Google Sheets data store).",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "google-auth-library": "^9.14.2"
+  }
+}
