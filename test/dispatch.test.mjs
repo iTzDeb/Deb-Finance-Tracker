@@ -1,11 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { dispatch, FRONTEND_ACTIONS } from '../lib/dispatch.js';
+import { dispatch, EXEC_ACTIONS } from '../lib/dispatch.js';
 
-test('FRONTEND_ACTIONS includes the actions the PWA calls', () => {
-  for (const a of ['pending', 'summary', 'save', 'bulkSave', 'history', 'snapshot', 'importChunk', 'importCommit', 'importCancel']) {
-    assert.ok(FRONTEND_ACTIONS.has(a), a);
+test('EXEC_ACTIONS includes the actions the PWA calls', () => {
+  for (const a of ['pending', 'summary', 'save', 'bulkSave', 'history', 'snapshot', 'importChunk', 'importCommit', 'importCancel', 'ingest']) {
+    assert.ok(EXEC_ACTIONS.has(a), a);
   }
 });
 

@@ -4,7 +4,7 @@
 //   GET  /api/exec?key=...&action=pending&callback=cb_xxx
 //   POST /api/exec  { "key": "...", "action": "...", ...params }
 
-import { dispatch, FRONTEND_ACTIONS } from '../lib/dispatch.js';
+import { dispatch, EXEC_ACTIONS } from '../lib/dispatch.js';
 import { safeCallback } from '../lib/util.js';
 import { APP_KEY } from '../lib/config.js';
 
@@ -44,7 +44,7 @@ export default async function handler(req) {
 
   if (!APP_KEY) return respond({ ok: false, error: 'server not configured' });
   if (params.key !== APP_KEY) return respond({ ok: false, error: 'unauthorized' });
-  if (!FRONTEND_ACTIONS.has(params.action)) return respond({ ok: false, error: 'unknown action' });
+  if (!EXEC_ACTIONS.has(params.action)) return respond({ ok: false, error: 'unknown action' });
 
   try {
     const data = await dispatch(params.action, params);
