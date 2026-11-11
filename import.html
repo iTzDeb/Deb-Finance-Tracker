@@ -41,7 +41,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const inr = n => '₹' + Math.round(Number(n) || 0).toLocaleString('en-IN');
 const pad = n => String(n).padStart(2, '0');
-const DEFAULT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzaDUl1tqREjXTGt8liHUWtr-kE2WR_kixf3UA-98K-vt36vOZv2f4rDPSOEohBiv6_/exec';
+const DEFAULT_WEB_APP_URL = 'https://deb-finance.vercel.app/api/exec';
 const cfg = () => { const saved = JSON.parse(localStorage.getItem('fin_cfg') || '{}'); return { ...saved, url: saved.url || DEFAULT_WEB_APP_URL }; };
 const setStatus = html => { $('#status').innerHTML = html; };
 let txns = [];

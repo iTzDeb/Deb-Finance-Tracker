@@ -58,7 +58,7 @@ main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{positio
 
 <script>
 const BUCKETS = ['Business', 'Personal', 'Internal', 'Deposit'];
-const DEFAULT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzaDUl1tqREjXTGt8liHUWtr-kE2WR_kixf3UA-98K-vt36vOZv2f4rDPSOEohBiv6_/exec';
+const DEFAULT_WEB_APP_URL = 'https://deb-finance.vercel.app/api/exec';
 const CATS = ['Electricity', 'Plumbing', 'Repairs', 'Groceries', 'Rent', 'Staff',
   'Chai and snacks', 'Cigarettes', 'Fuel', 'Medicine', 'Food out', 'Family support',
   'Self transfer', 'Deposit refund', 'Tenant rent', 'Reimbursement', 'Other'];
@@ -1186,7 +1186,7 @@ function openSettings() {
     <div class="grip"></div>
     <div class="setup-head"><div class="setup-mark" aria-hidden="true">↗</div><div><h3 id="sheetTitle">Connect your sheet</h3><div class="meta">A quick one-time setup</div></div></div>
     <p class="setup-copy">Enter the key for your Apps Script so pending transactions and monthly totals can sync with Google Sheets.</p>
-    <label class="label" for="s_url">Apps Script web app URL</label>
+    <label class="label" for="s_url">Backend URL</label>
     <input id="s_url" type="url" value="${esc(c.url || '')}" autocapitalize="off" autocorrect="off" spellcheck="false">
     <label class="label" for="s_key">SMS key</label>
     <input id="s_key" type="password" value="${esc(c.key || '')}" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Enter your key">
