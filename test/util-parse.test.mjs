@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 import {
   amountNum_, st_, isNonTxnSMS_, normDate_, normKey_, normBucket_, normCategory_,
-  pendingPayeeKey, compositeKey_, historyTotals, cellToDateStr, safeCallback, ymd, serialToDate,
+  pendingPayeeKey, compositeKey_, historyTotals, cellToDateStr, cellToStampStr, safeCallback, ymd, serialToDate,
   sameSecret, readRequestParams, normRef_, canonicalPayee, cleanPayeeName
 } from '../lib/util.js';
 
@@ -65,6 +65,12 @@ test('canonicalPayee expands a unique truncated prefix', () => {
   assert.equal(canonicalPayee('RAJ', ['RAJESH', 'RAJAN']), 'RAJ');      // ambiguous
   assert.equal(canonicalPayee('X', ['Xavier']), 'X');                   // too short
   assert.equal(canonicalPayee('Pratik', ['Pratik Kumar']), 'Pratik Kumar');
+});
+
+test('sheet serials format as wall-clock time (no IST shift)', () => {
+  const serial = (Date.UTC(2026, 10, 11, 8, 15) - Date.UTC(1899, 11, 30)) / 86400000;
+  assert.equal(cellToStampStr(serial), '2026-11-11 08:15');
+  assert.equal(cellToDateStr(Math.floor(serial)), '2026-11-11');
 });
 
 test('normRef_ normalises leading zeros', () => {
