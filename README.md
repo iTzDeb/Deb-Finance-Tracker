@@ -22,6 +22,7 @@ categorisation rules, asks an LLM for suggestions, and gives three daily views:
 - [HTTP API](#http-api)
 - [Ingest (SMS / email)](#ingest-sms--email)
 - [Statement import](#statement-import)
+- [Telegram bot](#telegram-bot)
 - [Background jobs (cron)](#background-jobs-cron)
 - [Frontend (PWA)](#frontend-pwa)
 - [Deployment](#deployment)
@@ -61,6 +62,9 @@ categorisation rules, asks an LLM for suggestions, and gives three daily views:
                                   └───────────────────┘
 ```
 
+`/api/telegram` receives bot updates (questions, commands, buttons) and sends
+replies through the same bot token as the digest.
+
 **Components**
 
 | Component | Where | What it does |
@@ -69,9 +73,10 @@ categorisation rules, asks an LLM for suggestions, and gives three daily views:
 | Importer | `import.html` | Parses CSV/XLSX/PDF statements in the browser, stages rows, commits |
 | API | `api/exec.js` | Key-authenticated JSON/JSONP endpoint for the PWA and forwarders |
 | Cron | `api/cron.js`, `api/maintenance.js`, `api/digest.js` | Rule sync, AI suggestions, Telegram digest |
-| Domain logic | `lib/*.js` | Sheets client, parsers, rules, dedup, import, AI, digest |
+| Telegram bot | `api/telegram.js`, `lib/bot.js` | Asks about new payees, applies trusted rules, commands, undo |
+| Domain logic | `lib/*.js` | Sheets client, parsers, rules, dedup, import, AI, digest, bot |
 | Gmail forwarder | `gas-forwarder/Code.gs` | The only Apps Script left: forwards Kotak emails |
-| Storage | Google Sheets | `Transactions`, `Rules`, `Staging` tabs |
+| Storage | Google Sheets | `Transactions`, `Rules`, `Staging`, `BotQuestions`, `BotLog`, `BotState` |
 
 ---
 
@@ -87,6 +92,7 @@ categorisation rules, asks an LLM for suggestions, and gives three daily views:
 | `api/cron.js` | ~70 | Cron handler factory + job table |
 | `api/maintenance.js` | 3 | `/api/maintenance` → `sync` then `suggest` |
 | `api/digest.js` | 3 | `/api/digest` → Telegram summary |
+| `api/telegram.js` | ~50 | Telegram webhook: secret check, update_id dedupe, bot dispatch |
 | `lib/config.js` | ~60 | Column names, buckets/categories, env secrets, AI prompt |
 | `lib/sheet.js` | ~150 | Sheets REST v4 client, whole-column reads, batch writes |
 | `lib/txn.js` | ~155 | Row ↔ object mapping, dedup, classify, append/update |
@@ -95,7 +101,10 @@ categorisation rules, asks an LLM for suggestions, and gives three daily views:
 | `lib/ingest.js` | ~70 | Forwarder endpoint: parse → classify → dedup → append |
 | `lib/import.js` | ~200 | Staging, 3-pass dedup, commit/cancel |
 | `lib/sync.js` | ~35 | Re-apply rules to open rows |
-| `lib/ai.js` | ~105 | Gemini first, DeepSeek fallback, suggestion columns |
+| `lib/ai.js` | ~85 | Suggestion prompting/validation (via `llm.js`) |
+| `lib/llm.js` | ~60 | Shared LLM adapter: DeepSeek primary, Gemini fallback |
+| `lib/telegram.js` | ~80 | Bot API client: send/edit/answer/setWebhook |
+| `lib/bot.js` | ~700 | Questions, rules/undo, commands, LLM intents, webhook setup |
 | `lib/digest.js` | ~30 | Telegram monthly summary |
 | `lib/dispatch.js` | ~45 | Action table shared by HTTP and cron |
 | `lib/util.js` | ~135 | Dates, keys, totals, request params, secret compare |
@@ -160,6 +169,18 @@ the rule's existing trust flag.
 `Batch`, `Stamp`, `Direction`, `Amount`, `Counterparty`, `Ref`, `Account`,
 `Source`. Only used during an import; cleared when the batch commits or is
 cancelled.
+
+### Bot tabs (created on demand by `botSetup` / the first update)
+
+| Tab | Columns |
+| --- | --- |
+| `BotQuestions` | Id, Chat, Message, Key, Payee, Refs, Evidence, Suggestion, Status, Created, Resolved |
+| `BotLog` | Id, At, Action, Payload, Before, After, Status |
+| `BotState` | Key, Value (last update id, pause flag, asked/ignore timestamps) |
+
+`BotQuestions` maps the bot's message id to a payee so a reply or inline button
+can be resolved without conversation memory. `BotLog` is the audit trail and
+the source for `/undo`.
 
 ---
 
@@ -363,13 +384,91 @@ The importer also refuses a transaction date that cannot be parsed or an amount
 
 ---
 
+## Telegram bot
+
+A conversational assistant on the same bot as the digest. It asks about new
+payees, turns a confirmed reply into a **trusted rule** (with `/undo`), and
+answers date-scoped commands.
+
+**When it speaks**
+
+- After `ingest` (SMS/email), for each new payee without a trusted rule: one
+  message, up to 2 per call.
+- After an import: one summary message ("N imported, M payees need a rule —
+  /ask"), or up to 3 questions for small imports.
+- The daily `maintenance` job asks up to 3.
+- `/ask [period]` asks up to 10 for the chosen period (it bypasses the 7-day
+  "already asked" window, but not open questions or ignores).
+
+**Answering**
+
+- Buttons: `Personal` / `Business` / `Internal` / `Ignore` /
+  `Something else…`, plus `✅ <suggested bucket>/<category>` when a suggestion
+  exists.
+- Bucket → category keyboard → rule applied. The bot confirms how many open
+  rows were confirmed and that `/undo` reverts it.
+- `Ignore` silences that payee for 7 days.
+- Free text: reply to the question (or just send it) — the LLM maps it to a
+  validated action and shows an Apply/Cancel confirmation. Amounts such as
+  ₹40/₹53/₹65 are the same payee; rules are never amount-specific.
+
+**Commands**
+
+| Command | Does |
+| --- | --- |
+| `/help` | command list |
+| `/pending` | open count + top 5 payees |
+| `/ask [period]` | send questions now |
+| `/summary [period]` | business result, received, personal, internal, open |
+| `/spend <category> [period]` | payments + total for a category |
+| `/rules` | rules and their trusted state |
+| `/undo` | revert the last applied bot rule |
+| `/pause`, `/resume` | stop/start new questions |
+| `/status` | bot state, open questions, AI provider |
+
+Periods: `2026-11`, `2026`, `2026-10-01..2026-11-12`, `today`,
+`yesterday`, `this month`, `last month`, `last 30 days` (default: the
+current month).
+
+**Rule application and undo**
+
+Applying a rule saves a trusted `Rules` row, sets every open transaction for
+that payee to `CONFIRMED` with the chosen bucket/category/property, and writes
+a `BotLog` row with the payload and the previous state. `/undo` restores the
+previous rule (or clears it) and the affected rows. You can also delete the
+rule directly in the sheet.
+
+**Setup**
+
+After deploying:
+
+```
+curl "https://<project>.vercel.app/api/exec?key=<APP_KEY>&action=botSetup&url=https://<project>.vercel.app"
+```
+
+This creates the three bot tabs, calls `setWebhook` for `/api/telegram`, and
+sends a hello message. The webhook secret is derived from `APP_KEY`
+(`sha256("tg:" + APP_KEY)`) unless `TG_WEBHOOK_SECRET` is set; rotating
+`APP_KEY` requires re-running `botSetup`. `TG_TOKEN`/`TG_CHAT` are the same as
+the digest. The endpoint only acts on `TG_CHAT` and dedupes `update_id`.
+
+**AI** — DeepSeek is primary, Gemini the fallback (the free tier is rate
+limited). The model only proposes an action; buckets and categories are
+validated server-side, and nothing is written until Apply.
+
+**Limits** — one question per payee per 7 days, 2 per ingest, 3 for imports,
+10 per `/ask`; a fresh `/ask` is the override. In a group, free-text replies
+need privacy mode off or a reply to the bot's message.
+
+---
+
 ## Background jobs (cron)
 
 Declared in `vercel.json`:
 
 | Path | Job | Schedule (UTC) |
 | --- | --- | --- |
-| `/api/maintenance` | `sync` then `suggest` | 21:30 daily (03:00 IST) |
+| `/api/maintenance` | `sync` → `suggest` → `ask` (bot) | 21:30 daily (03:00 IST) |
 | `/api/digest` | Telegram summary | 03:30 daily (09:00 IST) |
 
 `/api/cron?job=sync|suggest|digest|maintenance` runs any job manually;
@@ -391,7 +490,8 @@ curl -H "Authorization: Bearer $CRON_SECRET" \
   open rows without a suggestion, and stores the confidence and the provider
   that answered. Never changes status.
 - `digest` — posts the current-month summary + open-row count to Telegram.
-- `maintenance` — `sync` then `suggest`; a missing AI key does not fail the sync.
+- `maintenance` — `sync`, then `suggest`, then asks the bot about up to 3
+  payees; a missing AI key does not fail the sync.
 
 Hobby allows roughly one cron run per day; the old 10-minute sync and the 19:00
 digest need a paid plan.
@@ -444,10 +544,11 @@ inert background, `aria-pressed` toggles, reduced-motion support, dark mode,
    | `SPREADSHEET_ID` | yes | Spreadsheet id from the sheet URL |
    | `GOOGLE_SERVICE_ACCOUNT` | yes | Full service-account JSON as one string |
    | `CRON_SECRET` | recommended | Protects cron; Vercel sends it as a Bearer token |
-   | `GEMINI_KEY` | optional | AI suggestions (primary) |
+   | `DEEPSEEK_KEY` | optional | AI primary (suggestions + bot) |
+   | `GEMINI_KEY` | optional | AI fallback when DeepSeek fails |
    | `GEMINI_MODEL` | optional | Default `gemini-3.1-flash-lite` |
-   | `DEEPSEEK_KEY` | optional | AI fallback |
-   | `TG_TOKEN`, `TG_CHAT` | optional | Telegram digest |
+   | `TG_TOKEN`, `TG_CHAT` | optional | Telegram digest **and conversation bot** |
+   | `TG_WEBHOOK_SECRET` | optional | Overrides the webhook secret derived from `APP_KEY` |
    | `OWNER_CONTEXT` | optional | Extra context in the AI prompt |
 
    `APP_KEY`, `SPREADSHEET_ID` and `GOOGLE_SERVICE_ACCOUNT` are **sensitive** in
@@ -487,6 +588,10 @@ dispatch): Node 26, `npm ci`, `npm test`.
   password; never commit it.
 - CDN scripts in `import.html` are pinned with **SRI** hashes.
 - All API responses are `cache-control: no-store`.
+- **Telegram webhook** — `/api/telegram` accepts only POSTs carrying
+  `X-Telegram-Bot-Api-Secret-Token` (derived from `APP_KEY` unless
+  `TG_WEBHOOK_SECRET` is set) and only acts on `TG_CHAT`; `update_id` is
+  deduped so a Telegram retry cannot double-apply a rule.
 
 ---
 
@@ -540,6 +645,9 @@ npm test        # node --test, discovers test/*.test.mjs
 | Stale UI after a deploy | Hard-refresh once; navigations are network-first, but the open page stays as loaded |
 | `Could not load the default credentials` | `GOOGLE_SERVICE_ACCOUNT` missing/invalid, or the sheet is not shared with the service account |
 | Sheet rows past 999 invisible | Fixed: reads use whole columns, not `A1:S1000` |
+| Bot silent | `botSetup` not run, wrong `TG_CHAT`, or the webhook secret changed; re-run the setup call and check `getWebhookInfo` |
+| Bot asks nothing | `/pause`, the 7-day `asked:` window, an open question for that payee, or a trusted rule already exists; use `/ask` |
+| `/undo` does nothing | only applied bot rule actions are undoable, one at a time |
 
 **Rotating `APP_KEY`**: update Vercel → update the PWA Settings → update the iOS
 Shortcut JSON → update `gas-forwarder/Code.gs` (script properties).
@@ -564,6 +672,12 @@ automatically.
 - **JSONP kept** for compatibility; the app itself uses `fetch` + CORS.
 - **Query-string key** — the key appears in URLs/logs; acceptable for a personal
   single-user tool, but a header-based scheme would be stronger.
+- **Bot cost** — each free-text message is one LLM call (DeepSeek); buttons and
+  commands are deterministic and free.
+- **No conversation memory** — free text is interpreted from the question
+  evidence and the message itself; the bot does not keep a chat transcript.
+- **Group privacy mode** — in a group, free text may not reach the bot unless
+  privacy mode is disabled or you reply to its message.
 
 ---
 

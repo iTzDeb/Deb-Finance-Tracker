@@ -13,6 +13,7 @@ import { suggestOpenRows } from '../lib/ai.js';
 import { sendDigest } from '../lib/digest.js';
 import { CRON_SECRET } from '../lib/config.js';
 import { sameSecret } from '../lib/util.js';
+import { askPending } from '../lib/bot.js';
 
 // One daily job for Hobby plans: re-apply rules, then fill AI suggestions.
 // A missing AI key must not fail the rule sync.
@@ -21,7 +22,10 @@ async function maintenance() {
   let suggest;
   try { suggest = await suggestOpenRows(); }
   catch (err) { suggest = { error: err.message }; }
-  return { sync, suggest };
+  let ask = { asked: 0 };
+  try { ask = await askPending({ limit: 3 }); }
+  catch (err) { ask = { error: err.message }; }
+  return { sync, suggest, ask };
 }
 
 const JOBS = { sync: syncRows, suggest: suggestOpenRows, digest: sendDigest, maintenance };
