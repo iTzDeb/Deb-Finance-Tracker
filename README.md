@@ -150,6 +150,10 @@ Google Sheets is the source of truth. Three tabs, exact column order matters.
 | `CONFIRMED` | Final; counts as categorised |
 | `FORGOTTEN` | Terminal "leave it": out of Pending and out of Month/History totals, still in the sheet and visible in History under its filter |
 
+A separate `Hidden` flag (last column) removes a row from **every** total and
+from the family view; the row stays editable in History. Categories live in the
+`Categories` tab and grow whenever you or the bot apply a new one.
+
 **Buckets** — `Business`, `Personal`, `Internal`, `Deposit`.
 
 **Categories** — Electricity, Plumbing, Repairs, Groceries, Rent, Staff, Chai and
@@ -488,6 +492,14 @@ need privacy mode off or a reply to the bot's message.
 
 ---
 
+## Family view (mom)
+
+A password-gated, read-only monthly summary at `/mom.html`: only incoming,
+outgoing, business income, business expense and personal expense — no
+transactions, statuses or categories. Set `MOM_PASSWORD` in Vercel, share the
+URL, and she enters the password once (kept for the browser session). Rows
+flagged **Hidden** never appear and are excluded from every total.
+
 ## Background jobs (cron)
 
 Declared in `vercel.json`:
@@ -574,6 +586,7 @@ inert background, `aria-pressed` toggles, reduced-motion support, dark mode,
    | `GEMINI_KEY` | optional | AI fallback when DeepSeek fails |
    | `GEMINI_MODEL` | optional | Default `gemini-3.1-flash-lite` |
    | `TG_TOKEN`, `TG_CHAT` | optional | Telegram digest **and conversation bot** |
+   | `MOM_PASSWORD` | optional | Password for the read-only family view |
    | `TG_WEBHOOK_SECRET` | optional | Overrides the webhook secret derived from `APP_KEY` |
    | `OWNER_CONTEXT` | optional | Extra context in the AI prompt |
 

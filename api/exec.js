@@ -51,11 +51,13 @@ export default async function handler(req, res) {
     ? send(res, `${callback}(${JSON.stringify(body)});`, 200, 'application/javascript; charset=utf-8')
     : send(res, body));
 
-  if (!APP_KEY) return respond({ ok: false, error: 'server not configured' });
-  if (!sameSecret(params.key, APP_KEY)) return respond({ ok: false, error: 'unauthorized' });
-
   // Legacy SMS forwarders send ?src=KOTAK_SMS&sms=... with no action param.
   const action = params.action || ((params.sms || params.messages) ? 'ingest' : '');
+
+  // The family view is password-gated instead of key-gated.
+  if (!APP_KEY && action !== 'mom') return respond({ ok: false, error: 'server not configured' });
+  if (action !== 'mom' && !sameSecret(params.key, APP_KEY)) return respond({ ok: false, error: 'unauthorized' });
+
   if (!EXEC_ACTIONS.has(action)) return respond({ ok: false, error: 'unknown action' });
 
   // Names only, never values: enough to diagnose forwarder request shapes.

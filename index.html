@@ -62,7 +62,7 @@ main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{positio
 <script>
 const BUCKETS = ['Business', 'Personal', 'Internal', 'Deposit'];
 const DEFAULT_WEB_APP_URL = 'https://deb-finance.vercel.app/api/exec';
-const CATS = ['Electricity', 'Plumbing', 'Repairs', 'Groceries', 'Rent', 'Staff',
+let CATS = ['Electricity', 'Plumbing', 'Repairs', 'Groceries', 'Rent', 'Staff',
   'Chai and snacks', 'Cigarettes', 'Fuel', 'Medicine', 'Food out', 'Family support',
   'Self transfer', 'Deposit refund', 'Tenant rent', 'Reimbursement', 'Other'];
 
@@ -436,7 +436,7 @@ async function saveItem(item, p) {
   }
   try {
     await api('save', { ref: item.ref, ...p });
-    const updates = { bucket: p.bucket, category: p.category, property: p.property, notes: p.notes, status: 'CONFIRMED' };
+    const updates = { bucket: p.bucket, category: p.category, property: p.property, notes: p.notes, status: 'CONFIRMED', hidden: !!p.hidden };
     historyFilterCache.clear();
     const cachedItem = historyItems.find(entry => entry.ref === item.ref);
     if (cachedItem) {
@@ -499,7 +499,8 @@ function openEdit(ref) {
     bucket: item.bucket || item.sBucket || 'Personal',
     category: item.category || item.sCategory || 'Other',
     property: item.property || item.sProperty || '',
-    notes: item.notes || ''
+    notes: item.notes || '',
+    hidden: !!item.hidden
   };
   openSheet(`
     <div class="grip"></div>
@@ -513,6 +514,7 @@ function openEdit(ref) {
     <input id="f_prop" inputmode="numeric" value="${esc(ctx.property)}" placeholder="e.g. 170, or leave blank">
     <label class="label" for="f_notes">Notes</label>
     <textarea id="f_notes" rows="2">${esc(ctx.notes)}</textarea>
+    <label class="label" style="display:flex;align-items:center;gap:9px;margin-top:2px"><input type="checkbox" id="f_hidden" ${item.hidden ? 'checked' : ''}> Hide from family view <span class="meta">(excluded from all totals)</span></label>
     <div class="actions">
       <button class="btn ghost" data-act="close">Cancel</button>
       <button class="btn primary" data-act="save-edit">Save & confirm</button>
@@ -840,7 +842,8 @@ function normalizeHistoryItem(item) {
     counterparty: String(item.counterparty || ''), source: String(item.source || ''),
     account: String(item.account || ''), status: String(item.status || ''),
     bucket: String(item.bucket || ''), category: String(item.category || ''),
-    property: String(item.property || ''), notes: String(item.notes || '')
+    property: String(item.property || ''), notes: String(item.notes || ''),
+    hidden: !!item.hidden
   };
 }
 
@@ -849,6 +852,7 @@ function historySum(items) {
   const totals = { sent: 0, received: 0, business: 0, personal: 0, internal: 0 };
   items.forEach(item => {
     if (String(item.status || '').toUpperCase() === 'FORGOTTEN') return;
+    if (item.hidden) return;
     const bucket = String(item.bucket || '').toLowerCase();
     if (bucket === 'internal') totals.internal += item.amount;
     else if (item.direction === 'DEBIT') totals.sent += item.amount;
@@ -876,6 +880,7 @@ async function refreshHistorySnapshot() {
     try {
       const response = await api('snapshot', range);
       if (!Array.isArray(response.items)) throw new Error('Invalid snapshot response');
+      if (Array.isArray(response.categories) && response.categories.length) CATS = response.categories;
       const rows = response.items.map(normalizeHistoryItem);
       if (rows.some(item => item.date < range.from || item.date > range.to)) throw new Error('Snapshot outside requested range');
       const at = Date.now();
@@ -1303,7 +1308,8 @@ document.addEventListener('click', async e => {
         bucket: ctx.bucket,
         category: ctx.category,
         property: $('#f_prop').value.trim(),
-        notes: $('#f_notes').value.trim()
+        notes: $('#f_notes').value.trim(),
+        hidden: $('#f_hidden').checked
       };
       if (!CATS.includes(p.category)) { toast('Choose a category first'); return; }
       const item = ctx.item;

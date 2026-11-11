@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1177cc">
+<title>Family view</title>
+<style>
+:root{--bg:#f4f6f2;--ink:#1c2b3a;--muted:#68707c;--line:#e3e8e2;--brand:#1177cc;--in:#1f8f4e;--paper:#fff}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--line)}
+header b{font-size:16px}
+button{font:inherit;cursor:pointer}
+.lock{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:7px 12px}
+main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
+.gate{max-width:360px;margin:12vh auto;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px}
+.gate h1{font-size:19px;margin:0 0 4px}
+.gate p{color:var(--muted);font-size:13px;margin:0 0 18px}
+input{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:10px}
+.btn{width:100%;margin-top:12px;background:var(--brand);color:#fff;border:0;border-radius:10px;padding:12px;font-weight:600}
+.err{color:#b3261e;font-size:13px;margin-top:10px;display:none}
+.select{width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--paper);margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px}
+.card .k{font-size:12px;color:var(--muted)}
+.card .v{font-size:21px;font-weight:700;margin-top:4px}
+.card .v.in{color:var(--in)}
+h2{font-size:14px;margin:24px 0 10px}
+table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+th,td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px}
+th:first-child,td:first-child{text-align:left}
+tr:last-child td{border-bottom:0}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header><b>Family view</b><button class="lock" id="lock" hidden>Lock</button></header>
+<main>
+  <section id="gate" class="gate">
+    <h1>Family view</h1>
+    <p>Enter the password to see the monthly summary.</p>
+    <input id="pw" type="password" placeholder="Password" autocomplete="current-password">
+    <button class="btn" id="go">View</button>
+    <div class="err" id="err"></div>
+  </section>
+  <section id="app" class="hidden">
+    <select class="select" id="month" aria-label="Month"></select>
+    <div class="grid" id="cards"></div>
+    <h2>Last 12 months</h2>
+    <table><thead><tr><th>Month</th><th>Incoming</th><th>Outgoing</th></tr></thead><tbody id="rows"></tbody></table>
+  </section>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const inr = n => '₹' + (Number(n) || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+const monthLabel = m => { const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }); };
+let data = null;
+async function fetchData(password) {
+  const res = await fetch('api/exec', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'mom', password }) });
+  const r = await res.json();
+  if (!r.ok) throw new Error(r.error || 'failed');
+  return r;
+}
+function render() {
+  const sel = $('#month');
+  const m = data.months.find(x => x.month === sel.value) || data.months[0];
+  $('#cards').innerHTML = [
+    ['Incoming', 'in', m.incoming],
+    ['Outgoing', '', m.outgoing],
+    ['Business income', 'in', m.businessIncome],
+    ['Business expense', '', m.businessExpense],
+    ['Personal expense', '', m.personalExpense]
+  ].map(c => '<div class="card"><div class="k">' + c[0] + '</div><div class="v ' + c[1] + '">' + inr(c[2]) + '</div></div>').join('');
+  $('#rows').innerHTML = data.months.map(x => '<tr><td>' + monthLabel(x.month) + '</td><td>' + inr(x.incoming) + '</td><td>' + inr(x.outgoing) + '</td></tr>').join('');
+}
+async function enter() {
+  const pw = $('#pw').value;
+  if (!pw) return;
+  const err = $('#err'); err.style.display = 'none';
+  try {
+    data = await fetchData(pw);
+    sessionStorage.setItem('mom_pw', pw);
+    $('#gate').classList.add('hidden');
+    $('#app').classList.remove('hidden');
+    $('#lock').hidden = false;
+    $('#month').innerHTML = data.months.map(x => '<option value="' + x.month + '">' + monthLabel(x.month) + '</option>').join('');
+    $('#month').value = data.month;
+    render();
+  } catch (e) { err.textContent = e.message; err.style.display = 'block'; }
+}
+function lock() {
+  sessionStorage.removeItem('mom_pw');
+  data = null;
+  $('#app').classList.add('hidden');
+  $('#gate').classList.remove('hidden');
+  $('#lock').hidden = true;
+  $('#pw').value = ''; $('#pw').focus();
+}
+$('#go').addEventListener('click', enter);
+$('#pw').addEventListener('keydown', e => { if (e.key === 'Enter') enter(); });
+$('#lock').addEventListener('click', lock);
+$('#month').addEventListener('change', render);
+(async () => {
+  const pw = sessionStorage.getItem('mom_pw');
+  if (!pw) return $('#pw').focus();
+  try {
+    data = await fetchData(pw);
+    $('#gate').classList.add('hidden');
+    $('#app').classList.remove('hidden');
+    $('#lock').hidden = false;
+    $('#month').innerHTML = data.months.map(x => '<option value="' + x.month + '">' + monthLabel(x.month) + '</option>').join('');
+    $('#month').value = data.month;
+    render();
+  } catch { sessionStorage.removeItem('mom_pw'); $('#pw').focus(); }
+})();
+</script>
+</body>
+</html>
