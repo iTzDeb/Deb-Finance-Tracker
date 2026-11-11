@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {
   amountNum_, st_, isNonTxnSMS_, normDate_, normKey_, normBucket_, normCategory_,
   pendingPayeeKey, compositeKey_, historyTotals, cellToDateStr, safeCallback, ymd, serialToDate,
-  sameSecret, readRequestParams
+  sameSecret, readRequestParams, normRef_
 } from '../lib/util.js';
 
 import { parseKotak_, parseKotakSMS_, parseSMS_, parseSBISMS_ } from '../lib/parse.js';
@@ -52,6 +52,12 @@ test('normBucket_/normCategory_ normalise case', () => {
 test('pendingPayeeKey lowercases and collapses whitespace', () => {
   assert.equal(pendingPayeeKey('  Adarsh   Kumar '), 'adarsh kumar');
   assert.equal(pendingPayeeKey('KAKOLI SAHA'), 'kakoli saha');
+});
+
+test('normRef_ normalises leading zeros', () => {
+  assert.equal(normRef_('043303202554'), '43303202554');
+  assert.equal(normRef_('43303202554'), '43303202554');
+  assert.equal(normRef_('UPI-210039702734'), 'UPI-210039702734');
 });
 
 test('compositeKey_ builds date|direction|amount', () => {

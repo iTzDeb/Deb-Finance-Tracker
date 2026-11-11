@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { stageRowToTxn, dedupStaged } from '../lib/import.js';
+import { txnToRow } from '../lib/txn.js';
 
 test('stageRowToTxn maps Staging columns to a txn object', () => {
   const t = stageRowToTxn(['B1', '2026-01-15 09:30', 'DEBIT', '1,250.50', 'CHAIWALA', '123456789012', 'Kotak', 'Import-Kotak']);
@@ -64,6 +65,17 @@ test('dedupStaged still skips a re-import with the same ref, direction and amoun
   const existing = [stagedTxn({ ref: 'ref-9', direction: 'DEBIT', amount: 400, date: '2026-10-07' })];
   const staged = [stagedTxn({ ref: 'ref-9', direction: 'DEBIT', amount: 400, date: '2026-10-09' })];
   assert.equal(dedupStaged(staged, existing).skipped, 1);
+});
+
+test('dedupStaged matches a ref whose leading zero Sheets dropped', () => {
+  const existing = [stagedTxn({ ref: '43303202554', date: '2026-10-20', amount: 30000, counterparty: 'Shivam Sir', direction: 'CREDIT' })];
+  const staged = [stagedTxn({ ref: '043303202554', date: '2026-10-20', amount: 30000, counterparty: 'SHIVAM', direction: 'CREDIT' })];
+  assert.equal(dedupStaged(staged, existing).skipped, 1);
+});
+
+test('txnToRow writes a leading-zero ref as text', () => {
+  assert.equal(txnToRow({ ref: '043303202554' })[5], "'043303202554");
+  assert.equal(txnToRow({ ref: 'UPI-210039702734' })[5], 'UPI-210039702734');
 });
 
 test('dedupStaged skips duplicates inside the same batch', () => {
