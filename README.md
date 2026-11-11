@@ -8,14 +8,15 @@ Sheets kept as the data store**.
 ## Architecture
 
 ```
-GitHub Pages (PWA) ──JSONP──▶ Vercel Functions (/api/exec) ──Sheets API v4──▶ Google Sheets
+GitHub Pages (PWA) ──fetch (CORS)──▶ Vercel Functions (/api/exec) ──Sheets API v4──▶ Google Sheets
                                     ▲
                                     │ POST /api/exec (action=ingest)
                           Gmail forwarder (tiny GAS script)
 ```
 
-- `index.html` / `import.html` talk to the backend over JSONP, exactly like the
-  old Apps Script endpoint (`?key=…&action=…&callback=…`).
+- `index.html` / `import.html` call the backend with `fetch`
+  (`?key=…&action=…`); the JSONP `callback=` parameter is still accepted for
+  old clients.
 - `api/exec.js` dispatches frontend actions; `api/cron.js` runs background jobs.
 - `lib/` holds the ported GAS logic (config, parsers, Sheets client, rules,
   transactions, import, sync, AI suggestions, digest, ingest).
@@ -61,8 +62,7 @@ Status values: `NEEDS REVIEW`, `PENDING`, `CONFIRMED`.
    - Open the deployed PWA → Settings, and set the URL to
      `https://<your-project>.vercel.app/api/exec` and the key to `APP_KEY`.
    - Or edit `DEFAULT_WEB_APP_URL` in `index.html` and `import.html` so new
-     visitors get the right default (the old Apps Script URL is left as a
-     fallback).
+     visitors get the right default.
 
 ## Background jobs (cron)
 
@@ -94,7 +94,7 @@ Follow the setup comments in that file and add an hourly trigger.
 
 ```bash
 npm install
-npm test        # runs node --test test/
+npm test        # runs the Node test runner (test/*.test.mjs)
 ```
 
 The unit tests cover the pure logic (parsers, date/key helpers, summary,

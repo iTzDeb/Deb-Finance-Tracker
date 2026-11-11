@@ -1191,10 +1191,10 @@ function openSettings() {
   openSheet(`
     <div class="grip"></div>
     <div class="setup-head"><div class="setup-mark" aria-hidden="true">↗</div><div><h3 id="sheetTitle">Connect your sheet</h3><div class="meta">A quick one-time setup</div></div></div>
-    <p class="setup-copy">Enter your SMS key so pending transactions and monthly totals can sync with Google Sheets.</p>
+    <p class="setup-copy">Enter your app key (APP_KEY) so pending transactions and monthly totals can sync with Google Sheets.</p>
     <label class="label" for="s_url">Backend URL</label>
     <input id="s_url" type="url" value="${esc(c.url || '')}" autocapitalize="off" autocorrect="off" spellcheck="false">
-    <label class="label" for="s_key">SMS key</label>
+    <label class="label" for="s_key">App key</label>
     <input id="s_key" type="password" value="${esc(c.key || '')}" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Enter your key">
     <div class="secure-note"><span aria-hidden="true">🔒</span><span><b>Your key stays on this device.</b> It is saved in this browser, not in the app’s source code.</span></div>
     <div class="settings-actions">
