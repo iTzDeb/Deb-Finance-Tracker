@@ -103,6 +103,22 @@ test('dedupStaged fills an empty existing counterparty', () => {
   assert.equal(out.enrich[0].updates.counterparty, 'Ravindra Institute Of Indian Civil Services Opc');
 });
 
+test('Paytm name/time win over a different existing name', () => {
+  const existing = [stagedTxn({ ref: 'ref-1', counterparty: 'RAVIND', date: '2026-11-08', amount: 6000, loggedAt: '2026-11-08 00:00', row: 7 })];
+  const staged = [stagedTxn({ ref: 'ref-1', counterparty: 'Ravindra Institute Of Indian Civil Services Opc', date: '2026-11-08', amount: 6000, loggedAt: '2026-11-08 12:44', source: 'Import-Paytm', account: 'Paytm' })];
+  const out = dedupStaged(staged, existing);
+  assert.equal(out.enrich.length, 1);
+  assert.deepEqual(out.enrich[0].updates, { counterparty: 'Ravindra Institute Of Indian Civil Services Opc', loggedAt: '2026-11-08 12:44' });
+});
+
+test('Paytm self-transfer label keeps the person name but takes the time', () => {
+  const existing = [stagedTxn({ ref: 'ref-1', counterparty: 'DEB ZYOTI DAS', date: '2026-11-08', amount: 200, loggedAt: '2026-11-08 00:00', row: 8 })];
+  const staged = [stagedTxn({ ref: 'ref-1', counterparty: 'Self Transfer · Bank Of India - 4245', date: '2026-11-08', amount: 200, loggedAt: '2026-11-08 22:34', source: 'Import-Paytm', account: 'Paytm' })];
+  const out = dedupStaged(staged, existing);
+  assert.equal(out.enrich.length, 1);
+  assert.deepEqual(out.enrich[0].updates, { loggedAt: '2026-11-08 22:34' });
+});
+
 test('dedupStaged does not enrich an unrelated name', () => {
   const existing = [stagedTxn({ ref: 'ref-1', counterparty: 'DEB ZYOTI DAS', loggedAt: '2026-01-15 00:00', date: '2026-01-15', amount: 100, row: 5 })];
   const staged = [stagedTxn({ ref: 'ref-1', counterparty: 'Self Transfer · BOI-4245', loggedAt: '2026-01-15 00:00', date: '2026-01-15', amount: 100 })];
