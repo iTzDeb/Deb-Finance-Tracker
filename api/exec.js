@@ -36,7 +36,12 @@ export default async function handler(req, res) {
   } else if (req.method === 'POST') {
     let body = req.body;
     if (typeof body === 'string') {
-      try { body = JSON.parse(body); } catch { body = {}; }
+      // Forwarder apps send either JSON or form-urlencoded ("sms=...").
+      try {
+        body = JSON.parse(body);
+      } catch {
+        body = Object.fromEntries(new URLSearchParams(body));
+      }
     }
     params = body && typeof body === 'object' ? body : {};
   } else {
