@@ -15,8 +15,8 @@ Read this first next session; then only the files the task touches.
 - **Hidden** hides a row from the family view only; it still counts in your own totals. Toggle in the edit sheet.
 - **Family view**: monthly cards + day-grouped transactions + search; green +in / red −out; hidden rows are filtered server-side (search can't see them).
 - **Paytm is the default truth** for matched refs: its counterparty and exact time override bank/SMS values; generic “Self Transfer” labels never overwrite a person name.
-- **Categories** are dynamic: `Categories` tab, `Active=FALSE` hides; `/category list|add|remove`; applying a rule/save auto-adds.
-- **Telegram**: /pending /ask /summary /spend /rules /forget /category /undo /pause /resume /status /help; menu registered via botSetup.
+- **Categories** are dynamic: `Categories` tab, `Active=FALSE` hides; the LLM adds/removes them ("add a category X", "remove X") and auto-adds on apply — no command.
+- **Telegram**: /pending /ask /summary /spend /rules /forget /undo /pause /resume /status /help; menu registered via botSetup. Natural language also handles hide/unhide of named payees (family view only, undoable).
 - Pages build failures are GitHub-side; Pages is disabled.
 
 ## Tomorrow: SBI setup
@@ -33,6 +33,7 @@ Read this first next session; then only the files the task touches.
 ## Deferred / open
 
 - **N–R columns**: N–Q (suggested bucket/category/property, AI confidence) are still used; **R (AI Source)** and **S (Accept)** are unused. Hide them or remove later.
+- **Bot per-transaction tagging**: the bot is still payee-level ("this one only" is not wired); replies that name one amount/date create a payee rule or clarify.
 - 7 duplicate BOI rows (9, 19, 35, 98, 155, 191, 299) — cleanup not approved.
 - `dsh-plugin-finance-data` is blocked by a runtime mismatch (nothing installed).
 - Old Pages PWA on the phone: uninstall and install from the Vercel URL.

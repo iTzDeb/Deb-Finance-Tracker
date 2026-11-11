@@ -1,8 +1,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { parseCommand, parsePeriod, splitSpendArgs, matchCategory, pickAllowed, BOT_COMMANDS } from '../lib/bot.js';
+import { parseCommand, parsePeriod, splitSpendArgs, matchCategory, pickAllowed, BOT_COMMANDS, matchPayeeRows } from '../lib/bot.js';
 import { ALLOWED_BUCKETS } from '../lib/config.js';
+
+test('matchPayeeRows finds named counterparties', () => {
+  const rows = [
+    { row: 2, txn: { counterparty: 'Shalini Ghosh', ref: 'a' } },
+    { row: 3, txn: { counterparty: 'ANANDITA', ref: 'b' } },
+    { row: 4, txn: { counterparty: 'Other', ref: 'c' } }
+  ];
+  assert.deepEqual(matchPayeeRows(rows, ['shalini ghosh', 'anandita']).map(r => r.txn.ref), ['a', 'b']);
+});
 
 test('BOT_COMMANDS is valid for setMyCommands', () => {
   const names = new Set();
