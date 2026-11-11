@@ -458,6 +458,38 @@ async function saveItem(item, p) {
   }
 }
 
+async function forgetItem(ref) {
+  const idx = items.findIndex(entry => entry.ref === ref);
+  const pendingItem = idx >= 0 ? items[idx] : null;
+  if (idx >= 0) {
+    items.splice(idx, 1);
+    if (state.tab === 'pending') renderPending();
+  }
+  try {
+    await api('forget', { ref });
+    const updates = { status: 'FORGOTTEN' };
+    historyFilterCache.clear();
+    const cachedItem = historyItems.find(entry => entry.ref === ref);
+    if (cachedItem) {
+      const previous = historySum([cachedItem]);
+      Object.assign(cachedItem, updates);
+      const current = historySum([cachedItem]);
+      Object.keys(historyTotals).forEach(key => { historyTotals[key] += current[key] - previous[key]; });
+    }
+    const localItem = historyLocalItems.find(entry => entry.ref === ref);
+    if (localItem && localItem !== cachedItem) Object.assign(localItem, updates);
+    await historyUpdateCached(ref, updates);
+    if (state.tab === 'history') renderHistory();
+    toast('Forgotten');
+  } catch (err) {
+    if (pendingItem) {
+      items.splice(idx, 0, pendingItem);
+      if (state.tab === 'pending') renderPending();
+    }
+    toast('Not saved: ' + err.message);
+  }
+}
+
 function openEdit(ref) {
   const item = items.find(x => x.ref === ref) || historyItems.find(x => x.ref === ref);
   if (!item) return;
@@ -483,7 +515,8 @@ function openEdit(ref) {
     <div class="actions">
       <button class="btn ghost" data-act="close">Cancel</button>
       <button class="btn primary" data-act="save-edit">Save & confirm</button>
-    </div>`);
+    </div>
+    <button class="link" data-act="forget" data-ref="${esc(item.ref)}">Forget this transaction</button>`);
   renderChoiceChips($('#bk'));
   renderChoiceChips($('#ct'));
   bindChoiceChips($('#bk'));
@@ -550,7 +583,7 @@ function shiftMonth(n) {
 const HISTORY_PAGE_SIZE = 40;
 const HISTORY_DB_NAME = 'fin-cache';
 const HISTORY_DB_VERSION = 1;
-const HISTORY_FILTERS = [['all', 'All'], ['sent', 'Sent'], ['received', 'Received'], ['business', 'Business'], ['personal', 'Personal'], ['pending', 'Pending']];
+const HISTORY_FILTERS = [['all', 'All'], ['sent', 'Sent'], ['received', 'Received'], ['business', 'Business'], ['personal', 'Personal'], ['pending', 'Pending'], ['forgotten', 'Forgotten']];
 const HISTORY_COLORS = ['#1177cc', '#148254', '#b6342c', '#9a5c08', '#7b55a1', '#147e87', '#c05a82', '#64748b', '#a16b20', '#3b72a8', '#53804b', '#855e9b', '#bd6b35', '#357b8f', '#9b4d57', '#5d786a', '#6e70a8'];
 let historyItems = [];
 let historyLocalItems = [];
@@ -814,6 +847,7 @@ function normalizeHistoryItem(item) {
 function historySum(items) {
   const totals = { sent: 0, received: 0, business: 0, personal: 0, internal: 0 };
   items.forEach(item => {
+    if (String(item.status || '').toUpperCase() === 'FORGOTTEN') return;
     const bucket = String(item.bucket || '').toLowerCase();
     if (bucket === 'internal') totals.internal += item.amount;
     else if (item.direction === 'DEBIT') totals.sent += item.amount;
@@ -1058,6 +1092,7 @@ function filteredHistoryItems() {
     if (state.historyFilter === 'business' && item.bucket.toLowerCase() !== 'business') return false;
     if (state.historyFilter === 'personal' && item.bucket.toLowerCase() !== 'personal') return false;
     if (state.historyFilter === 'pending' && item.status !== 'PENDING' && item.status !== 'NEEDS REVIEW') return false;
+    if (state.historyFilter === 'forgotten' && item.status !== 'FORGOTTEN') return false;
     if (!query) return true;
     return [item.counterparty, item.source, item.account, item.status, item.bucket,
       item.category, item.property, item.notes, item.amount, item.ref].join(' ').toLowerCase().includes(query);
@@ -1261,6 +1296,7 @@ document.addEventListener('click', async e => {
       break;
     }
     case 'edit': openEdit(el.dataset.ref); break;
+    case 'forget': closeSheet(); forgetItem(el.dataset.ref); break;
     case 'save-edit': {
       const p = {
         bucket: ctx.bucket,

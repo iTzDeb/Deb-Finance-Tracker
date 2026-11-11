@@ -146,6 +146,7 @@ Google Sheets is the source of truth. Three tabs, exact column order matters.
 | `NEEDS REVIEW` | No usable suggestion; the user must categorise |
 | `PENDING` | Has a suggestion (rule or AI) and can be confirmed |
 | `CONFIRMED` | Final; counts as categorised |
+| `FORGOTTEN` | Terminal "leave it": out of Pending and out of Month/History totals, still in the sheet and visible in History under its filter |
 
 **Buckets** — `Business`, `Personal`, `Internal`, `Deposit`.
 
@@ -225,6 +226,7 @@ All actions are `/api/exec` and require `key=APP_KEY`.
 | `summary` | `month` (`YYYY-MM`) | `{ summary }` |
 | `save` | `ref`, `bucket`, `category`, `property`, `notes` | `{ updated: 1 }` |
 | `bulkSave` | `payeeKey`, `bucket`, `category` | `{ updated, refs }` |
+| `forget` | `ref` (any status) or `payeeKey` (open rows) | `{ updated, refs }` |
 | `history` | `status`, `q`, `from`, `to`, `limit` (≤100), `offset` | `{ items, hasMore, totals, serverMs }` |
 | `snapshot` | `from`, `to` | `{ items }` (all rows in range) |
 | `importChunk` | `batch`, `rows` (JSON string) | `{ ok: true }` |
@@ -265,7 +267,7 @@ All actions are `/api/exec` and require `key=APP_KEY`.
 - `snapshot` is what feeds the offline cache; it rejects responses over 5,000
   rows rather than silently truncating.
 - Totals **include open rows** by design (the Month/History figures are
-  "everything logged", not "confirmed only").
+  "everything logged", not "confirmed only") but **exclude `FORGOTTEN`**.
 - `save` validates bucket/category against the allowed lists and upserts a rule
   (untrusted, or preserving the rule's existing trust). A failed rule upsert
   never turns a saved row into an error.
@@ -403,11 +405,13 @@ answers date-scoped commands.
 **Answering**
 
 - Buttons: `Personal` / `Business` / `Internal` / `Ignore` /
-  `Something else…`, plus `✅ <suggested bucket>/<category>` when a suggestion
-  exists.
+  `Forget` / `Something else…`, plus `✅ <suggested bucket>/<category>` when a
+  suggestion exists.
 - Bucket → category keyboard → rule applied. The bot confirms how many open
   rows were confirmed and that `/undo` reverts it.
 - `Ignore` silences that payee for 7 days.
+- `Forget` marks the payee's open rows `FORGOTTEN` (out of Pending and totals,
+  still in the sheet); `/undo` restores them.
 - Free text: reply to the question (or just send it) — the LLM maps it to a
   validated action and shows an Apply/Cancel confirmation. Amounts such as
   ₹40/₹53/₹65 are the same payee; rules are never amount-specific.
@@ -422,6 +426,7 @@ answers date-scoped commands.
 | `/summary [period]` | business result, received, personal, internal, open |
 | `/spend <category> [period]` | payments + total for a category |
 | `/rules` | rules and their trusted state |
+| `/forget <payee>` | mark that payee's open rows FORGOTTEN |
 | `/undo` | revert the last applied bot rule |
 | `/pause`, `/resume` | stop/start new questions |
 | `/status` | bot state, open questions, AI provider |
@@ -672,6 +677,8 @@ automatically.
 - **JSONP kept** for compatibility; the app itself uses `fetch` + CORS.
 - **Query-string key** — the key appears in URLs/logs; acceptable for a personal
   single-user tool, but a header-based scheme would be stronger.
+- **Forgotten rows stay in the sheet** with no category; they are excluded from
+  Month/History totals but appear in History's `Forgotten` filter.
 - **Bot cost** — each free-text message is one LLM call (DeepSeek); buttons and
   commands are deterministic and free.
 - **No conversation memory** — free text is interpreted from the question

@@ -52,6 +52,8 @@ test('computeSummary buckets income and spending by month', () => {
     { ...txn, direction: 'CREDIT', bucket: 'Deposit', amount: 200, status: 'CONFIRMED' },
     { ...txn, bucket: 'Internal', amount: 50, status: 'CONFIRMED' },
     { ...txn, bucket: '', amount: 10, status: 'PENDING' },
+    { ...txn, direction: 'CREDIT', bucket: 'Business', amount: 999, status: 'FORGOTTEN' },
+    { ...txn, bucket: 'Business', amount: 777, status: 'FORGOTTEN' },
   ];
   const s = computeSummary(txns, '2026-01');
   assert.equal(s.businessIncome, 3000);
