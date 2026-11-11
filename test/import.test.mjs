@@ -94,6 +94,15 @@ test('dedupStaged enriches a matched row with a fuller name and time', () => {
   assert.deepEqual(out.enrich[0].updates, { counterparty: 'DEB ZYOTI DAS', loggedAt: '2026-01-15 09:30' });
 });
 
+test('dedupStaged fills an empty existing counterparty', () => {
+  const existing = [stagedTxn({ ref: 'ref-1', counterparty: '', date: '2026-11-08', amount: 6000, row: 7, loggedAt: '2026-11-08 12:44' })];
+  const staged = [stagedTxn({ ref: 'ref-1', counterparty: 'Ravindra Institute Of Indian Civil Services Opc', date: '2026-11-08', amount: 6000, loggedAt: '2026-11-08 12:44' })];
+  const out = dedupStaged(staged, existing);
+  assert.equal(out.skipped, 1);
+  assert.equal(out.enrich.length, 1);
+  assert.equal(out.enrich[0].updates.counterparty, 'Ravindra Institute Of Indian Civil Services Opc');
+});
+
 test('dedupStaged does not enrich an unrelated name', () => {
   const existing = [stagedTxn({ ref: 'ref-1', counterparty: 'DEB ZYOTI DAS', loggedAt: '2026-01-15 00:00', date: '2026-01-15', amount: 100, row: 5 })];
   const staged = [stagedTxn({ ref: 'ref-1', counterparty: 'Self Transfer · BOI-4245', loggedAt: '2026-01-15 00:00', date: '2026-01-15', amount: 100 })];
