@@ -65,7 +65,7 @@ const CATS = ['Electricity', 'Plumbing', 'Repairs', 'Groceries', 'Rent', 'Staff'
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const inr = n => '₹' + Math.round(Number(n) || 0).toLocaleString('en-IN');
+const inr = n => '₹' + (Number(n) || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 const sumObj = o => Object.values(o).reduce((a, b) => a + b, 0);
 const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 const monthLabel = m => { const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }); };
@@ -98,27 +98,22 @@ let state = { tab: 'pending', filter: 'all', query: '', pendingView: 'rows', mon
 let ctx = null;
 let pendingVisibleCount = 40;
 
-// ---------- Network (JSONP: Apps Script responses can't be read by a normal fetch) ----------
-function jsonp(params) {
-  return new Promise((resolve, reject) => {
-    const name = 'cb_' + Math.random().toString(36).slice(2);
-    const s = document.createElement('script');
-    const done = () => { delete window[name]; s.remove(); clearTimeout(timer); };
-    const timer = setTimeout(() => { done(); reject(new Error('timed out')); }, 25000);
-    window[name] = d => { done(); resolve(d); };
-    s.onerror = () => { done(); reject(new Error('network error')); };
-    s.src = cfg().url + '?' + new URLSearchParams({ ...params, callback: name }).toString();
-    document.body.appendChild(s);
-  });
-}
-
-async function api(action, extra = {}) {
+// ---------- Network (the Vercel backend sends CORS headers, so a normal fetch works) ----------
+async function api(action, extra = {}, ms = 25000) {
   const c = cfg();
   if (!c.url || !c.key) throw new Error('open Settings first');
   const started = performance.now();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
   let r;
-  try { r = await jsonp({ key: c.key, action, ...extra }); }
-  finally { showApiDuration(performance.now() - started); }
+  try {
+    const res = await fetch(c.url + '?' + new URLSearchParams({ key: c.key, action, ...extra }), { signal: controller.signal });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    r = await res.json();
+  } finally {
+    clearTimeout(timer);
+    showApiDuration(performance.now() - started);
+  }
   if (!r.ok) throw new Error(r.error || 'failed');
   return r;
 }
@@ -129,7 +124,7 @@ function toast(msg) {
   clearTimeout(t._h); t._h = setTimeout(() => (t.style.display = 'none'), 2200);
 }
 function setStatus(msg) { $('#status').textContent = msg; }
-// Updates the opt-in display of the latest JSONP duration.
+// Updates the opt-in display of the latest API duration.
 let lastApiDurationMs = null;
 let historyDebug = { cachePaintMs: null, networkMs: null, serverMs: null };
 
@@ -143,7 +138,7 @@ function renderApiDebug() {
   line.textContent = `Last server call: ${value(lastApiDurationMs)} · History: cache paint ${value(historyDebug.cachePaintMs)}, network ${value(historyDebug.networkMs)}, server ${value(historyDebug.serverMs)}`;
 }
 
-// Retains the existing JSONP duration measurement while refreshing the debug line.
+// Retains the existing API duration measurement while refreshing the debug line.
 function showApiDuration(ms) {
   lastApiDurationMs = ms;
   renderApiDebug();
@@ -1185,7 +1180,7 @@ function openSettings() {
   openSheet(`
     <div class="grip"></div>
     <div class="setup-head"><div class="setup-mark" aria-hidden="true">↗</div><div><h3 id="sheetTitle">Connect your sheet</h3><div class="meta">A quick one-time setup</div></div></div>
-    <p class="setup-copy">Enter the key for your Apps Script so pending transactions and monthly totals can sync with Google Sheets.</p>
+    <p class="setup-copy">Enter your SMS key so pending transactions and monthly totals can sync with Google Sheets.</p>
     <label class="label" for="s_url">Backend URL</label>
     <input id="s_url" type="url" value="${esc(c.url || '')}" autocapitalize="off" autocorrect="off" spellcheck="false">
     <label class="label" for="s_key">SMS key</label>
