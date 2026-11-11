@@ -47,6 +47,12 @@ h2 small{font-size:13px;color:var(--muted);font-weight:400}
 .t-cat{font-size:13px;color:var(--muted)}
 .t-amt{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;flex:none}
 .empty{color:var(--muted);font-size:15px;padding:16px;margin:0}
+.search{width:100%;font:inherit;font-size:17px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0 2px}
+.day{margin-bottom:20px}
+.day-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:0 3px 8px}
+.day-head b{font-size:15px}
+.day-head span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.day-list{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 th,td{text-align:right;padding:12px;border-bottom:1px solid var(--line);font-size:15px;font-variant-numeric:tabular-nums}
 th:first-child,td:first-child{text-align:left}
@@ -71,9 +77,10 @@ tr:last-child td{border-bottom:0}
     <p class="lead" id="lead"></p>
     <div class="net"><span>Left over this month</span><strong id="net"></strong></div>
     <div class="grid" id="cards"></div>
-    <h2>Money in &amp; out <small>this month</small></h2>
+    <h2>Money in &amp; out <small id="txCount"></small></h2>
+    <input id="q" class="search" type="search" placeholder="Search by name, category or amount" aria-label="Search transactions">
     <div class="legend"><span><i style="background:var(--in)"></i>Green = money in</span><span><i style="background:var(--out)"></i>Red = money out</span></div>
-    <div class="txn-list" id="txns"></div>
+    <div id="txns"></div>
     <h2>Last 12 months</h2>
     <table><thead><tr><th>Month</th><th>Money in</th><th>Money out</th></tr></thead><tbody id="rows"></tbody></table>
   </section>
@@ -86,7 +93,7 @@ const shortDate = d => { const x = new Date(d + 'T00:00:00'); return isNaN(x) ? 
 const monthLabel = m => { const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }); };
 const cls = n => n >= 0 ? 'plus' : 'minus';
 const sgn = n => (n >= 0 ? '+' : '−') + inr(Math.abs(n));
-let data = null, pw = '';
+let data = null, pw = '', query = '';
 async function fetchData(password, month) {
   const body = { action: 'mom', password };
   if (month) body.month = month;
@@ -109,12 +116,46 @@ function render() {
     ['Personal expense', m.personalExpense, 'minus']
   ];
   $('#cards').innerHTML = cards.map(c => '<div class="card"><div class="k">' + c[0] + '</div><div class="v ' + c[2] + '">' + (c[2] === 'plus' ? '+' : '−') + inr(c[1]) + '</div></div>').join('');
-  const list = data.transactions || [];
-  $('#txns').innerHTML = list.length ? list.map(t => {
-    const credit = t.direction === 'CREDIT';
-    return '<div class="txn"><div class="t-main"><span class="t-date">' + shortDate(t.date) + '</span><span class="t-party">' + esc(t.counterparty) + '</span><span class="t-cat">' + esc(t.category) + '</span></div><span class="t-amt ' + (credit ? 'plus' : 'minus') + '">' + (credit ? '+' : '−') + inr(t.amount) + '</span></div>';
-  }).join('') : '<p class="empty">No transactions this month.</p>';
+  renderTxns();
   $('#rows').innerHTML = data.months.map(x => '<tr><td>' + monthLabel(x.month) + '</td><td class="plus">+' + inr(x.incoming) + '</td><td class="minus">−' + inr(x.outgoing) + '</td></tr>').join('');
+}
+function dayHeading(date) {
+  const d = new Date(date + 'T00:00:00');
+  if (isNaN(d)) return date;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const diff = Math.round((today - d) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Yesterday';
+  return d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+function renderTxns() {
+  const all = data.transactions || [];
+  const q = query.trim().toLowerCase();
+  const list = q
+    ? all.filter(t => (String(t.counterparty || '') + ' ' + String(t.category || '') + ' ' + String(t.amount || '')).toLowerCase().includes(q))
+    : all;
+  $('#txCount').textContent = list.length + (list.length === 1 ? ' transaction' : ' transactions');
+  if (!list.length) {
+    $('#txns').innerHTML = '<p class="empty">' + (q ? 'No matching transactions.' : 'No transactions this month.') + '</p>';
+    return;
+  }
+  const groups = new Map();
+  for (const t of list) {
+    if (!groups.has(t.date)) groups.set(t.date, []);
+    groups.get(t.date).push(t);
+  }
+  $('#txns').innerHTML = [...groups.entries()].map(([date, rows]) => {
+    let inSum = 0, outSum = 0;
+    const body = rows.map(t => {
+      const credit = t.direction === 'CREDIT';
+      if (credit) inSum += Number(t.amount) || 0; else outSum += Number(t.amount) || 0;
+      return '<div class="txn"><div class="t-main"><span class="t-party">' + esc(t.counterparty) + '</span><span class="t-cat">' + esc(t.category) + '</span></div><span class="t-amt ' + (credit ? 'plus' : 'minus') + '">' + (credit ? '+' : '−') + inr(t.amount) + '</span></div>';
+    }).join('');
+    const bits = [];
+    if (inSum) bits.push('<span class="plus">in +' + inr(inSum) + '</span>');
+    if (outSum) bits.push('<span class="minus">out −' + inr(outSum) + '</span>');
+    return '<section class="day"><div class="day-head"><b>' + dayHeading(date) + '</b><span>' + bits.join(' · ') + '</span></div><div class="day-list">' + body + '</div></section>';
+  }).join('');
 }
 function showApp() {
   $('#gate').classList.add('hidden');
@@ -148,6 +189,7 @@ $('#go').addEventListener('click', enter);
 $('#pw').addEventListener('keydown', e => { if (e.key === 'Enter') enter(); });
 $('#lock').addEventListener('click', lock);
 $('#month').addEventListener('change', () => { load($('#month').value).catch(e => { $('#txns').innerHTML = '<p class="empty">' + esc(e.message) + '</p>'; }); });
+$('#q').addEventListener('input', e => { query = e.target.value; renderTxns(); });
 (async () => {
   const saved = sessionStorage.getItem('mom_pw');
   if (!saved) return $('#pw').focus();
