@@ -393,6 +393,9 @@ transaction time from the newer statement backfill the existing row, and
 truncated payee names (`DEB ZY`) are expanded to the fullest known name
 (`DEB ZYOTI DAS`) when the match is unambiguous.
 
+After each import the sheet is re-sorted by **Logged At**, so an older statement
+lands in date/time order instead of at the bottom.
+
 The importer also refuses a transaction date that cannot be parsed or an amount
 ≤ 0.
 
@@ -433,6 +436,10 @@ answers date-scoped commands.
 | Command | Does |
 | --- | --- |
 | `/help` | command list |
+
+The bot registers these with Telegram's `setMyCommands` and sets the menu
+button to *commands*, so the blue **Menu** button lists them. Re-run
+`?action=botSetup` after changing the list.
 | `/pending` | open count + top 5 payees |
 | `/ask [period]` | send questions now |
 | `/summary [period]` | business result, received, personal, internal, open |

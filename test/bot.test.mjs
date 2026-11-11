@@ -1,8 +1,19 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { parseCommand, parsePeriod, splitSpendArgs, matchCategory, pickAllowed } from '../lib/bot.js';
+import { parseCommand, parsePeriod, splitSpendArgs, matchCategory, pickAllowed, BOT_COMMANDS } from '../lib/bot.js';
 import { ALLOWED_BUCKETS } from '../lib/config.js';
+
+test('BOT_COMMANDS is valid for setMyCommands', () => {
+  const names = new Set();
+  assert.ok(BOT_COMMANDS.length > 0 && BOT_COMMANDS.length <= 100);
+  for (const c of BOT_COMMANDS) {
+    assert.match(c.command, /^[a-z0-9_]{1,32}$/);
+    assert.ok(c.description.length >= 3 && c.description.length <= 256);
+    assert.ok(!names.has(c.command));
+    names.add(c.command);
+  }
+});
 
 test('parseCommand handles commands, args and @bot suffixes', () => {
   assert.deepEqual(parseCommand('/summary 2026-10'), { cmd: 'summary', args: '2026-10' });

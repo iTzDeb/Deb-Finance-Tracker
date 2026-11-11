@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { stageRowToTxn, dedupStaged } from '../lib/import.js';
-import { txnToRow } from '../lib/txn.js';
+import { txnToRow, sortedByLoggedAt } from '../lib/txn.js';
 
 test('stageRowToTxn maps Staging columns to a txn object', () => {
   const t = stageRowToTxn(['B1', '2026-01-15 09:30', 'DEBIT', '1,250.50', 'CHAIWALA', '123456789012', 'Kotak', 'Import-Kotak']);
@@ -20,6 +20,11 @@ test('stageRowToTxn maps Staging columns to a txn object', () => {
 const stagedTxn = (over = {}) => ({
   loggedAt: '2026-01-15 09:30', date: '2026-01-15', direction: 'DEBIT', amount: 100,
   counterparty: 'ALPHA', ref: '', status: 'PENDING', ...over
+});
+
+test('sortedByLoggedAt orders rows by the Logged At value', () => {
+  const rows = [[46332.9, 'c'], [46330.1, 'a'], [46331.5, 'b']];
+  assert.deepEqual(sortedByLoggedAt(rows).map(r => r[1]), ['a', 'b', 'c']);
 });
 
 // Regression: staged rows expose counterparty, not party. Reading the wrong
