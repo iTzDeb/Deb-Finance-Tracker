@@ -7,62 +7,75 @@
 <meta name="theme-color" content="#1177cc">
 <title>Family view</title>
 <style>
-:root{--bg:#f4f6f2;--ink:#1c2b3a;--muted:#68707c;--line:#e3e8e2;--brand:#1177cc;--in:#1f8f4e;--paper:#fff}
+:root{--bg:#f4f6f2;--ink:#1b2a38;--muted:#5c6672;--line:#dde4dc;--brand:#1177cc;--in:#17703a;--out:#b3261e;--paper:#fff}
 *{box-sizing:border-box}
-body{margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
-header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--line)}
-header b{font-size:16px}
+body{margin:0;font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--line)}
+.brandline{display:flex;align-items:center;gap:11px}
+.brandline img{width:40px;height:40px;border-radius:12px;object-fit:cover;display:block}
+header b{font-size:18px}
 button{font:inherit;cursor:pointer}
-.lock{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:7px 12px}
-main{max-width:620px;margin:0 auto;padding:20px 16px 48px}
-.gate{max-width:360px;margin:12vh auto;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px}
-.gate h1{font-size:19px;margin:0 0 4px}
-.gate p{color:var(--muted);font-size:13px;margin:0 0 18px}
-input{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:10px}
-.btn{width:100%;margin-top:12px;background:var(--brand);color:#fff;border:0;border-radius:10px;padding:12px;font-weight:600}
-.err{color:#b3261e;font-size:13px;margin-top:10px;display:none}
-.select{width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--paper);margin-bottom:16px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px}
-.card .k{font-size:12px;color:var(--muted)}
-.card .v{font-size:21px;font-weight:700;margin-top:4px}
-.card .v.in{color:var(--in)}
-h2{font-size:14px;margin:24px 0 10px}
+.lock{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:9px 14px;color:var(--ink)}
+main{max-width:640px;margin:0 auto;padding:20px 16px 56px}
+.gate{max-width:380px;margin:10vh auto;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:28px}
+.gate h1{font-size:22px;margin:0 0 6px}
+.gate p{color:var(--muted);font-size:15px;margin:0 0 18px}
+input{width:100%;font:inherit;padding:13px 14px;border:1px solid var(--line);border-radius:12px}
+.btn{width:100%;margin-top:14px;background:var(--brand);color:#fff;border:0;border-radius:12px;padding:14px;font-weight:650;font-size:17px}
+.err{color:var(--out);font-size:15px;margin-top:12px;display:none}
+.select{width:100%;font:inherit;font-size:17px;padding:13px 12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);margin-bottom:16px}
+.lead{font-size:18px;margin:0 0 14px}
+.lead b{font-weight:700}
+.net{display:flex;justify-content:space-between;align-items:baseline;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.net span{font-size:14px;color:var(--muted)}
+.net strong{font-size:22px;font-variant-numeric:tabular-nums}
+.plus{color:var(--in)}.minus{color:var(--out)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:15px}
+.card .k{font-size:14px;color:var(--muted)}
+.card .v{font-size:25px;font-weight:750;margin-top:5px;font-variant-numeric:tabular-nums}
+h2{font-size:16px;margin:26px 0 10px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+h2 small{font-size:13px;color:var(--muted);font-weight:400}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--muted);margin:8px 0 12px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
 .txn-list{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.txn{display:flex;justify-content:space-between;gap:12px;padding:11px 13px;border-bottom:1px solid var(--line)}
+.txn{display:flex;justify-content:space-between;gap:12px;padding:14px 15px;border-bottom:1px solid var(--line);align-items:center}
 .txn:last-child{border-bottom:0}
 .t-main{display:flex;flex-direction:column;min-width:0}
-.t-date{font-size:11px;color:var(--muted)}
-.t-party{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.t-right{display:flex;flex-direction:column;align-items:flex-end;flex:none}
-.t-cat{font-size:11px;color:var(--muted)}
-.t-amt{font-weight:600;font-size:14px}
-.t-amt.in{color:var(--in)}
-.empty{color:var(--muted);font-size:13px;padding:14px;margin:0}
+.t-date{font-size:13px;color:var(--muted)}
+.t-party{font-size:17px;font-weight:560;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-cat{font-size:13px;color:var(--muted)}
+.t-amt{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;flex:none}
+.empty{color:var(--muted);font-size:15px;padding:16px;margin:0}
 table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-th,td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px}
+th,td{text-align:right;padding:12px;border-bottom:1px solid var(--line);font-size:15px;font-variant-numeric:tabular-nums}
 th:first-child,td:first-child{text-align:left}
+th{font-size:13px;color:var(--muted);font-weight:600}
 tr:last-child td{border-bottom:0}
 .hidden{display:none}
+@media(max-width:420px){.grid{grid-template-columns:1fr}.card .v{font-size:23px}}
 </style>
 </head>
 <body>
-<header><b>Family view</b><button class="lock" id="lock" hidden>Lock</button></header>
+<header><div class="brandline"><img src="favicon.png" alt=""><b>Family view</b></div><button class="lock" id="lock" hidden>Lock</button></header>
 <main>
   <section id="gate" class="gate">
     <h1>Family view</h1>
-    <p>Enter the password to see the monthly summary.</p>
+    <p>Please enter the password to see the monthly summary.</p>
     <input id="pw" type="password" placeholder="Password" autocomplete="current-password">
     <button class="btn" id="go">View</button>
     <div class="err" id="err"></div>
   </section>
   <section id="app" class="hidden">
-    <select class="select" id="month" aria-label="Month"></select>
+    <select class="select" id="month" aria-label="Choose month"></select>
+    <p class="lead" id="lead"></p>
+    <div class="net"><span>Left over this month</span><strong id="net"></strong></div>
     <div class="grid" id="cards"></div>
-    <h2>Transactions</h2>
+    <h2>Money in &amp; out <small>this month</small></h2>
+    <div class="legend"><span><i style="background:var(--in)"></i>Green = money in</span><span><i style="background:var(--out)"></i>Red = money out</span></div>
     <div class="txn-list" id="txns"></div>
     <h2>Last 12 months</h2>
-    <table><thead><tr><th>Month</th><th>Incoming</th><th>Outgoing</th></tr></thead><tbody id="rows"></tbody></table>
+    <table><thead><tr><th>Month</th><th>Money in</th><th>Money out</th></tr></thead><tbody id="rows"></tbody></table>
   </section>
 </main>
 <script>
@@ -71,6 +84,8 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 const inr = n => '₹' + (Number(n) || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
 const shortDate = d => { const x = new Date(d + 'T00:00:00'); return isNaN(x) ? d : x.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); };
 const monthLabel = m => { const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }); };
+const cls = n => n >= 0 ? 'plus' : 'minus';
+const sgn = n => (n >= 0 ? '+' : '−') + inr(Math.abs(n));
 let data = null, pw = '';
 async function fetchData(password, month) {
   const body = { action: 'mom', password };
@@ -83,17 +98,23 @@ async function fetchData(password, month) {
 function render() {
   const sel = $('#month');
   const m = data.months.find(x => x.month === sel.value) || data.months[0];
+  $('#lead').innerHTML = 'Here is <b>' + monthLabel(m.month) + '</b> at a glance.';
+  const net = (m.incoming || 0) - (m.outgoing || 0);
+  const netEl = $('#net'); netEl.textContent = sgn(net); netEl.className = cls(net);
   const cards = [
-    ['Incoming', 'in', m.incoming],
-    ['Outgoing', '', m.outgoing],
-    ['Business income', 'in', m.businessIncome],
-    ['Business expense', '', m.businessExpense],
-    ['Personal expense', '', m.personalExpense]
+    ['Money in', m.incoming, 'plus'],
+    ['Money out', m.outgoing, 'minus'],
+    ['Business income', m.businessIncome, 'plus'],
+    ['Business expense', m.businessExpense, 'minus'],
+    ['Personal expense', m.personalExpense, 'minus']
   ];
-  $('#cards').innerHTML = cards.map(c => '<div class="card"><div class="k">' + c[0] + '</div><div class="v ' + c[1] + '">' + inr(c[2]) + '</div></div>').join('');
+  $('#cards').innerHTML = cards.map(c => '<div class="card"><div class="k">' + c[0] + '</div><div class="v ' + c[2] + '">' + (c[2] === 'plus' ? '+' : '−') + inr(c[1]) + '</div></div>').join('');
   const list = data.transactions || [];
-  $('#txns').innerHTML = list.length ? list.map(t => '<div class="txn"><div class="t-main"><span class="t-date">' + shortDate(t.date) + '</span><span class="t-party">' + esc(t.counterparty) + '</span></div><div class="t-right"><span class="t-cat">' + esc(t.category) + '</span><span class="t-amt ' + (t.direction === 'CREDIT' ? 'in' : '') + '">' + (t.direction === 'CREDIT' ? '+' : '−') + inr(t.amount) + '</span></div></div>').join('') : '<p class="empty">No transactions this month.</p>';
-  $('#rows').innerHTML = data.months.map(x => '<tr><td>' + monthLabel(x.month) + '</td><td>' + inr(x.incoming) + '</td><td>' + inr(x.outgoing) + '</td></tr>').join('');
+  $('#txns').innerHTML = list.length ? list.map(t => {
+    const credit = t.direction === 'CREDIT';
+    return '<div class="txn"><div class="t-main"><span class="t-date">' + shortDate(t.date) + '</span><span class="t-party">' + esc(t.counterparty) + '</span><span class="t-cat">' + esc(t.category) + '</span></div><span class="t-amt ' + (credit ? 'plus' : 'minus') + '">' + (credit ? '+' : '−') + inr(t.amount) + '</span></div>';
+  }).join('') : '<p class="empty">No transactions this month.</p>';
+  $('#rows').innerHTML = data.months.map(x => '<tr><td>' + monthLabel(x.month) + '</td><td class="plus">+' + inr(x.incoming) + '</td><td class="minus">−' + inr(x.outgoing) + '</td></tr>').join('');
 }
 function showApp() {
   $('#gate').classList.add('hidden');
@@ -112,11 +133,8 @@ async function enter() {
   if (!value) return;
   const err = $('#err'); err.style.display = 'none';
   pw = value;
-  try {
-    await load();
-    sessionStorage.setItem('mom_pw', pw);
-    showApp();
-  } catch (e) { pw = ''; err.textContent = e.message; err.style.display = 'block'; }
+  try { await load(); sessionStorage.setItem('mom_pw', pw); showApp(); }
+  catch (e) { pw = ''; err.textContent = e.message; err.style.display = 'block'; }
 }
 function lock() {
   sessionStorage.removeItem('mom_pw');
