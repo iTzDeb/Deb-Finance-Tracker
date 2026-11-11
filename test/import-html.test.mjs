@@ -40,6 +40,37 @@ test('narrationParts only takes a bare number as a ref', () => {
   assert.equal(sandbox.narrationParts('500312789665/102026').ref, '');
 });
 
+test('narrationParts extracts Kotak and card payees', () => {
+  const upi = sandbox.narrationParts('UPI/SHALINI GHOSH/UBIN/617985807272/Sent using P');
+  assert.equal(upi.ref, '617985807272');
+  assert.equal(upi.party, 'SHALINI GHOSH');
+  const imps = sandbox.narrationParts('SentIMPS628600308833Kakoli Sah/SBINX2175/IMPS(Value Date: 13-10-2026)');
+  assert.equal(imps.ref, '628600308833');
+  assert.equal(imps.party, 'Kakoli Sah');
+  const pci = sandbox.narrationParts('PCI/0165/PAYPAL *DEEPSEERWEA/402935773111126/14:34');
+  assert.equal(pci.ref, '');
+  assert.equal(pci.party, 'PAYPAL *DEEPSEERWEA');
+});
+
+test('fromTable parses a Kotak statement with a Dr / Cr column', () => {
+  const csv = [
+    '"Sl. No.","Transaction Date","Value Date","Description","Chq /Ref No.","Amount","Dr / Cr","Balance","Dr / Cr"',
+    '"1","11-11-2026 19:09:47","11-11-2026","UPI/SHALINI GHOSH/UBIN/617985807272/Sent using P","UPI-210039702734","1,000.00","CR","4,180.14","CR"',
+    '"2","11-11-2026 14:34:57","11-11-2026","PCI/0165/PAYPAL *DEEPSEERWEA/402935773111126/14:34","631509767683","210.19","DR","780.14","CR"'
+  ].join('\n');
+  const txns = sandbox.fromTable(sandbox.parseCSV(csv), 'Kotak');
+  assert.equal(txns.length, 2);
+  assert.equal(txns[0].stamp, '2026-11-11 19:09');
+  assert.equal(txns[0].direction, 'CREDIT');
+  assert.equal(txns[0].amount, 1000);
+  assert.equal(txns[0].party, 'SHALINI GHOSH');
+  assert.equal(txns[0].ref, '617985807272');
+  assert.equal(txns[1].direction, 'DEBIT');
+  assert.equal(txns[1].amount, 210.19);
+  assert.equal(txns[1].party, 'PAYPAL *DEEPSEERWEA');
+  assert.equal(txns[1].ref, '631509767683');
+});
+
 test('fromTable parses a BOI statement with reversals', () => {
   const csv = [
     'Sr No,Date,Remarks,Debit,Credit,Balance Amount',

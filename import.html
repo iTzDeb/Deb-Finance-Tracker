@@ -108,6 +108,17 @@ function narrationParts(v) {
   if (m) return { ref: m[1], party: m[2].trim() };
   m = s.match(/^UPI\/(?:DR|CR)\/(\d{9,})\/([^\/]+)/i);
   if (m) return { ref: m[1], party: m[2].trim() };
+  // Kotak: UPI/NAME/BANK/ref/...
+  m = s.match(/^UPI\/([^\/]+)\/[A-Za-z]{4}\/(\d{9,})/);
+  if (m) return { ref: m[2], party: m[1].trim() };
+  // Kotak IMPS: SentIMPS<ref><name>/BANK/...
+  m = s.match(/^SentIMPS(\d{9,})([^\/]+)\//i);
+  if (m) return { ref: m[1], party: m[2].trim() };
+  // Card payments: PCI/0165/MERCHANT/... and PCD/0165/MERCHANT/...
+  m = s.match(/^(?:PCI|PCD)\/\d+\/([^\/]+)/i);
+  if (m) return { ref: '', party: m[1].trim() };
+  m = s.match(/^VISA-REFUND\/(?:[^\/]+\/){2}(.+)$/i);
+  if (m) return { ref: '', party: m[1].trim() };
   m = s.match(/^(?:NEFT|IMPS|RTGS)\/([A-Z0-9]{8,})\/(?:[A-Z]{4}\/)?(.+)$/i);
   if (m) return { ref: m[1], party: m[2].trim() };
   m = s.match(/^(\d{9,})$/);                                  // narration is only a ref
@@ -190,7 +201,7 @@ function fromTable(rows, account) {
   const iDesc = find(/description|narration|particular|details|remark|payee|counterparty|name/);
   const iRef = find(/ref|utr|rrn|transaction id|txn id|upi/);
   const iDr = find(/debit|withdraw|paid out/), iCr = find(/credit|deposit|received/);
-  const iAmt = find(/^amount/), iType = find(/type|dr\/cr|cr\/dr/);
+  const iAmt = find(/^amount/), iType = find(/type|dr\s*\/\s*cr|cr\s*\/\s*dr/);
   const out = [];
   rows.slice(hi + 1).forEach(r => {
     const day = parseDate(r[iDate]);
@@ -206,7 +217,9 @@ function fromTable(rows, account) {
     if (!direction || !(amount > 0)) return;
     const time = parseTime(iTime >= 0 ? r[iTime] : r.join(' '));
     const desc = iDesc >= 0 ? r[iDesc] : r.join(' ');
-    const ref = (iRef >= 0 ? String(r[iRef]).trim() : '') || narrationParts(desc).ref;
+    // Prefer the UPI ref inside the narration: SMS alerts use that same ref,
+    // while banks' own ref columns differ (Kotak: "UPI-210039702734").
+    const ref = narrationParts(desc).ref || (iRef >= 0 ? String(r[iRef]).trim() : '');
     out.push(mk(day, time, direction, amount, desc, ref, account));
   });
   return out;
