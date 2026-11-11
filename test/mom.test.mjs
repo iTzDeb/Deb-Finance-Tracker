@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { monthlyTotals } from '../lib/mom.js';
+import { monthlyTotals, monthTransactions } from '../lib/mom.js';
 
 const txn = (over = {}) => ({ loggedAt: '2026-01-15 09:30', date: '2026-01-15', direction: 'DEBIT', amount: 100, counterparty: 'X', ref: 'r', status: 'CONFIRMED', bucket: '', category: '', hidden: false, ...over });
 
@@ -19,4 +19,16 @@ test('monthlyTotals splits incoming/outgoing and excludes hidden/forgotten/inter
   assert.equal(t.businessIncome, 5000);
   assert.equal(t.businessExpense, 1000);
   assert.equal(t.personalExpense, 200);
+});
+
+test('monthTransactions hides hidden/forgotten/internal and sorts newest', () => {
+  const txns = [
+    txn({ date: '2026-01-15', loggedAt: '2026-01-15 10:00', counterparty: 'A' }),
+    txn({ date: '2026-01-16', loggedAt: '2026-01-16 10:00', counterparty: 'B', direction: 'CREDIT' }),
+    txn({ date: '2026-01-16', loggedAt: '2026-01-16 11:00', counterparty: 'C', hidden: true }),
+    txn({ date: '2026-01-16', loggedAt: '2026-01-16 12:00', counterparty: 'D', bucket: 'Internal' }),
+    txn({ date: '2026-02-01', loggedAt: '2026-02-01 10:00', counterparty: 'E' })
+  ];
+  const list = monthTransactions(txns, '2026-01');
+  assert.deepEqual(list.map(x => x.counterparty), ['B', 'A']);
 });

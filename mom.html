@@ -28,6 +28,17 @@ input{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);bor
 .card .v{font-size:21px;font-weight:700;margin-top:4px}
 .card .v.in{color:var(--in)}
 h2{font-size:14px;margin:24px 0 10px}
+.txn-list{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.txn{display:flex;justify-content:space-between;gap:12px;padding:11px 13px;border-bottom:1px solid var(--line)}
+.txn:last-child{border-bottom:0}
+.t-main{display:flex;flex-direction:column;min-width:0}
+.t-date{font-size:11px;color:var(--muted)}
+.t-party{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-right{display:flex;flex-direction:column;align-items:flex-end;flex:none}
+.t-cat{font-size:11px;color:var(--muted)}
+.t-amt{font-weight:600;font-size:14px}
+.t-amt.in{color:var(--in)}
+.empty{color:var(--muted);font-size:13px;padding:14px;margin:0}
 table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 th,td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px}
 th:first-child,td:first-child{text-align:left}
@@ -48,17 +59,23 @@ tr:last-child td{border-bottom:0}
   <section id="app" class="hidden">
     <select class="select" id="month" aria-label="Month"></select>
     <div class="grid" id="cards"></div>
+    <h2>Transactions</h2>
+    <div class="txn-list" id="txns"></div>
     <h2>Last 12 months</h2>
     <table><thead><tr><th>Month</th><th>Incoming</th><th>Outgoing</th></tr></thead><tbody id="rows"></tbody></table>
   </section>
 </main>
 <script>
 const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const inr = n => '₹' + (Number(n) || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+const shortDate = d => { const x = new Date(d + 'T00:00:00'); return isNaN(x) ? d : x.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); };
 const monthLabel = m => { const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }); };
-let data = null;
-async function fetchData(password) {
-  const res = await fetch('api/exec', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'mom', password }) });
+let data = null, pw = '';
+async function fetchData(password, month) {
+  const body = { action: 'mom', password };
+  if (month) body.month = month;
+  const res = await fetch('api/exec', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
   const r = await res.json();
   if (!r.ok) throw new Error(r.error || 'failed');
   return r;
@@ -66,33 +83,44 @@ async function fetchData(password) {
 function render() {
   const sel = $('#month');
   const m = data.months.find(x => x.month === sel.value) || data.months[0];
-  $('#cards').innerHTML = [
+  const cards = [
     ['Incoming', 'in', m.incoming],
     ['Outgoing', '', m.outgoing],
     ['Business income', 'in', m.businessIncome],
     ['Business expense', '', m.businessExpense],
     ['Personal expense', '', m.personalExpense]
-  ].map(c => '<div class="card"><div class="k">' + c[0] + '</div><div class="v ' + c[1] + '">' + inr(c[2]) + '</div></div>').join('');
+  ];
+  $('#cards').innerHTML = cards.map(c => '<div class="card"><div class="k">' + c[0] + '</div><div class="v ' + c[1] + '">' + inr(c[2]) + '</div></div>').join('');
+  const list = data.transactions || [];
+  $('#txns').innerHTML = list.length ? list.map(t => '<div class="txn"><div class="t-main"><span class="t-date">' + shortDate(t.date) + '</span><span class="t-party">' + esc(t.counterparty) + '</span></div><div class="t-right"><span class="t-cat">' + esc(t.category) + '</span><span class="t-amt ' + (t.direction === 'CREDIT' ? 'in' : '') + '">' + (t.direction === 'CREDIT' ? '+' : '−') + inr(t.amount) + '</span></div></div>').join('') : '<p class="empty">No transactions this month.</p>';
   $('#rows').innerHTML = data.months.map(x => '<tr><td>' + monthLabel(x.month) + '</td><td>' + inr(x.incoming) + '</td><td>' + inr(x.outgoing) + '</td></tr>').join('');
 }
+function showApp() {
+  $('#gate').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  $('#lock').hidden = false;
+}
+async function load(month) {
+  data = await fetchData(pw, month);
+  const sel = $('#month');
+  if (!sel.options.length) sel.innerHTML = data.months.map(x => '<option value="' + x.month + '">' + monthLabel(x.month) + '</option>').join('');
+  sel.value = data.month;
+  render();
+}
 async function enter() {
-  const pw = $('#pw').value;
-  if (!pw) return;
+  const value = $('#pw').value;
+  if (!value) return;
   const err = $('#err'); err.style.display = 'none';
+  pw = value;
   try {
-    data = await fetchData(pw);
+    await load();
     sessionStorage.setItem('mom_pw', pw);
-    $('#gate').classList.add('hidden');
-    $('#app').classList.remove('hidden');
-    $('#lock').hidden = false;
-    $('#month').innerHTML = data.months.map(x => '<option value="' + x.month + '">' + monthLabel(x.month) + '</option>').join('');
-    $('#month').value = data.month;
-    render();
-  } catch (e) { err.textContent = e.message; err.style.display = 'block'; }
+    showApp();
+  } catch (e) { pw = ''; err.textContent = e.message; err.style.display = 'block'; }
 }
 function lock() {
   sessionStorage.removeItem('mom_pw');
-  data = null;
+  pw = ''; data = null;
   $('#app').classList.add('hidden');
   $('#gate').classList.remove('hidden');
   $('#lock').hidden = true;
@@ -101,19 +129,13 @@ function lock() {
 $('#go').addEventListener('click', enter);
 $('#pw').addEventListener('keydown', e => { if (e.key === 'Enter') enter(); });
 $('#lock').addEventListener('click', lock);
-$('#month').addEventListener('change', render);
+$('#month').addEventListener('change', () => { load($('#month').value).catch(e => { $('#txns').innerHTML = '<p class="empty">' + esc(e.message) + '</p>'; }); });
 (async () => {
-  const pw = sessionStorage.getItem('mom_pw');
-  if (!pw) return $('#pw').focus();
-  try {
-    data = await fetchData(pw);
-    $('#gate').classList.add('hidden');
-    $('#app').classList.remove('hidden');
-    $('#lock').hidden = false;
-    $('#month').innerHTML = data.months.map(x => '<option value="' + x.month + '">' + monthLabel(x.month) + '</option>').join('');
-    $('#month').value = data.month;
-    render();
-  } catch { sessionStorage.removeItem('mom_pw'); $('#pw').focus(); }
+  const saved = sessionStorage.getItem('mom_pw');
+  if (!saved) return $('#pw').focus();
+  pw = saved;
+  try { await load(); showApp(); }
+  catch { sessionStorage.removeItem('mom_pw'); pw = ''; $('#pw').focus(); }
 })();
 </script>
 </body>

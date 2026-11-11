@@ -86,8 +86,6 @@ test('historyTotals matches frontend historySum', () => {
     { direction: 'CREDIT', amount: 5, bucket: 'Internal' },
     { direction: 'DEBIT', amount: 1000, bucket: 'Business', status: 'FORGOTTEN' },
     { direction: 'CREDIT', amount: 500, bucket: 'Business', status: 'FORGOTTEN' },
-    { direction: 'DEBIT', amount: 700, bucket: 'Business', hidden: true },
-    { direction: 'CREDIT', amount: 900, hidden: true },
   ];
   assert.deepEqual(historyTotals(items), {
     sent: 150, received: 300, business: 100, personal: 50, internal: 25

@@ -514,7 +514,7 @@ function openEdit(ref) {
     <input id="f_prop" inputmode="numeric" value="${esc(ctx.property)}" placeholder="e.g. 170, or leave blank">
     <label class="label" for="f_notes">Notes</label>
     <textarea id="f_notes" rows="2">${esc(ctx.notes)}</textarea>
-    <label class="label" style="display:flex;align-items:center;gap:9px;margin-top:2px"><input type="checkbox" id="f_hidden" ${item.hidden ? 'checked' : ''}> Hide from family view <span class="meta">(excluded from all totals)</span></label>
+    <label class="label" style="display:flex;align-items:center;gap:9px;margin-top:2px"><input type="checkbox" id="f_hidden" ${item.hidden ? 'checked' : ''}> Hide from family view <span class="meta">(not shown to mom)</span></label>
     <div class="actions">
       <button class="btn ghost" data-act="close">Cancel</button>
       <button class="btn primary" data-act="save-edit">Save & confirm</button>
@@ -852,7 +852,6 @@ function historySum(items) {
   const totals = { sent: 0, received: 0, business: 0, personal: 0, internal: 0 };
   items.forEach(item => {
     if (String(item.status || '').toUpperCase() === 'FORGOTTEN') return;
-    if (item.hidden) return;
     const bucket = String(item.bucket || '').toLowerCase();
     if (bucket === 'internal') totals.internal += item.amount;
     else if (item.direction === 'DEBIT') totals.sent += item.amount;

@@ -150,8 +150,8 @@ Google Sheets is the source of truth. Three tabs, exact column order matters.
 | `CONFIRMED` | Final; counts as categorised |
 | `FORGOTTEN` | Terminal "leave it": out of Pending and out of Month/History totals, still in the sheet and visible in History under its filter |
 
-A separate `Hidden` flag (last column) removes a row from **every** total and
-from the family view; the row stays editable in History. Categories live in the
+A separate `Hidden` flag (last column) hides a row from the family view only;
+it still counts in your own totals and stays editable in History. Categories live in the
 `Categories` tab and grow whenever you or the bot apply a new one.
 
 **Buckets** — `Business`, `Personal`, `Internal`, `Deposit`.
@@ -497,8 +497,9 @@ need privacy mode off or a reply to the bot's message.
 A password-gated, read-only monthly summary at `/mom.html`: only incoming,
 outgoing, business income, business expense and personal expense — no
 transactions, statuses or categories. Set `MOM_PASSWORD` in Vercel, share the
-URL, and she enters the password once (kept for the browser session). Rows
-flagged **Hidden** never appear and are excluded from every total.
+URL, and she enters the password once (kept for the browser session). It shows
+monthly totals plus that month's transaction list. Rows flagged **Hidden**
+never appear there; they still count in your own totals.
 
 ## Background jobs (cron)
 
