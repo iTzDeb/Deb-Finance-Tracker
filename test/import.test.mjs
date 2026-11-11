@@ -33,10 +33,10 @@ test('dedupStaged matches the staged counterparty', () => {
 test('dedupStaged skips by ref, same day, and ±1 day', () => {
   const existing = [stagedTxn({ ref: 'ref-1', date: '2026-01-10', amount: 100 })];
   const staged = [
-    stagedTxn({ ref: 'ref-1', date: '2026-01-11' }),
-    stagedTxn({ ref: 'ref-2', date: '2026-01-10', amount: 100 }),
-    stagedTxn({ ref: 'ref-3', date: '2026-01-11', amount: 100 }),
-    stagedTxn({ ref: 'ref-4', date: '2026-01-20', amount: 100 })
+    stagedTxn({ ref: 'ref-1', date: '2026-01-11' }),            // same ref
+    stagedTxn({ ref: '', date: '2026-01-10', amount: 100 }),    // no ref: same day
+    stagedTxn({ ref: '', date: '2026-01-11', amount: 100 }),    // no ref: ±1 day
+    stagedTxn({ ref: 'ref-4', date: '2026-01-20', amount: 100 }) // new
   ];
   const out = dedupStaged(staged, existing);
   assert.equal(out.skipped, 3);
@@ -95,6 +95,24 @@ test('dedupStaged does not enrich an unrelated name', () => {
   const out = dedupStaged(staged, existing);
   assert.equal(out.skipped, 1);
   assert.equal(out.enrich.length, 0);
+});
+
+test('dedupStaged keeps two different refs for the same payee/amount/day', () => {
+  const staged = [
+    stagedTxn({ ref: 'ref-a', counterparty: 'SHALINI GHOSH', amount: 10000, date: '2026-10-12', loggedAt: '2026-10-12 21:39' }),
+    stagedTxn({ ref: 'ref-b', counterparty: 'SHALINI GHOSH', amount: 10000, date: '2026-10-12', loggedAt: '2026-10-12 21:39' })
+  ];
+  const out = dedupStaged(staged, []);
+  assert.equal(out.rows.length, 2);
+  assert.equal(out.skipped, 0);
+});
+
+test('dedupStaged keeps a distinct ref matching an existing row', () => {
+  const existing = [stagedTxn({ ref: 'ref-a', counterparty: 'SHALINI GHOSH', amount: 10000, date: '2026-10-12' })];
+  const staged = [stagedTxn({ ref: 'ref-b', counterparty: 'SHALINI GHOSH', amount: 10000, date: '2026-10-12' })];
+  const out = dedupStaged(staged, existing);
+  assert.equal(out.rows.length, 1);
+  assert.equal(out.skipped, 0);
 });
 
 test('dedupStaged skips duplicates inside the same batch', () => {
