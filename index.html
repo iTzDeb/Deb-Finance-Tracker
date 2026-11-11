@@ -1169,7 +1169,7 @@ function openHistoryDetail(ref) {
   openSheet(`
     <div class="grip"></div>
     <div class="setup-head"><div class="setup-mark" aria-hidden="true">${credit ? '↓' : '↑'}</div><div><h3 id="sheetTitle">${esc(item.counterparty || 'Transaction')}</h3><div class="meta">${credit ? 'Received' : 'Paid'} · ${esc(fmtStamp(item.stamp))}</div></div></div>
-    <div class="history-detail" role="group" aria-label="Transaction details">
+    <dl class="history-detail" aria-label="Transaction details">
       ${detail('Amount', `${credit ? '+' : '−'}${inr(item.amount)}`)}
       ${detail('Status', item.status)}
       ${detail('Date and time', fmtStamp(item.stamp))}
@@ -1181,7 +1181,7 @@ function openHistoryDetail(ref) {
       ${detail('Property', item.property)}
       ${detail('Notes', item.notes)}
       ${detail('Reference', item.ref, 'history-reference')}
-    </div>
+    </dl>
     <div class="actions"><button class="btn ghost" data-act="close">Close</button><button class="btn primary" data-act="edit" data-ref="${esc(item.ref)}">Edit</button></div>`);
 }
 

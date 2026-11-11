@@ -175,4 +175,22 @@ test('readRequestParams merges query with JSON, form, raw and buffer bodies', ()
   assert.deepEqual(readRequestParams('POST', '/api/exec?key=K', Buffer.from('sms=hi')), { key: 'K', sms: 'hi' });
   assert.deepEqual(readRequestParams('POST', '/api/exec?key=K'), { key: 'K' });
 });
+
+test('parseKotakSMS_ strips the account text from a credit party', () => {
+  const t = parseKotakSMS_('Received Rs.1000.00 from SHALINI GHOSH in your Kotak811 a/c XX7991 on 11-11-26. UPI Ref:123456789012');
+  assert.equal(t.party, 'SHALINI GHOSH');
+  assert.equal(t.direction, 'CREDIT');
+});
+
+test('parseKotak_ reads a spaced date from an email body', () => {
+  const t = parseKotak_('Credit alert', 'Amount: ₹1,000.00\nReference Number: 123456789012\nDate: 15 Nov 26\nSender: ALPHA');
+  assert.equal(t.date, '2026-11-15');
+  assert.equal(t.direction, 'CREDIT');
+  assert.equal(t.party, 'ALPHA');
+});
+
+test('parseSMS_ refuses a BOI-shaped text with no debit/credit verb', () => {
+  assert.equal(parseSMS_('Rs.500.00 from a/c XX1234 on 15-Jan-26. UPI ref No. 123456789012'), null);
+});
+
 console.log('All tests passed.');

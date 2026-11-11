@@ -66,23 +66,28 @@ Status values: `NEEDS REVIEW`, `PENDING`, `CONFIRMED`.
 
 ## Background jobs (cron)
 
-The old GAS time triggers map to Vercel Cron hitting `/api/cron`:
+The old GAS time triggers map to Vercel Cron hitting `/api/cron`. The
+schedules live in `vercel.json`:
 
-| Job | Purpose | Schedule (GAS) |
+| Path | Purpose | Schedule (UTC) |
 | --- | --- | --- |
-| `sync` | Re-apply rules to open rows | every 10 min |
-| `suggest` | AI suggestions for open rows | 23:00 daily |
-| `digest` | Telegram summary | 09:00 + 19:00 daily |
+| `/api/maintenance` | `sync` then `suggest` | 21:30 daily (03:00 IST) |
+| `/api/digest` | Telegram summary | 03:30 daily (09:00 IST) |
 
-Configure these in Vercel → Settings → Cron Jobs, pointing at paths like:
+Cron paths carry no query string; `/api/cron?job=sync|suggest|digest|maintenance`
+runs a job manually.
+
+When `CRON_SECRET` is set, Vercel sends it automatically as
+`Authorization: Bearer $CRON_SECRET`. Manual runs can also use `?secret=` or
+`x-cron-secret`:
 
 ```
-/api/cron?job=sync&secret=YOUR_CRON_SECRET
+curl -H "Authorization: Bearer $CRON_SECRET" \
+  "https://<your-project>.vercel.app/api/cron?job=sync"
 ```
 
-Put the secret in the path **in the Vercel dashboard only** (never commit it).
-Note: Vercel Hobby allows limited cron frequency — the 10-minute `sync` may
-require a paid plan; `suggest`/`digest` (daily) work on Hobby.
+Hobby limits crons to roughly one run per day, so the old 10-minute `sync` and
+the 19:00 digest need a paid plan; the single daily `maintenance` run fits.
 
 ## Hybrid Gmail forwarder
 

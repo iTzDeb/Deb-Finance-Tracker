@@ -1,6 +1,8 @@
 {
+  "id": "./",
   "name": "Finance",
   "short_name": "Finance",
+  "scope": "./",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f4f6f2",
