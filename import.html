@@ -340,6 +340,7 @@ async function runImport() {
         <div class="big in">${r.added} added</div>
         <div class="meta" style="margin-top:8px">${r.skipped} already in your sheet, skipped</div>
         <div class="meta">${r.check} added as CHECK: same amount and date as an existing entry under a different name</div>
+        ${r.enriched ? `<div class="meta">${r.enriched} existing row(s) improved with fuller names or exact times</div>` : ''}
         <a class="btn" href="index.html">Open Pending</a>
       </div>`;
     txns = [];
