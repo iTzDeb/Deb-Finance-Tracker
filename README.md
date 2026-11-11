@@ -359,9 +359,16 @@ The browser does the parsing; the server only stages and commits.
      | Kotak IMPS | `SentIMPS628600308833Kakoli Sah/…` | `Kakoli Sah` | `628600308833` |
      | Card | `PCI/0165/PAYPAL *X/…` | `PAYPAL *X` | from the ref column |
      | Charges/interest | `CHRG: …`, `SBInt.Pd:…` | full text | from the ref column |
+      | Paytm | `Paid to Sindhu Dixit`, `Received from …`, `Transferred to Self, …` | `Sindhu Dixit`, `Self Transfer · <bank>` | `UPI Ref No.` column |
    - **Ref priority** — the UPI ref inside the narration wins over the bank's
      ref column (Kotak's column holds `UPI-210039702734`, which SMS alerts never
      use); otherwise the ref column, otherwise none.
+   - **Signed amounts** (Paytm `-240.00` / `+200.00`) set the direction; an
+     unsigned amount falls back to the narration (`Received from …` → credit,
+     `Paid to …` → debit). A `Dr/Cr` type column wins over the narration.
+   - **Multi-sheet workbooks** (Paytm `Summary` + `Passbook Payment History`)
+     pick the sheet whose name looks like transactions and has a header (else
+     the largest sheet), so the Summary tab is ignored.
 5. Preview: count, date range, paid/received totals, first 8 rows.
 6. Import sends rows in **chunks of 12** (`importChunk`), then `importCommit`.
 
@@ -380,6 +387,11 @@ but with a `CHECK: matches <name> (<date>)` note and `NEEDS REVIEW`, so a human
 decides. Rows appended in the same commit are added to the index, so duplicates
 inside one statement are caught. Staged rows are cleared in one call per
 contiguous run.
+
+Matched rows are also **enriched in place**: a fuller counterparty and an exact
+transaction time from the newer statement backfill the existing row, and
+truncated payee names (`DEB ZY`) are expanded to the fullest known name
+(`DEB ZYOTI DAS`) when the match is unambiguous.
 
 The importer also refuses a transaction date that cannot be parsed or an amount
 ≤ 0.

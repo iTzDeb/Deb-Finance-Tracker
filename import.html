@@ -121,6 +121,16 @@ function narrationParts(v) {
   if (m) return { ref: '', party: m[1].trim() };
   m = s.match(/^(?:NEFT|IMPS|RTGS)\/([A-Z0-9]{8,})\/(?:[A-Z]{4}\/)?(.+)$/i);
   if (m) return { ref: m[1], party: m[2].trim() };
+  // Paytm human narrations: "Paid to X", "Received from X", "Automatic payment for X".
+  if (/\bpaytm\s+wallet\b/i.test(s)) return { ref: '', party: 'Paytm Wallet' };
+  m = s.match(/^Transferred to Self,?\s*(.*)$/i);
+  if (m) return { ref: '', party: m[1] ? 'Self Transfer · ' + m[1].trim() : 'Self Transfer' };
+  m = s.match(/^(?:Paid to|Paid for|Money sent to|Sent to|Payment to|Pay to|Payment for)\s+(.+)$/i);
+  if (m) return { ref: '', party: m[1].trim() };
+  m = s.match(/^(?:Money received from|Received from|Received by|Paid by|Added from)\s+(.+)$/i);
+  if (m) return { ref: '', party: m[1].trim() };
+  m = s.match(/^Automatic payment for\s+(.+)$/i) || s.match(/^Automatic payment of .*? for\s+(.+)$/i);
+  if (m) return { ref: '', party: m[1].trim() };
   m = s.match(/^(\d{9,})$/);                                  // narration is only a ref
   if (m) return { ref: m[1], party: s };
   return { ref: '', party: s };
@@ -138,6 +148,24 @@ function mk(day, time, direction, amount, desc, ref, account) {
 }
 
 // ---------- Reading files ----------
+// A header row has a date column and an amount/debit/credit column.
+function findHeaderRow(rows) {
+  return rows.findIndex(r => r.some(c => /date/i.test(String(c))) &&
+    r.some(c => /amount|debit|credit|withdraw|deposit/i.test(String(c))));
+}
+
+// Multi-tab workbooks (e.g. Paytm: Summary + Passbook) — prefer the sheet
+// whose name looks like transactions and has a header, else any with a header,
+// else the largest.
+function pickSheet(sheets) {
+  if (!sheets.length) return null;
+  const named = sheets.find(s => /passbook|payment history|transaction|statement/i.test(s.name || '') && findHeaderRow(s.rows) >= 0);
+  if (named) return named;
+  const withHeader = sheets.find(s => findHeaderRow(s.rows) >= 0);
+  if (withHeader) return withHeader;
+  return sheets.reduce((a, b) => (b.rows.length > a.rows.length ? b : a));
+}
+
 function parseCSV(text) {
   text = text.replace(/^\uFEFF/, '');
   const first = text.split(/\r?\n/)[0] || '';
@@ -184,7 +212,11 @@ async function readRows(file) {
   if (/\.(csv|txt)$/.test(n)) return parseCSV(await file.text());
   if (/\.(xlsx|xls)$/.test(n)) {
     const wb = XLSX.read(await file.arrayBuffer(), { type: 'array' });
-    return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, defval: '' });
+    const sheets = wb.SheetNames.map(name => ({
+      name,
+      rows: XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, raw: false, defval: '' })
+    }));
+    return (pickSheet(sheets) || sheets[0]).rows;
   }
   if (/\.pdf$/.test(n)) return pdfLines(file);
   throw new Error('Use a CSV, Excel or PDF file');
@@ -192,31 +224,42 @@ async function readRows(file) {
 
 // Table with a header row (CSV, Excel, Paytm exports)
 function fromTable(rows, account) {
-  const hi = rows.findIndex(r => r.some(c => /date/i.test(String(c))) &&
-    r.some(c => /amount|debit|credit|withdraw|deposit/i.test(String(c))));
+  const hi = findHeaderRow(rows);
   if (hi < 0) return fromLines(rows, account);
   const h = rows[hi].map(c => String(c).toLowerCase());
   const find = re => h.findIndex(c => re.test(c));
   const iDate = find(/date/), iTime = find(/time/);
   const iDesc = find(/description|narration|particular|details|remark|payee|counterparty|name/);
-  const iRef = find(/ref|utr|rrn|transaction id|txn id|upi/);
+  const iRef = find(/ref|utr|rrn|txn\s*id|transaction\s*id/);
   const iDr = find(/debit|withdraw|paid out/), iCr = find(/credit|deposit|received/);
   const iAmt = find(/^amount/), iType = find(/type|dr\s*\/\s*cr|cr\s*\/\s*dr/);
   const out = [];
   rows.slice(hi + 1).forEach(r => {
     const day = parseDate(r[iDate]);
     if (!day) return;
+    const desc = iDesc >= 0 ? r[iDesc] : r.join(' ');
     let direction = '', amount = NaN;
     if (iDr >= 0 && parseAmt(r[iDr])) { direction = 'DEBIT'; amount = parseAmt(r[iDr]); }
     else if (iCr >= 0 && parseAmt(r[iCr])) { direction = 'CREDIT'; amount = parseAmt(r[iCr]); }
     else if (iAmt >= 0 && parseAmt(r[iAmt])) {
       amount = parseAmt(r[iAmt]);
-      const t = String(r[iAmt]) + ' ' + (iType >= 0 ? r[iType] : '');
-      direction = /^-|dr|debit|sent|paid/i.test(t) ? 'DEBIT' : /cr|credit|received/i.test(t) ? 'CREDIT' : 'DEBIT';
+      const raw = String(r[iAmt] || '');
+      // Paytm signs the amount; otherwise infer from the type column or narration.
+      if (/^\s*-/.test(raw)) direction = 'DEBIT';
+      else if (/^\s*\+/.test(raw)) direction = 'CREDIT';
+      else {
+        const typeVal = iType >= 0 ? String(r[iType] || '') : '';
+        if (/\bcr\b|credit|received|deposit/i.test(typeVal)) direction = 'CREDIT';
+        else if (/\bdr\b|debit|withdraw|sent|paid\s*out/i.test(typeVal)) direction = 'DEBIT';
+        else {
+          const t = raw + ' ' + typeVal + ' ' + desc;
+          direction = /\bdr\b|debit|sent|paid|payment/i.test(t) ? 'DEBIT'
+            : /\bcr\b|credit|received|added|refund|cashback|transferred to self/i.test(t) ? 'CREDIT' : 'DEBIT';
+        }
+      }
     }
     if (!direction || !(amount > 0)) return;
     const time = parseTime(iTime >= 0 ? r[iTime] : r.join(' '));
-    const desc = iDesc >= 0 ? r[iDesc] : r.join(' ');
     // Prefer the UPI ref inside the narration: SMS alerts use that same ref,
     // while banks' own ref columns differ (Kotak: "UPI-210039702734").
     const ref = narrationParts(desc).ref || (iRef >= 0 ? String(r[iRef]).trim() : '');

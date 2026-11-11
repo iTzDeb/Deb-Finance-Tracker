@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {
   amountNum_, st_, isNonTxnSMS_, normDate_, normKey_, normBucket_, normCategory_,
   pendingPayeeKey, compositeKey_, historyTotals, cellToDateStr, safeCallback, ymd, serialToDate,
-  sameSecret, readRequestParams, normRef_
+  sameSecret, readRequestParams, normRef_, canonicalPayee, cleanPayeeName
 } from '../lib/util.js';
 
 import { parseKotak_, parseKotakSMS_, parseSMS_, parseSBISMS_ } from '../lib/parse.js';
@@ -52,6 +52,19 @@ test('normBucket_/normCategory_ normalise case', () => {
 test('pendingPayeeKey lowercases and collapses whitespace', () => {
   assert.equal(pendingPayeeKey('  Adarsh   Kumar '), 'adarsh kumar');
   assert.equal(pendingPayeeKey('KAKOLI SAHA'), 'kakoli saha');
+});
+
+test('cleanPayeeName strips the account suffix', () => {
+  assert.equal(cleanPayeeName('DEB ZYOTI DAS in your Kotak811 a/c XX7991'), 'DEB ZYOTI DAS');
+  assert.equal(cleanPayeeName('SHALINI GHOSH'), 'SHALINI GHOSH');
+});
+
+test('canonicalPayee expands a unique truncated prefix', () => {
+  assert.equal(canonicalPayee('DEB ZY', ['DEB ZYOTI DAS']), 'DEB ZYOTI DAS');
+  assert.equal(canonicalPayee('APARAJITA GHOS', ['APARAJITA GHOSH']), 'APARAJITA GHOSH');
+  assert.equal(canonicalPayee('RAJ', ['RAJESH', 'RAJAN']), 'RAJ');      // ambiguous
+  assert.equal(canonicalPayee('X', ['Xavier']), 'X');                   // too short
+  assert.equal(canonicalPayee('Pratik', ['Pratik Kumar']), 'Pratik Kumar');
 });
 
 test('normRef_ normalises leading zeros', () => {

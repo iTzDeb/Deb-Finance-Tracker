@@ -95,3 +95,38 @@ test('fromTable parses a BOI statement with reversals', () => {
   assert.equal(txns[3].direction, 'CREDIT');
   assert.equal(txns[3].amount, 400);
 });
+test('findHeaderRow and pickSheet choose the transaction sheet', () => {
+  const summary = [['Paytm Statement for:', "1 OCT'26 - 11 NOV'26"], ['Money Paid (Amount in Rs.)', '-209,768.18']];
+  const passbook = [['Date', 'Time', 'Transaction Details', 'Amount', 'UPI Ref No.'], ['11/11/2026', '21:46:27', 'Paid to X', '-99.00', '123456789012']];
+  assert.equal(sandbox.findHeaderRow(summary), -1);
+  assert.equal(sandbox.findHeaderRow(passbook), 0);
+  assert.equal(sandbox.pickSheet([{ name: 'Summary', rows: summary }, { name: 'Passbook Payment History', rows: passbook }]).name, 'Passbook Payment History');
+  assert.equal(sandbox.pickSheet([{ name: 'Summary', rows: summary }]).name, 'Summary');
+});
+
+test('fromTable parses a Paytm passbook with signed amounts', () => {
+  const csv = [
+    'Date,Time,Transaction Details,Other Transaction Details (UPI ID or A/c No),Your Account,Amount,UPI Ref No.,Order ID,Remarks,Tags,Comment',
+    '11/11/2026,21:46:27,"Paid to Sindhu Dixit",paytm.s31xahf@pty,Bank Of India - 45,-240.00,318975425210,,Transaction success,#🛒 Groceries,',
+    '06/11/2026,02:11:10,"Received from Deb Zyoti Das",******7086@kotakbank,Bank Of India - 45,+200.00,667621332145,,,#💵 Money Received,',
+    '01/11/2026,12:00:00,"Received from Adarsh Kumar",8584966190.wa.zqr@waicici,Bank Of India - 45,120.00,111090601749,,,#💵 Money Received,',
+    '02/11/2026,10:00:00,"Automatic payment for Apple Media Services",appleservices.bdsi@hdfcbank,Bank Of India - 45,-99.00,104459475062,,Transaction success,#🏦 Services,',
+    '03/11/2026,10:00:00,"Transferred to Self, Bank Of India - 4245",,Bank Of India - 45,120.00,218731450467,,,#💵 Self Transfer,'
+  ].join('\n');
+  const txns = sandbox.fromTable(sandbox.parseCSV(csv), 'Paytm');
+  assert.equal(txns.length, 5);
+  assert.equal(txns[0].stamp, '2026-11-11 21:46');
+  assert.equal(txns[0].direction, 'DEBIT');
+  assert.equal(txns[0].amount, 240);
+  assert.equal(txns[0].party, 'Sindhu Dixit');
+  assert.equal(txns[0].ref, '318975425210');
+  assert.equal(txns[1].direction, 'CREDIT');
+  assert.equal(txns[1].party, 'Deb Zyoti Das');
+  assert.equal(txns[1].ref, '667621332145');
+  assert.equal(txns[2].direction, 'CREDIT');
+  assert.equal(txns[2].party, 'Adarsh Kumar');
+  assert.equal(txns[3].party, 'Apple Media Services');
+  assert.equal(txns[3].direction, 'DEBIT');
+  assert.equal(txns[4].direction, 'CREDIT');
+  assert.equal(txns[4].party, 'Self Transfer · Bank Of India - 4245');
+});

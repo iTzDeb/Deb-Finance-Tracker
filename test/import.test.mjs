@@ -78,6 +78,25 @@ test('txnToRow writes a leading-zero ref as text', () => {
   assert.equal(txnToRow({ ref: 'UPI-210039702734' })[5], 'UPI-210039702734');
 });
 
+test('dedupStaged enriches a matched row with a fuller name and time', () => {
+  const existing = [stagedTxn({ ref: 'ref-1', counterparty: 'DEB ZY', loggedAt: '2026-01-15 00:00', date: '2026-01-15', amount: 100, row: 5 })];
+  const staged = [stagedTxn({ ref: 'ref-1', counterparty: 'DEB ZYOTI DAS', loggedAt: '2026-01-15 09:30', date: '2026-01-15', amount: 100 })];
+  const out = dedupStaged(staged, existing);
+  assert.equal(out.skipped, 1);
+  assert.equal(out.rows.length, 0);
+  assert.equal(out.enrich.length, 1);
+  assert.equal(out.enrich[0].txn.row, 5);
+  assert.deepEqual(out.enrich[0].updates, { counterparty: 'DEB ZYOTI DAS', loggedAt: '2026-01-15 09:30' });
+});
+
+test('dedupStaged does not enrich an unrelated name', () => {
+  const existing = [stagedTxn({ ref: 'ref-1', counterparty: 'DEB ZYOTI DAS', loggedAt: '2026-01-15 00:00', date: '2026-01-15', amount: 100, row: 5 })];
+  const staged = [stagedTxn({ ref: 'ref-1', counterparty: 'Self Transfer · BOI-4245', loggedAt: '2026-01-15 00:00', date: '2026-01-15', amount: 100 })];
+  const out = dedupStaged(staged, existing);
+  assert.equal(out.skipped, 1);
+  assert.equal(out.enrich.length, 0);
+});
+
 test('dedupStaged skips duplicates inside the same batch', () => {
   const out = dedupStaged([stagedTxn({ ref: '' }), stagedTxn({ ref: '' })], []);
   assert.equal(out.rows.length, 1);
