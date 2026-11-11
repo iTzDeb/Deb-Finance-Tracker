@@ -5,7 +5,7 @@ Read this first next session; then only the files the task touches.
 ## Live
 
 - App: **https://deb-finance.vercel.app/** — Vercel is the only host; GitHub Pages is disabled.
-- Family view: **https://deb-finance.vercel.app/mom.html** (password = `MOM_PASSWORD` in Vercel).
+- Family view: **https://deb-finance.vercel.app/mom.html** (the `MOM_PASSWORD` env var is the password).
 - Latest deploy: `b731f8a` (Vercel READY). `npm test`: **70 pass**.
 - Sheet id is in Vercel env `SPREADSHEET_ID` (title *Expense Tracker 2026*).
 
