@@ -1,3 +1,5 @@
+<p align="center"><img src="avatar.png" width="110" alt="Finance avatar"></p>
+
 # Deb Finance Tracker
 
 [![tests](https://github.com/iTzDeb/Deb-Finance-Tracker/actions/workflows/test.yml/badge.svg)](https://github.com/iTzDeb/Deb-Finance-Tracker/actions/workflows/test.yml)
