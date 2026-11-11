@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 
 import {
   amountNum_, st_, isNonTxnSMS_, normDate_, normKey_, normBucket_, normCategory_,
-  pendingPayeeKey, compositeKey_, historyTotals, cellToDateStr, safeCallback, ymd, serialToDate
+  pendingPayeeKey, compositeKey_, historyTotals, cellToDateStr, safeCallback, ymd, serialToDate,
+  sameSecret, readRequestParams
 } from '../lib/util.js';
 
 import { parseKotak_, parseKotakSMS_, parseSMS_, parseSBISMS_ } from '../lib/parse.js';
@@ -128,4 +129,50 @@ test('parseSBISMS_ only accepts the 2175 account', () => {
   assert.equal(parseSBISMS_('A/c XX9999 Debited Rs.1000.00 on 15/01/26'), null);
 });
 
+
+test('normDate_ accepts 4-digit years and slash separators', () => {
+  assert.equal(normDate_('15-01-2026'), '2026-01-15');
+  assert.equal(normDate_('15/01/2026'), '2026-01-15');
+});
+
+test('parseSMS_ handles a 4-digit year and UPI Ref No#', () => {
+  const t = parseSMS_('Rs.500.00 debited from a/c XX1234 on 15-01-2026. UPI Ref No# 123456789012 credited to ADARSH via UPI');
+  assert.equal(t.date, '2026-01-15');
+  assert.equal(t.ref, '123456789012');
+  assert.equal(t.direction, 'DEBIT');
+});
+
+test('parseSMS_ handles the real BOI alert from 11-Nov-26', () => {
+  const t = parseSMS_('BOIIND-S Rs.240.00 debited A/cXX4245 and credited to SINDHU DIXIT via UPI Ref No 318975425210 on 11Nov26. Call 18001031906, if not done by you. -BOI');
+  assert.equal(t.date, '2026-11-11');
+  assert.equal(t.amount, '240.00');
+  assert.equal(t.ref, '318975425210');
+  assert.equal(t.party, 'SINDHU DIXIT');
+  assert.equal(t.direction, 'DEBIT');
+  assert.equal(t.account, 'BOI');
+});
+
+test('parseSMS_ handles INR and UPI/ref/name notation', () => {
+  const t = parseSMS_('INR 1,250.00 debited from a/c XX1234 on 15/01/26 UPI/123456789012/ADARSH');
+  assert.equal(t.amount, '1,250.00');
+  assert.equal(t.date, '2026-01-15');
+  assert.equal(t.ref, '123456789012');
+});
+
+test('sameSecret compares without accepting different lengths', () => {
+  assert.equal(sameSecret('abc123', 'abc123'), true);
+  assert.equal(sameSecret('abc123', 'abc124'), false);
+  assert.equal(sameSecret('abc123', 'abc12'), false);
+});
+
+test('readRequestParams merges query with JSON, form, raw and buffer bodies', () => {
+  const url = '/api/exec?key=K&action=ingest';
+  assert.deepEqual(readRequestParams('GET', url), { key: 'K', action: 'ingest' });
+  assert.deepEqual(readRequestParams('POST', url, '{"sms":"Rs.5.00"}'), { key: 'K', action: 'ingest', sms: 'Rs.5.00' });
+  assert.deepEqual(readRequestParams('POST', url, 'sms=Rs.5.00'), { key: 'K', action: 'ingest', sms: 'Rs.5.00' });
+  assert.deepEqual(readRequestParams('POST', url, 'Rs.5.00 debited on 15-Jan-26'),
+    { key: 'K', action: 'ingest', sms: 'Rs.5.00 debited on 15-Jan-26' });
+  assert.deepEqual(readRequestParams('POST', '/api/exec?key=K', Buffer.from('sms=hi')), { key: 'K', sms: 'hi' });
+  assert.deepEqual(readRequestParams('POST', '/api/exec?key=K'), { key: 'K' });
+});
 console.log('All tests passed.');

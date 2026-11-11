@@ -8,6 +8,7 @@ import { syncRows } from '../lib/sync.js';
 import { suggestOpenRows } from '../lib/ai.js';
 import { sendDigest } from '../lib/digest.js';
 import { CRON_SECRET } from '../lib/config.js';
+import { sameSecret } from '../lib/util.js';
 
 const JOBS = { sync: syncRows, suggest: suggestOpenRows, digest: sendDigest };
 
@@ -22,7 +23,7 @@ export default async function handler(req, res) {
   const url = new URL(req.url, 'http://localhost');
   const job = url.searchParams.get('job');
   const secret = url.searchParams.get('secret') || req.headers['x-cron-secret'] || '';
-  if (!CRON_SECRET || secret !== CRON_SECRET) {
+  if (!CRON_SECRET || !sameSecret(secret, CRON_SECRET)) {
     return send(res, { ok: false, error: 'unauthorized' }, 401);
   }
 
