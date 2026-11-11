@@ -44,3 +44,39 @@ Read this first next session; then only the files the task touches.
 - Resuming this chat reuses the session; if the cache expired, this file + the README are the cheap path.
 - Fast checks: `npm test`; `node --check` on changed JS; `leak_guard` before any push.
 - Never commit secrets: `APP_KEY`, `GOOGLE_SERVICE_ACCOUNT`, `TG_TOKEN`, `MOM_PASSWORD`, `CRON_SECRET` live only in Vercel env.
+
+## Bot redesign plan (priority)
+
+Real Telegram phrasing kept breaking the single-intent LLM design. Stop patching
+one message at a time; rebuild the intent layer around a validated action list.
+
+### Failure classes seen today
+
+| Message | Wrong result | Cause |
+| --- | --- | --- |
+| "No no personal, not business. My salary" | clarify | no memory (fixed), missing category |
+| "Ravindra ... Teaching Payments (Part time Salary)" | Business / Staff | substituted an existing category; no direction |
+| "Rohit Agarwal 2600 is personal shopping / note / hide" | only hid | one intent; note/hide not on create_rule |
+| "Any transactions from Adarsh Kumar?" | month summary | no transactions intent |
+| "Hide this from family view" | "Which payee(s)?" | no pronoun/last-payee context |
+| "Adarsh kumar" | transactions again | pending clarification not tracked |
+| History times +5:30 vs sheet | wrong times/dates | sheet serials formatted in IST (fixed to UTC wall clock) |
+
+### Target design
+
+1. One message -> actions: [...] (a list), not one intent. Actions are typed and validated; each has its own executor.
+2. Actions: rule{payee,bucket,category,property,direction,note,hide}, hide/unhide{payees}, transactions{payees,period}, note{payees,text}, summary, spend, category_add/category_remove, undo, clarify.
+3. Deterministic executor: resolve payees/rows, validate enums, compute exact changes, show a preview ("I'll: ... [Apply] [Cancel]"). Apply logs each action for /undo.
+4. Pending clarification state: if a payee/category is missing, store the partial action; the next message fills it ("Adarsh kumar").
+5. Conversation: store user AND bot turns (role) in BotState; pass the last 6 to the LLM.
+6. Fast paths before the LLM: hide/unhide, transactions from <payee>, add/remove category (regex) - deterministic, free, reliable.
+7. Logging: every free-text stores the raw LLM JSON + resolved actions in BotLog for debugging.
+8. Regression guard (scripts/eval-bot.mjs): ~25 fixtures (message -> expected actions) against DeepSeek; run manually, not CI.
+
+### Phases
+
+1. Schema + executor + preview + pending + logging + fixture tests (executor can be unit-tested without the LLM).
+2. Eval harness + prompt iteration; target >=90% on the fixture set.
+3. Fast paths + docs.
+
+Seed the eval set with today's exact messages plus variants (numbers, two payees, corrections, direction, notes, multi-action).
