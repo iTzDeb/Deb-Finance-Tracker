@@ -3,7 +3,7 @@
 [![tests](https://github.com/iTzDeb/Deb-Finance-Tracker/actions/workflows/test.yml/badge.svg)](https://github.com/iTzDeb/Deb-Finance-Tracker/actions/workflows/test.yml)
 
 A personal finance tracker for a PG/hostel business: a static installable PWA
-on GitHub Pages, a small Node.js (ESM) backend on Vercel Functions, and
+on Vercel, a small Node.js (ESM) backend in Vercel Functions, and
 **Google Sheets as the database**. It replaces an older Google Apps Script web
 app; the only remaining Apps Script is the Gmail forwarder.
 
@@ -39,7 +39,7 @@ categorisation rules, asks an LLM for suggestions, and gives three daily views:
 
 ```
                         ┌───────────────────────────────┐
-                        │  GitHub Pages (static PWA)    │
+                        │  Vercel static (PWA)          │
                         │  index.html · import.html     │
                         │  manifest.json · sw.js        │
                         │  localStorage (cfg, pending)  │
@@ -584,11 +584,12 @@ inert background, `aria-pressed` toggles, reduced-motion support, dark mode,
 4. Point the PWA at `https://<project>.vercel.app/api/exec` (Settings), and set
    the key. Or change `DEFAULT_WEB_APP_URL` in `index.html`/`import.html`.
 
-### GitHub Pages (frontend)
+### Vercel (frontend)
 
-Serve the repository root from `main` (Settings → Pages → Deploy from branch →
-`main` / root). No build step, no workflow. Files served: `index.html`,
-`import.html`, `manifest.json`, `sw.js`, icons.
+Vercel serves the repository root as static files — no build step. `index.html`,
+`import.html`, `manifest.json`, `sw.js` and the icons are served from
+`https://<project>.vercel.app/`; the API functions live under `/api` on the same
+origin. GitHub Pages is not used.
 
 ### CI
 
@@ -645,11 +646,11 @@ npm test        # node --test, discovers test/*.test.mjs
 ## Development workflow
 
 - **One branch: `main`.** Every change goes directly to `main`; CI runs on push;
-  Vercel and Pages deploy from `main`. No feature branches or pull requests.
+  Vercel deploys from `main`. No feature branches or pull requests.
 - **GitHub is the source of truth.** The code on github.com is final; local
   clones are disposable working copies — sync before working and never leave
   uncommitted/unpushed changes behind.
-- Verify the deployment (Vercel READY, Pages updated) after pushing.
+- Verify the deployment (Vercel READY) after pushing.
 
 ---
 
