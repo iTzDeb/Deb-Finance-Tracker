@@ -14,6 +14,7 @@
 :root{color-scheme:light;--bg:#f4f6f2;--paper:#fff;--ink:#17231f;--muted:#65736d;--line:#dfe7e1;--brand:#1177cc;--brand-dark:#075d9e;--brand-soft:#e5f3ff;--green:#148254;--amber:#9a5c08;--red:#b6342c;--shadow:none}
 @media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#101820;--paper:#1a2530;--ink:#edf5fc;--muted:#a6b8c8;--line:#30404e;--brand:#63b6fa;--brand-dark:#a8daff;--brand-soft:#22394a;--green:#71d3a2;--amber:#f2bd66;--red:#ff938a;--shadow:none}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.48 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}body{min-height:100vh;padding-bottom:calc(82px + env(safe-area-inset-bottom))}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed}:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 64%,transparent);outline-offset:3px}
+.skip{position:fixed;left:16px;top:16px;transform:translateY(-200%);background:var(--brand);color:#fff;padding:10px 16px;border-radius:8px;z-index:30;text-decoration:none;transition:transform .15s ease}.skip:focus{transform:translateY(0)}
 .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:11px;padding:calc(env(safe-area-inset-top) + 10px) max(16px,calc((100vw - 1060px)/2)) 10px;background:var(--bg);border-bottom:1px solid var(--line)}.brand-lockup{display:flex;align-items:center;gap:10px}.brand-mark{width:37px;height:37px;display:grid;place-items:center;border-radius:12px;background:var(--brand);color:#fff}.brand-mark svg{width:23px;height:23px}.brand{font-size:18px;font-weight:760;letter-spacing:-.03em}.sub{font-size:12px;color:var(--muted)}.grow{flex:1}.icon{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:18px;display:grid;place-items:center;text-decoration:none}
 main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,440px);display:flex;background:var(--paper);border:1px solid var(--line);border-bottom:0;border-radius:17px 17px 0 0;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:5}.tab{flex:1;border:0;border-radius:11px;background:none;color:var(--muted);font-size:12px;font-weight:670;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px}.tab .ti{width:20px;height:20px;display:grid;place-items:center}.tab .ti svg{display:block;width:20px;height:20px}.tab.on{color:var(--brand);background:var(--brand-soft)}
 .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:5px 2px 20px}.page-head h1{margin:0;font-size:clamp(25px,4vw,34px);line-height:1.13;letter-spacing:-.04em}.page-description{margin:7px 0 0;color:var(--muted);font-size:14px}.review-count{display:flex;align-items:baseline;gap:7px;padding:9px 13px;border:1px solid var(--line);border-radius:11px;background:var(--paper);white-space:nowrap}.review-count strong{font-size:21px;font-variant-numeric:tabular-nums}.review-count span{font-size:12px;color:var(--muted)}
@@ -40,6 +41,7 @@ main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{positio
 </style>
 </head>
 <body>
+<a class="skip" href="#view">Skip to content</a>
 <header class="top">
   <div class="brand-lockup"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5H6a2 2 0 0 0-2 2v13h16V7a2 2 0 0 0-2-2h-2"/><rect x="8" y="3" width="8" height="4" rx="1.5"/><path d="M8 12h8M8 16h8"/></svg></span><div><div class="brand">Finance</div><div class="sub" id="status" role="status" aria-live="polite" aria-atomic="true">Starting…</div><div class="sub" id="debugStatus" hidden></div></div></div>
   <div class="grow"></div>
@@ -47,7 +49,7 @@ main{width:min(100%,1060px);margin:0 auto;padding:24px 18px 34px}.tabbar{positio
   <button class="icon" id="btnRefresh" aria-label="Refresh">↻</button>
   <button class="icon" id="btnSettings" aria-label="Settings">⚙</button>
 </header>
-<main id="view"></main>
+<main id="view" tabindex="-1"></main>
 <nav class="tabbar" aria-label="Main navigation">
   <button class="tab on" data-tab="pending" id="tabPending" aria-pressed="true" aria-controls="view"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5H6a2 2 0 0 0-2 2v13h16V7a2 2 0 0 0-2-2h-2"/><rect x="8" y="3" width="8" height="4" rx="1.5"/><path d="m8 13 1.5 1.5L12 12m2 1h3m-9 5 1.5 1.5L12 18m2 1h3"/></svg></span>Pending</button>
   <button class="tab" data-tab="month" id="tabMonth" aria-pressed="false" aria-controls="view"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01" stroke-width="2.4"/></svg></span>Month</button>
@@ -155,12 +157,18 @@ function openSheet(html) {
   $('#sheet').setAttribute('aria-labelledby', 'sheetTitle');
   $('#scrim').setAttribute('aria-hidden', 'false');
   $('#scrim').classList.add('on');
+  setBackgroundInert(true);
   $('#sheet').querySelector('input, button')?.focus({ preventScroll: true });
 }
 function closeSheet() {
   $('#scrim').classList.remove('on');
   $('#scrim').setAttribute('aria-hidden', 'true');
+  setBackgroundInert(false);
   if (sheetTrigger instanceof HTMLElement) sheetTrigger.focus({ preventScroll: true });
+}
+// Keeps background content out of the tab order / screen-reader tree while a sheet is open.
+function setBackgroundInert(inert) {
+  document.querySelectorAll('header, main, nav').forEach(el => { el.inert = inert; });
 }
 $('#scrim').addEventListener('keydown', e => {
   if (e.key === 'Escape') { closeSheet(); return; }
@@ -177,6 +185,8 @@ $('#scrim').addEventListener('click', e => { if (e.target.id === 'scrim') closeS
 function renderChoiceChips(container) {
   if (!container || !ctx) return;
   const group = container.dataset.choiceGroup;
+  container.setAttribute('role', 'group');
+  container.setAttribute('aria-label', group === 'bucket' ? 'Bucket' : 'Category');
   const values = group === 'bucket' ? BUCKETS : CATS;
   container.innerHTML = values.map(value => `<button type="button" class="${group === 'category' ? 'chip ' : ''}${ctx[group] === value ? 'on' : ''}" data-value="${esc(value)}" aria-pressed="${ctx[group] === value}">${esc(value)}</button>`).join('');
 }
@@ -465,9 +475,9 @@ function openEdit(ref) {
     <div class="seg choice-chips" id="bk" data-choice-group="bucket"></div>
     <div class="label">Category</div>
     <div class="chips choice-chips" id="ct" data-choice-group="category"></div>
-    <div class="label">Property (unit number)</div>
+    <label class="label" for="f_prop">Property (unit number)</label>
     <input id="f_prop" inputmode="numeric" value="${esc(ctx.property)}" placeholder="e.g. 170, or leave blank">
-    <div class="label">Notes</div>
+    <label class="label" for="f_notes">Notes</label>
     <textarea id="f_notes" rows="2">${esc(ctx.notes)}</textarea>
     <div class="actions">
       <button class="btn ghost" data-act="close">Cancel</button>
@@ -1144,7 +1154,7 @@ function historyRow(item) {
   const color = historyCategoryColor(item.category);
   return `<button type="button" class="history-row" data-history-ref="${esc(item.ref)}" aria-label="${pending ? 'Pending review. ' : ''}${credit ? 'Received' : 'Paid'} ${inr(item.amount)} ${esc(name)}${time}">
     <span class="history-avatar" style="--avatar-color:${color}" aria-hidden="true">${esc(historyInitials(name))}</span>
-    <span class="history-copy"><span class="history-title">${esc(name)}${pending ? '<i class="history-pending-dot" aria-label="Pending review"></i>' : ''}</span><span class="history-meta">${esc(category)}${time}</span></span>
+    <span class="history-copy"><span class="history-title">${esc(name)}${pending ? '<i class="history-pending-dot" aria-hidden="true"></i>' : ''}</span><span class="history-meta">${esc(category)}${time}</span></span>
     <span class="history-amount"><span class="amt ${credit ? 'in' : ''}">${credit ? '+' : '−'}${inr(item.amount)}</span></span>
   </button>`;
 }
