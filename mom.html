@@ -129,7 +129,7 @@ function dayHeading(date) {
   return d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
 }
 function renderTxns() {
-  const all = data.transactions || [];
+  const all = (data.transactions || []).filter(t => !t.hidden);
   const q = query.trim().toLowerCase();
   const list = q
     ? all.filter(t => (String(t.counterparty || '') + ' ' + String(t.category || '') + ' ' + String(t.amount || '')).toLowerCase().includes(q))
