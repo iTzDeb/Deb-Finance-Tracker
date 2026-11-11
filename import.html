@@ -4,18 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#2563eb">
+<meta name="theme-color" content="#1177cc">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png?v=6">
+<meta name="apple-mobile-web-app-title" content="Finance">
 <title>Import statement</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
-:root{color-scheme:light;--bg:#f5f7f8;--card:#fff;--ink:#17212b;--muted:#667482;--line:#e1e7eb;--brand:#2563eb;--green:#16845b;--red:#b42318}
-@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#0e1420;--card:#171f2d;--ink:#edf1f7;--muted:#a0adbb;--line:#293545;--brand:#7ba7ff;--green:#56c895;--red:#ff8b86}}
+:root{color-scheme:light;--bg:#f5f7f8;--card:#fff;--ink:#17212b;--muted:#667482;--line:#e1e7eb;--brand:#1177cc;--green:#16845b;--red:#b42318}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#0e1420;--card:#171f2d;--ink:#edf1f7;--muted:#a0adbb;--line:#293545;--brand:#63b6fa;--green:#56c895;--red:#ff8b86}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,system-ui,sans-serif;padding-bottom:calc(28px + env(safe-area-inset-bottom))}button,input,select{font:inherit}:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 60%,transparent);outline-offset:3px}
 .top{position:sticky;top:0;display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top) + 12px) max(16px,calc((100vw - 760px)/2));background:var(--card);border-bottom:1px solid var(--line);z-index:2}.top a{color:var(--brand);text-decoration:none;font-size:15px;font-weight:650}.top b{font-size:17px}main{width:min(100%,760px);margin:0 auto;padding:18px 16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px;font-weight:650}.meta{font-size:13px;color:var(--muted)}.big{font-size:24px;font-weight:720;margin-top:4px}.in{color:var(--green)}
 select,input[type=file]{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:16px}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}td,th{padding:9px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}td.r,th.r{text-align:right;white-space:nowrap}
-.btn{width:100%;padding:13px;border:0;border-radius:11px;background:var(--brand);color:#fff;font-size:15px;font-weight:680;margin-top:14px;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.err{color:var(--red);font-weight:650}.busy{color:var(--brand);font-weight:650}
+.btn{display:block;width:100%;padding:13px;border:0;border-radius:11px;background:var(--brand);color:#fff;font-size:15px;font-weight:680;margin-top:14px;cursor:pointer;text-align:center;text-decoration:none}.btn:disabled{opacity:.45;cursor:not-allowed}.err{color:var(--red);font-weight:650}.busy{color:var(--brand);font-weight:650}
 @media(min-width:640px){main{padding-top:24px}.card{padding:20px}table{font-size:14px}td,th{padding:10px 8px}}
 </style>
 </head>
@@ -267,7 +270,7 @@ async function runImport() {
         <div class="big in">${r.added} added</div>
         <div class="meta" style="margin-top:8px">${r.skipped} already in your sheet, skipped</div>
         <div class="meta">${r.check} added as CHECK: same amount and date as an existing entry under a different name</div>
-        <button class="btn" onclick="location.href='index.html'">Open Pending</button>
+        <a class="btn" href="index.html">Open Pending</a>
       </div>`;
     txns = [];
   } catch (err) {
