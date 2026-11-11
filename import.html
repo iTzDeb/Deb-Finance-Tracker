@@ -103,7 +103,7 @@ function cleanParty(v) {
 
 function mk(day, time, direction, amount, desc, ref, account) {
   return {
-    stamp: day + (time ? ' ' + time : ''), direction, amount,
+    stamp: day + ' ' + (time || '00:00'), direction, amount,
     party: cleanParty(desc), ref: String(ref || '').trim(),
     account, source: 'Import-' + account
   };
