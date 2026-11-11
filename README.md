@@ -103,5 +103,10 @@ npm test        # runs the Node test runner (test/*.test.mjs)
 ```
 
 The unit tests cover the pure logic (parsers, date/key helpers, summary,
-history filtering, import mapping). Sheets/AI/Telegram paths need real
+history filtering, import mapping) and the inline importer in `import.html`
+(loaded into a small VM sandbox). Sheets/AI/Telegram paths need real
 credentials, so they're exercised against the deployed environment.
+
+## License
+
+MIT — see [LICENSE](./LICENSE).

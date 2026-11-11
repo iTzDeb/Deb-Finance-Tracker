@@ -52,6 +52,20 @@ test('dedupStaged flags CHECK for same amount+date under another payee', () => {
   assert.equal(out.rows[0].match.name, 'ALPHA');
 });
 
+test('dedupStaged keeps a reversal that shares a ref with the original', () => {
+  const existing = [stagedTxn({ ref: 'ref-9', direction: 'DEBIT', amount: 400, date: '2026-10-07' })];
+  const staged = [stagedTxn({ ref: 'ref-9', direction: 'CREDIT', amount: 400, date: '2026-10-07' })];
+  const out = dedupStaged(staged, existing);
+  assert.equal(out.rows.length, 1);
+  assert.equal(out.skipped, 0);
+});
+
+test('dedupStaged still skips a re-import with the same ref, direction and amount', () => {
+  const existing = [stagedTxn({ ref: 'ref-9', direction: 'DEBIT', amount: 400, date: '2026-10-07' })];
+  const staged = [stagedTxn({ ref: 'ref-9', direction: 'DEBIT', amount: 400, date: '2026-10-09' })];
+  assert.equal(dedupStaged(staged, existing).skipped, 1);
+});
+
 test('dedupStaged skips duplicates inside the same batch', () => {
   const out = dedupStaged([stagedTxn({ ref: '' }), stagedTxn({ ref: '' })], []);
   assert.equal(out.rows.length, 1);

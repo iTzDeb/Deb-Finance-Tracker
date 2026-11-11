@@ -74,7 +74,7 @@ function parseDate(v) {
   const s = String(v ?? '').trim();
   let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (m) return `${m[1]}-${pad(m[2])}-${pad(m[3])}`;
-  m = s.match(/^(\d{1,2})[\/.\- ]+(\d{1,2}|[A-Za-z]{3})[\/.\- ,]+(\d{2}|\d{4})/);
+  m = s.match(/^(\d{1,2})[\/.\- ]+(\d{1,2}|[A-Za-z]{3})[\/.\- ,]+(\d{4}|\d{2})/);
   if (!m) return '';                                   // day first, as used in India
   const mo = /\d/.test(m[2]) ? Number(m[2]) : MON[m[2].toLowerCase()];
   if (!mo || mo > 12) return '';
@@ -98,10 +98,24 @@ function parseAmt(v) {
   return isFinite(n) ? Math.abs(n) : NaN;
 }
 
-function cleanParty(v) {
+// Pulls the ref and payee out of a bank narration, e.g.
+//   BOI      UPI/627498773714/DR/THANDI/YESB/...
+//   other    UPI/DR/627498773714/THANDI/YESB/...
+//   NEFT     NEFT/SBIN226275322203/SBIN/ITDTAX REFUND
+function narrationParts(v) {
   const s = String(v ?? '').replace(/\s+/g, ' ').trim();
-  const upi = s.match(/UPI\/(?:DR|CR)\/\d+\/([^\/]+)/i);   // bank narrations: UPI/DR/ref/NAME/bank
-  return upi ? upi[1].trim() : s;
+  let m = s.match(/^UPI\/(\d{9,})\/(?:DR|CR)\/([^\/]+)/i);
+  if (m) return { ref: m[1], party: m[2].trim() };
+  m = s.match(/^UPI\/(?:DR|CR)\/(\d{9,})\/([^\/]+)/i);
+  if (m) return { ref: m[1], party: m[2].trim() };
+  m = s.match(/^(?:NEFT|IMPS|RTGS)\/([A-Z0-9]{8,})\/(?:[A-Z]{4}\/)?(.+)$/i);
+  if (m) return { ref: m[1], party: m[2].trim() };
+  m = s.match(/^(\d{9,})$/);                                  // narration is only a ref
+  if (m) return { ref: m[1], party: s };
+  return { ref: '', party: s };
+}
+function cleanParty(v) {
+  return narrationParts(v).party;
 }
 
 function mk(day, time, direction, amount, desc, ref, account) {
@@ -192,7 +206,7 @@ function fromTable(rows, account) {
     if (!direction || !(amount > 0)) return;
     const time = parseTime(iTime >= 0 ? r[iTime] : r.join(' '));
     const desc = iDesc >= 0 ? r[iDesc] : r.join(' ');
-    const ref = (iRef >= 0 ? String(r[iRef]) : '') || (String(desc).match(/\b\d{12}\b/) || [''])[0];
+    const ref = (iRef >= 0 ? String(r[iRef]).trim() : '') || narrationParts(desc).ref;
     out.push(mk(day, time, direction, amount, desc, ref, account));
   });
   return out;
@@ -211,7 +225,7 @@ function fromLines(rows, account) {
     if (!day || !(amount > 0)) return;
     const direction = /\bcr\b|credit|received|deposit/i.test(text) ? 'CREDIT' : 'DEBIT';
     const desc = text.slice(dm.index + dm[0].length, am.index);
-    const ref = (text.match(/\b\d{12}\b/) || [''])[0];
+    const ref = narrationParts(text).ref;
     out.push(mk(day, parseTime(text), direction, amount, desc, ref, account));
   });
   return out;
