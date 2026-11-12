@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { parseCommand, parsePeriod, splitSpendArgs, matchCategory, pickAllowed, BOT_COMMANDS, matchPayeeRows } from '../lib/bot.js';
+import { parseCommand, parsePeriod, splitSpendArgs, matchCategory, pickAllowed, BOT_COMMANDS, matchPayeeRows, matchBulkRows } from '../lib/bot.js';
 import { ALLOWED_BUCKETS } from '../lib/config.js';
 
 test('matchPayeeRows finds named counterparties', () => {
@@ -11,6 +11,20 @@ test('matchPayeeRows finds named counterparties', () => {
     { row: 4, txn: { counterparty: 'Other', ref: 'c' } }
   ];
   assert.deepEqual(matchPayeeRows(rows, ['shalini ghosh', 'anandita']).map(r => r.txn.ref), ['a', 'b']);
+});
+
+test('matchBulkRows matches amount or ref', () => {
+  const rows = [
+    { row: 2, txn: { amount: 13, counterparty: 'Kss Mart', ref: 'a' } },
+    { row: 3, txn: { amount: 20, counterparty: '500312789665/112026', ref: '500312789665' } }
+  ];
+  assert.deepEqual(matchBulkRows(rows, { amount: 13 }).map(r => r.txn.ref), ['a']);
+  assert.deepEqual(matchBulkRows(rows, { ref: '500312789665' }).map(r => r.txn.ref), ['500312789665']);
+});
+
+test('matchPayeeRows matches refs and raw names', () => {
+  const rows = [{ row: 2, txn: { counterparty: '500312789665/112026', ref: 'x' } }];
+  assert.equal(matchPayeeRows(rows, ['500312789665/112026']).length, 1);
 });
 
 test('BOT_COMMANDS is valid for setMyCommands', () => {
