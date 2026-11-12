@@ -18,6 +18,7 @@ test('planAction resolves rule targets/needs', () => {
   const ok = planAction({ type: 'rule', payee: 'Rohit', bucket: 'Personal', category: 'Shopping', scope: 'all' }, rows);
   assert.equal(ok.targets.length, 1);
   assert.equal(ok.needs.length, 0);
+  assert.equal(planAction({ type: 'rule', payee: 'Rohit', bucket: 'personal', category: 'Other' }, rows).needs.length, 0);
   const missing = planAction({ type: 'rule', payee: 'Rohit' }, rows);
   assert.deepEqual(missing.needs, ['bucket', 'category']);
 });
