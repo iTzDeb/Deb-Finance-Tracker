@@ -6,7 +6,7 @@ Read this first next session; then only the files the task touches.
 
 - App: **https://deb-finance.vercel.app/** — Vercel is the only host; GitHub Pages is disabled.
 - Family view: **https://deb-finance.vercel.app/mom.html** (the `MOM_PASSWORD` env var is the password).
-- Latest deploy: `af4eead` (Vercel READY). `npm test`: **87 pass**.
+- Latest deploy: `d0d4771` (Vercel READY). `npm test`: **92 pass**.
 - Sheet id is in Vercel env `SPREADSHEET_ID` (title *Expense Tracker 2026*).
 
 ## Current behaviour
@@ -36,6 +36,13 @@ Read this first next session; then only the files the task touches.
 - `lib/import.js` treats **Paytm and Google Pay as rich sources**: their counterparty name always wins (renames included) and their exact date/time is taken.
 - Android `7065777086` (Kotak-linked) and iPhone `7042777086` (BOI-linked); both use UPI Circle on the mother's SBI current.
 - **Dry-run 12 Nov**: 53 staged (49 Android + 4 iPhone) → **49 enrich** the SBI rows (name completion + exact time + the BPCL LOYALTY rename), **4 Kotak 7991 rows (24–26 Aug) are new** and would be added as Kotak.
+
+## Bot: read-only checks, category lists, note follow-ups (12 Nov)
+
+- "confirm if ..." returns a read-only check (match/differ counts), never a bulk; the `check` action is not in MUTATING.
+- `transactions` accepts `category_query`, so "list all cigarettes" shows every payee (payee per row).
+- "Note - Golgappe" with no payee applies to the last payee; if the model put the note text into payee, it is swapped back.
+- `/suggest` (and after each import, silently) proposes a category from repeated notes/payees: **min 3**, raw notes to the LLM, **always asks** with Create & move / No. Merchant suggestions apply a rule (future rows follow); type suggestions move existing rows whose note has the token. Both are undoable.
 
 ## Deferred / open
 
