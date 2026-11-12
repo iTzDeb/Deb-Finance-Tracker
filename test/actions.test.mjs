@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeActions, planAction, planActions, describePlan } from '../lib/actions.js';
+import { normalizeActions, planAction, planActions, describePlan, actionToIntent, mergePendingActions } from '../lib/actions.js';
 
 const rows = [
   { row: 2, txn: { counterparty: 'Rohit Agarwal', ref: 'a', amount: 2600, direction: 'DEBIT', status: 'NEEDS REVIEW', bucket: '', category: '' } },
@@ -25,6 +25,20 @@ test('planAction resolves rule targets/needs', () => {
 test('planAction resolves bulk amount/ref', () => {
   assert.equal(planAction({ type: 'bulk', match_amount: 13, bucket: 'Personal', category: 'Cigarettes' }, rows).targets.length, 1);
   assert.equal(planAction({ type: 'bulk', match_ref: '500312789665', bucket: 'Personal', category: 'Investment' }, rows).targets.length, 1);
+});
+
+test('actionToIntent maps read-only actions', () => {
+  assert.equal(actionToIntent({ type: 'transactions', payees: ['X'] }).intent, 'transactions');
+  assert.equal(actionToIntent({ type: 'rule', payee: 'X' }).intent, 'create_rule');
+  assert.equal(actionToIntent({ type: 'clarify', reply: 'hm' }).intent, 'clarify');
+});
+
+test('mergePendingActions fills a hide payee from a follow-up lookup', () => {
+  const pending = [{ type: 'hide', payees: [], bucket: '' }];
+  const incoming = [{ type: 'transactions', payees: ['Adarsh Kumar'] }];
+  const merged = mergePendingActions(pending, incoming, 'Adarsh Kumar');
+  assert.deepEqual(merged[0].payees, ['Adarsh Kumar']);
+  assert.equal(merged[0].type, 'hide');
 });
 
 test('planAction resolves hide/note and describePlan', () => {
