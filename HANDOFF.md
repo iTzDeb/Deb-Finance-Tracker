@@ -6,14 +6,14 @@ Read this first next session; then only the files the task touches.
 
 - App: **https://deb-finance.vercel.app/** — Vercel is the only host; GitHub Pages is disabled.
 - Family view: **https://deb-finance.vercel.app/mom.html** (the `MOM_PASSWORD` env var is the password).
-- Latest deploy: `6bbc800` (Vercel READY). `npm test`: **76 pass**.
+- Latest deploy: `93df3ad` (Vercel READY). `npm test`: **80 pass**.
 - Sheet id is in Vercel env `SPREADSHEET_ID` (title *Expense Tracker 2026*).
 
 ## Current behaviour
 
 - Tabs: `Transactions` (A–T; **T = Hidden**), `Staging`, `Rules`, `BotQuestions`, `BotLog`, `BotState`, `Categories` (Name | Active).
 - **Hidden** hides a row from the family view only; it still counts in your own totals. Toggle in the edit sheet.
-- **History** shows category and bucket as pills; the mom view shows a category pill.
+- **History** shows category and bucket as pills; the mom view shows category + bucket pills.
 - **Family view**: monthly cards + day-grouped transactions + search; green +in / red −out; hidden rows are filtered server-side (search can't see them).
 - **Paytm is the default truth** for matched refs: its counterparty and exact time override bank/SMS values; generic “Self Transfer” labels never overwrite a person name.
 - **Rules** have a `Direction` column (CREDIT/DEBIT/blank = both); the bot sets it from “credits”/“paid”. A direction-specific rule replaces an older both-directions rule for that payee.
@@ -88,5 +88,5 @@ Seed the eval set with today's exact messages plus variants (numbers, two payees
 
 ### Status
 
-- Done: memory (user messages), note/hide on create_rule, findPayee any row, scope all, amount/ref bulk + /undo, transactions for numeric refs, pills.
-- Next: the action-array engine + preview + pending clarification + user/bot turns + eval harness.
+- Done: memory (user messages), note/hide on create_rule, findPayee any row, scope all, amount/ref bulk + /undo, transactions for numeric refs, pills, action schema + planner (lib/actions.js) with tests, family bucket pill.
+- Next: switch intentPrompt to `{actions:[...]}`, wire the preview/Apply executor + pending clarification + user/bot turns, and add scripts/eval-bot.mjs using the messages above as fixtures.
