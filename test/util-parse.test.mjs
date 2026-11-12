@@ -65,6 +65,9 @@ test('canonicalPayee expands a unique truncated prefix', () => {
   assert.equal(canonicalPayee('RAJ', ['RAJESH', 'RAJAN']), 'RAJ');      // ambiguous
   assert.equal(canonicalPayee('X', ['Xavier']), 'X');                   // too short
   assert.equal(canonicalPayee('Pratik', ['Pratik Kumar']), 'Pratik Kumar');
+  assert.equal(canonicalPayee('Paytm', [], 'CREDIT'), 'Paytm Payments Services');
+  assert.equal(canonicalPayee('PAYTM PAYMENTS SERVICES', [], 'CREDIT'), 'Paytm Payments Services');
+  assert.equal(canonicalPayee('Paytm', [], 'DEBIT'), 'Paytm');
 });
 
 test('sheet serials format as wall-clock time (no IST shift)', () => {
