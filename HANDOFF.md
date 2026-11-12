@@ -6,7 +6,7 @@ Read this first next session; then only the files the task touches.
 
 - App: **https://deb-finance.vercel.app/** — Vercel is the only host; GitHub Pages is disabled.
 - Family view: **https://deb-finance.vercel.app/mom.html** (the `MOM_PASSWORD` env var is the password).
-- Latest deploy: `9786a92` (Vercel READY). `npm test`: **82 pass**.
+- Latest deploy: `fc43ed2` (Vercel READY). `npm test`: **83 pass**.
 - Sheet id is in Vercel env `SPREADSHEET_ID` (title *Expense Tracker 2026*).
 
 ## Current behaviour
@@ -18,8 +18,8 @@ Read this first next session; then only the files the task touches.
 - **Paytm is the default truth** for matched refs: its counterparty and exact time override bank/SMS values; generic “Self Transfer” labels never overwrite a person name.
 - **Rules** have a `Direction` column (CREDIT/DEBIT/blank = both); the bot sets it from “credits”/“paid”. A direction-specific rule replaces an older both-directions rule for that payee.
 - **Categories** are dynamic: `Categories` tab, `Active=FALSE` hides; the LLM adds/removes them ("add a category X", "remove X") and auto-adds on apply — no command.
-- **Docs**: README.md is the plain-English overview and links to TECHNICAL.md (setup, sheet layout, API, deployment, troubleshooting).
-- **Telegram**: /pending /ask /summary /spend /rules /forget /undo /pause /resume /status /help; menu registered via botSetup. Natural language also lists a named payee's transactions, hides/unhides named payees (family view only, undoable), and manages categories. Free-text rules apply to all matching transactions (confirmed included); amount/ref bulk works ("all 13 rupee ...", "all 500312... ..."). Free text now runs through the action engine: one message -> actions; mutations preview with Apply/Cancel; missing fields are stored and asked; /undo restores the batch; the eval runner is `scripts/eval-bot.mjs`.
+- **Docs**: README.md is the feature page (no operational details); TECHNICAL.md is the owner's manual (setup, sheet layout, API, deployment, troubleshooting).
+- **Telegram**: /pending /ask /summary /spend /rules /forget /undo /pause /resume /status /help; menu registered via botSetup. Natural language also lists a named payee's transactions, hides/unhides named payees (family view only, undoable), and manages categories. Free-text rules apply to all matching transactions (confirmed included); amount/ref bulk works ("all 13 rupee ...", "all 500312... ..."). Free text now runs through the action engine: one message -> actions; mutations preview with Apply/Cancel; missing fields are stored and asked; /undo restores the batch; the eval runner is `scripts/eval-bot.mjs`. **Only the configured `TG_CHAT` can talk to the bot** — checked before any sheet access; the webhook secret is also enforced.
 - Pages build failures are GitHub-side; Pages is disabled.
 
 ## Tomorrow: SBI setup
@@ -89,5 +89,5 @@ Seed the eval set with today's exact messages plus variants (numbers, two payees
 
 ### Status
 
-- Done: memory (user messages), note/hide on create_rule, findPayee any row, scope all, amount/ref bulk + /undo, transactions for numeric refs, pills, action schema + planner (lib/actions.js) with tests, family bucket pill, and the full wiring (prompt `{actions:[...]}`, preview/Apply, pending clarification, combined /undo, eval runner with 12 fixtures).
+- Done: memory (user messages), note/hide on create_rule, findPayee any row, scope all, amount/ref bulk + /undo, transactions for numeric refs, pills, action schema + planner (lib/actions.js) with tests, family bucket pill, the full wiring (prompt `{actions:[...]}`, preview/Apply, pending clarification, combined /undo, eval runner with 12 fixtures), the TG_CHAT allowlist, and the clean feature README.
 - Next: run `DEEPSEEK_KEY=... node scripts/eval-bot.mjs` and live-test the batch; SBI setup needs a sample statement.
