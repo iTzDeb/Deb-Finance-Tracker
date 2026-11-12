@@ -138,9 +138,18 @@ test('narrationParts extracts SBI transfer payees', () => {
   const debit = sandbox.narrationParts('WDL TFR   UPI/DR/664335168378/PAYEE B/YESB/paytmqr6ja');
   assert.equal(debit.ref, '664335168378');
   assert.equal(debit.party, 'PAYEE B');
-  const sbiy = sandbox.narrationParts('DEP TFR   SBIY226275104411469280067/M/Transfer to Family or 001 OF X');
+  const sbiy = sandbox.narrationParts('DEP TFR   SBIY226275104411469280067/M/Transfer to Family or 001 OF Mrs. KAKOLI SAHA AT 00093 JADAVPUR UNIVERSITY');
   assert.equal(sbiy.ref, 'SBIY226275104411469280067');
-  assert.equal(sbiy.party, 'SBI Transfer');
+  assert.equal(sbiy.party, 'KAKOLI SAHA');
+  const imps = sandbox.narrationParts('WDL TFR IMPS/628523987649/ICIC-xx470-RAKESH R/ Rent 0098286162096 AT 00093');
+  assert.equal(imps.ref, '628523987649');
+  assert.equal(imps.party, 'RAKESH R');
+  const bill = sandbox.narrationParts('WDL TFR Bill Payment-SB41627801ZiYMrLO7hA 0098710801501');
+  assert.equal(bill.ref, 'SB41627801ZiYMrLO7hA');
+  assert.equal(bill.party, 'Bill Payment');
+  assert.equal(sandbox.narrationParts('DEP TFR CSH DEP (CDM) MOB 7042777086').party, 'Cash Deposit');
+  assert.equal(sandbox.narrationParts('DEP TFR UPI/REF/186111126600/CR 009 7735162098').ref, '186111126600');
+  assert.equal(sandbox.narrationParts('DEP TFR UPI/REF/186111126600/CR 009 7735162098').party, 'UPI');
 });
 
 test('fromTable parses an SBI statement', () => {

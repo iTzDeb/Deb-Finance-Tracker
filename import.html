@@ -109,45 +109,57 @@ function narrationParts(v) {
   const s = String(v ?? '').replace(/\s+/g, ' ').trim();
   // SBI statements prefix transfers with "DEP TFR" (credit) / "WDL TFR" (debit).
   const sbi = s.replace(/^(?:DEP|WDL)\s*TFR\s+/i, '').trim();
-  if (sbi !== s) {
-    let m = sbi.match(/^UPI\/(?:DR|CR)\/(\d{9,})\/([^\/]+)/i);
-    if (m) return { ref: m[1], party: m[2].trim() };
-    m = sbi.match(/^(SBIY\d{9,})\b/i);
-    if (m) return { ref: m[1].toUpperCase(), party: 'SBI Transfer' };
-    m = sbi.match(/^([A-Z]{4}\d{9,})\b/i);
-    if (m) return { ref: m[1], party: 'Bank Transfer' };
-    return { ref: '', party: sbi };
+  const text = sbi !== s ? sbi : s;
+  // SBI internal transfer: SBIY.../M/Transfer ... OF Mrs. NAME AT ...
+  let m = text.match(/^(SBIY\d{9,})\b/i);
+  if (m) {
+    const who = text.match(/\bOF\s+(?:(?:MR|MRS|MS|MISS|SHRI|SMT)\.?\s+)?([A-Z][A-Z .]*?)(?=\s+AT\b|$)/i);
+    return { ref: m[1].toUpperCase(), party: who ? who[1].replace(/\s+/g, ' ').trim() : 'SBI Transfer' };
   }
-  let m = s.match(/^UPI\/(\d{9,})\/(?:DR|CR)\/([^\/]+)/i);
+  // SBI IMPS: IMPS/<ref>/<BANK>-<xxNNN>-<NAME>/<purpose> ...
+  m = text.match(/^IMPS\/(\d{9,})\/([A-Za-z0-9]+)-[xX]{2}\d+-([^\/]+)/i);
+  if (m) return { ref: m[1], party: m[3].trim() };
+  // SBI UPI credit with no payer name in the narration.
+  m = text.match(/^UPI\/REF\/(\d{9,})\/(?:CR|DR)\b/i);
+  if (m) return { ref: m[1], party: 'UPI' };
+  // SBI bill payments / cash deposits / ATM / charges / interest.
+  m = text.match(/^Bill Payment-?(SB[A-Z0-9]+)/i);
+  if (m) return { ref: m[1], party: 'Bill Payment' };
+  if (/^Bill Payment\b/i.test(text)) return { ref: '', party: 'Bill Payment' };
+  if (/^CSH DEP\b/i.test(text)) return { ref: '', party: 'Cash Deposit' };
+  if (/^ATM\b/i.test(text)) return { ref: '', party: 'ATM Cash' };
+  if (/^(?:SMSChrgs|CHRG|SERVICE CHARGE)/i.test(text)) return { ref: '', party: 'Bank Charges' };
+  if (/^(?:INT\.?PD|INTEREST|SBINT\.?PD)/i.test(text)) return { ref: '', party: 'Interest' };
+  m = text.match(/^UPI\/(\d{9,})\/(?:DR|CR)\/([^\/]+)/i);
   if (m) return { ref: m[1], party: m[2].trim() };
-  m = s.match(/^UPI\/(?:DR|CR)\/(\d{9,})\/([^\/]+)/i);
+  m = text.match(/^UPI\/(?:DR|CR)\/(\d{9,})\/([^\/]+)/i);
   if (m) return { ref: m[1], party: m[2].trim() };
   // Kotak: UPI/NAME/BANK/ref/...
-  m = s.match(/^UPI\/([^\/]+)\/[A-Za-z]{4}\/(\d{9,})/);
+  m = text.match(/^UPI\/([^\/]+)\/[A-Za-z]{4}\/(\d{9,})/);
   if (m) return { ref: m[2], party: m[1].trim() };
   // Kotak IMPS: SentIMPS<ref><name>/BANK/...
-  m = s.match(/^SentIMPS(\d{9,})([^\/]+)\//i);
+  m = text.match(/^SentIMPS(\d{9,})([^\/]+)\//i);
   if (m) return { ref: m[1], party: m[2].trim() };
   // Card payments: PCI/0165/MERCHANT/... and PCD/0165/MERCHANT/...
-  m = s.match(/^(?:PCI|PCD)\/\d+\/([^\/]+)/i);
+  m = text.match(/^(?:PCI|PCD)\/\d+\/([^\/]+)/i);
   if (m) return { ref: '', party: m[1].trim() };
-  m = s.match(/^VISA-REFUND\/(?:[^\/]+\/){2}(.+)$/i);
+  m = text.match(/^VISA-REFUND\/(?:[^\/]+\/){2}(.+)$/i);
   if (m) return { ref: '', party: m[1].trim() };
-  m = s.match(/^(?:NEFT|IMPS|RTGS)\/([A-Z0-9]{8,})\/(?:[A-Z]{4}\/)?(.+)$/i);
+  m = text.match(/^(?:NEFT|IMPS|RTGS)\/([A-Z0-9]{8,})\/(?:[A-Z]{4}\/)?(.+)$/i);
   if (m) return { ref: m[1], party: m[2].trim() };
   // Paytm human narrations: "Paid to X", "Received from X", "Automatic payment for X".
-  if (/\bpaytm\s+wallet\b/i.test(s)) return { ref: '', party: 'Paytm Wallet' };
-  m = s.match(/^Transferred to Self,?\s*(.*)$/i);
+  if (/\bpaytm\s+wallet\b/i.test(text)) return { ref: '', party: 'Paytm Wallet' };
+  m = text.match(/^Transferred to Self,?\s*(.*)$/i);
   if (m) return { ref: '', party: m[1] ? 'Self Transfer · ' + m[1].trim() : 'Self Transfer' };
-  m = s.match(/^(?:Paid to|Paid for|Money sent to|Sent to|Payment to|Pay to|Payment for)\s+(.+)$/i);
+  m = text.match(/^(?:Paid to|Paid for|Money sent to|Sent to|Payment to|Pay to|Payment for)\s+(.+)$/i);
   if (m) return { ref: '', party: m[1].trim() };
-  m = s.match(/^(?:Money received from|Received from|Received by|Paid by|Added from)\s+(.+)$/i);
+  m = text.match(/^(?:Money received from|Received from|Received by|Paid by|Added from)\s+(.+)$/i);
   if (m) return { ref: '', party: m[1].trim() };
-  m = s.match(/^Automatic payment for\s+(.+)$/i) || s.match(/^Automatic payment of .*? for\s+(.+)$/i);
+  m = text.match(/^Automatic payment for\s+(.+)$/i) || text.match(/^Automatic payment of .*? for\s+(.+)$/i);
   if (m) return { ref: '', party: m[1].trim() };
-  m = s.match(/^(\d{9,})$/);                                  // narration is only a ref
-  if (m) return { ref: m[1], party: s };
-  return { ref: '', party: s };
+  m = text.match(/^(\d{9,})$/);                                  // narration is only a ref
+  if (m) return { ref: m[1], party: text };
+  return { ref: '', party: text };
 }
 function cleanParty(v) {
   return narrationParts(v).party;
