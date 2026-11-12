@@ -44,7 +44,7 @@ h2 small{font-size:13px;color:var(--muted);font-weight:400}
 .t-main{display:flex;flex-direction:column;min-width:0}
 .t-date{font-size:13px;color:var(--muted)}
 .t-party{font-size:17px;font-weight:560;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.t-cat{display:inline-block;font-size:11px;color:var(--muted);background:var(--line);border-radius:999px;padding:1px 8px;margin-top:4px}
+.t-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}.t-cat,.t-bucket{display:inline-block;font-size:11px;color:var(--muted);background:var(--line);border-radius:999px;padding:1px 8px}.t-bucket.business{background:#e8f1fb;color:#1268a8}.t-bucket.personal{background:#e9f4ed;color:#167247}
 .t-amt{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;flex:none}
 .empty{color:var(--muted);font-size:15px;padding:16px;margin:0}
 .search{width:100%;font:inherit;font-size:17px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0 2px}
@@ -149,7 +149,7 @@ function renderTxns() {
     const body = rows.map(t => {
       const credit = t.direction === 'CREDIT';
       if (credit) inSum += Number(t.amount) || 0; else outSum += Number(t.amount) || 0;
-      return '<div class="txn"><div class="t-main"><span class="t-party">' + esc(t.counterparty) + '</span><span class="t-cat">' + esc(t.category) + '</span></div><span class="t-amt ' + (credit ? 'plus' : 'minus') + '">' + (credit ? '+' : '−') + inr(t.amount) + '</span></div>';
+      return '<div class="txn"><div class="t-main"><span class="t-party">' + esc(t.counterparty) + '</span><span class="t-tags"><span class="t-cat">' + esc(t.category) + '</span>' + (t.bucket ? '<span class="t-bucket ' + String(t.bucket).toLowerCase() + '">' + esc(t.bucket) + '</span>' : '') + '</span></div><span class="t-amt ' + (credit ? 'plus' : 'minus') + '">' + (credit ? '+' : '−') + inr(t.amount) + '</span></div>';
     }).join('');
     const bits = [];
     if (inSum) bits.push('<span class="plus">in +' + inr(inSum) + '</span>');
