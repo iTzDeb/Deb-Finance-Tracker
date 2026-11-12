@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { parseCommand, parsePeriod, splitSpendArgs, matchCategory, pickAllowed, BOT_COMMANDS, matchPayeeRows, matchBulkRows } from '../lib/bot.js';
+import { parseCommand, parsePeriod, splitSpendArgs, matchCategory, pickAllowed, BOT_COMMANDS, matchPayeeRows, matchBulkRows, isOwnerChat } from '../lib/bot.js';
 import { ALLOWED_BUCKETS } from '../lib/config.js';
 
 test('matchPayeeRows finds named counterparties', () => {
@@ -25,6 +25,13 @@ test('matchBulkRows matches amount or ref', () => {
 test('matchPayeeRows matches refs and raw names', () => {
   const rows = [{ row: 2, txn: { counterparty: '500312789665/112026', ref: 'x' } }];
   assert.equal(matchPayeeRows(rows, ['500312789665/112026']).length, 1);
+});
+
+test('isOwnerChat only allows the configured chat', () => {
+  assert.equal(isOwnerChat('499900380', '499900380'), true);
+  assert.equal(isOwnerChat(499900380, '499900380'), true);
+  assert.equal(isOwnerChat('123', '499900380'), false);
+  assert.equal(isOwnerChat(undefined, '499900380'), false);
 });
 
 test('BOT_COMMANDS is valid for setMyCommands', () => {

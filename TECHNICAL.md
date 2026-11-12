@@ -6,7 +6,7 @@
 
 > Plain-English overview and how to use the app: [README.md](README.md)
 
-A personal finance tracker for a PG/hostel business: a static installable PWA
+A personal finance tracker for a small business: a static installable PWA
 on Vercel, a small Node.js (ESM) backend in Vercel Functions, and
 **Google Sheets as the database**. It replaces an older Google Apps Script web
 app; the only remaining Apps Script is the Gmail forwarder.
@@ -496,7 +496,7 @@ need privacy mode off or a reply to the bot's message.
 
 ---
 
-## Family view (mom)
+## Family view
 
 A password-gated, read-only monthly summary at `/mom.html`: only incoming,
 outgoing, business income, business expense and personal expense — no
