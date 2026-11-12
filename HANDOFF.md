@@ -6,7 +6,7 @@ Read this first next session; then only the files the task touches.
 
 - App: **https://deb-finance.vercel.app/** — Vercel is the only host; GitHub Pages is disabled.
 - Family view: **https://deb-finance.vercel.app/mom.html** (the `MOM_PASSWORD` env var is the password).
-- Latest deploy: `97a5a75` (Vercel READY). `npm test`: **83 pass**.
+- Latest deploy: `5040eaf` (Vercel READY). `npm test`: **83 pass**.
 - Sheet id is in Vercel env `SPREADSHEET_ID` (title *Expense Tracker 2026*).
 
 ## Current behaviour
@@ -14,7 +14,7 @@ Read this first next session; then only the files the task touches.
 - Tabs: `Transactions` (A–T; **T = Hidden**), `Staging`, `Rules`, `BotQuestions`, `BotLog`, `BotState`, `Categories` (Name | Active).
 - **Hidden** hides a row from the family view only; it still counts in your own totals. Toggle in the edit sheet.
 - **History** shows category and bucket as pills; the mom view shows category + bucket pills with normal font sizes (the phone's system font scaling does the rest).
-- **Family view**: monthly cards + day-grouped transactions + search; green +in / red −out; hidden rows are filtered server-side (search can't see them). Tapping a transaction opens a bottom sheet with source, date & time and notes; the row keeps the counterparty, category/bucket pills and amount.
+- **Family view**: monthly cards + day-grouped transactions + search; green +in / red −out; hidden rows are filtered server-side (search can't see them). Tapping a transaction opens a bottom sheet with source, date & time and notes; the row keeps the counterparty, category/bucket pills and amount. The five summary cards are now one compact card of five label/value rows; the per-row chevron was removed so the amount stays flush right (the whole row is still tappable).
 - **Paytm is the default truth** for matched refs: its counterparty and exact time override bank/SMS values; generic “Self Transfer” labels never overwrite a person name.
 - **Paytm credits** are canonicalised to **Paytm Payments Services** (confirmed from the BOI statement: NEFT says “PAYTM PAYMENTS SERVICES”; UPI says “Paytm /UTIB/poweracce”). canonicalPayee maps CREDIT only; debits keep the merchant/person. The 7 existing credits were renamed.
 - **Rules** have a `Direction` column (CREDIT/DEBIT/blank = both); the bot sets it from “credits”/“paid”. A direction-specific rule replaces an older both-directions rule for that payee.
