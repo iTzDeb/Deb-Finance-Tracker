@@ -46,6 +46,20 @@ h2 small{font-size:12px;color:var(--muted);font-weight:400}
 .t-party{font-size:15px;font-weight:560;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .t-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}.t-cat,.t-bucket{display:inline-block;font-size:12px;color:var(--muted);background:var(--line);border-radius:999px;padding:2px 9px}.t-bucket.business{background:#e8f1fb;color:#1268a8}.t-bucket.personal{background:#e9f4ed;color:#167247}
 .t-amt{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;flex:none}
+button.txn{width:100%;text-align:left;font:inherit;color:inherit;background:transparent;border:0;border-bottom:1px solid var(--line);cursor:pointer}
+button.txn:last-child{border-bottom:0}
+button.txn:active{background:color-mix(in srgb,var(--brand) 7%,var(--paper))}
+button.txn:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+.t-chev{flex:none;color:var(--muted);font-size:18px;line-height:1;margin-left:2px}
+.detail{position:fixed;inset:auto 0 0 0;margin:0 auto;width:100%;max-width:640px;border:1px solid var(--line);border-bottom:0;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));background:var(--paper);color:var(--ink);box-shadow:0 -12px 40px rgba(0,0,0,.22)}
+.detail::backdrop{background:rgba(0,0,0,.4)}
+.d-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
+.d-head b{font-size:16px;line-height:1.35;word-break:break-word}
+.d-close{border:0;background:var(--line);color:var(--ink);width:32px;height:32px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer;flex:none}
+.d-list{margin:0;display:grid;grid-template-columns:96px 1fr;gap:10px 12px}
+.d-list dt{font-size:12px;color:var(--muted);font-weight:600}
+.d-list dd{margin:0;font-size:14px;line-height:1.45;word-break:break-word;white-space:pre-wrap}
+.d-list dd.empty-note{color:var(--muted)}
 .empty{color:var(--muted);font-size:13px;padding:16px;margin:0}
 .search{width:100%;font:inherit;font-size:15px;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);margin:8px 0 2px}
 .day{margin-bottom:20px}
@@ -85,15 +99,29 @@ tr:last-child td{border-bottom:0}
     <table><thead><tr><th>Month</th><th>Money in</th><th>Money out</th></tr></thead><tbody id="rows"></tbody></table>
   </section>
 </main>
+<dialog id="detail" class="detail" aria-labelledby="d-party">
+  <div class="d-head"><b id="d-party"></b><button class="d-close" id="d-close" type="button" aria-label="Close details">×</button></div>
+  <dl class="d-list">
+    <dt>Source</dt><dd id="d-source"></dd>
+    <dt>Date &amp; time</dt><dd id="d-when"></dd>
+    <dt>Notes</dt><dd id="d-notes"></dd>
+  </dl>
+</dialog>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const inr = n => '₹' + (Number(n) || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
 const shortDate = d => { const x = new Date(d + 'T00:00:00'); return isNaN(x) ? d : x.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); };
+const longWhen = s => {
+  const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/);
+  if (!m) return String(s || '—');
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4] || 0), Number(m[5] || 0));
+  return isNaN(d) ? String(s) : d.toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+};
 const monthLabel = m => { const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }); };
 const cls = n => n >= 0 ? 'plus' : 'minus';
 const sgn = n => (n >= 0 ? '+' : '−') + inr(Math.abs(n));
-let data = null, pw = '', query = '';
+let data = null, pw = '', query = '', viewRows = [];
 async function fetchData(password, month) {
   const body = { action: 'mom', password };
   if (month) body.month = month;
@@ -134,6 +162,7 @@ function renderTxns() {
   const list = q
     ? all.filter(t => (String(t.counterparty || '') + ' ' + String(t.category || '') + ' ' + String(t.amount || '')).toLowerCase().includes(q))
     : all;
+  viewRows = list;
   $('#txCount').textContent = list.length + (list.length === 1 ? ' transaction' : ' transactions');
   if (!list.length) {
     $('#txns').innerHTML = '<p class="empty">' + (q ? 'No matching transactions.' : 'No transactions this month.') + '</p>';
@@ -149,7 +178,7 @@ function renderTxns() {
     const body = rows.map(t => {
       const credit = t.direction === 'CREDIT';
       if (credit) inSum += Number(t.amount) || 0; else outSum += Number(t.amount) || 0;
-      return '<div class="txn"><div class="t-main"><span class="t-party">' + esc(t.counterparty) + '</span><span class="t-tags"><span class="t-cat">' + esc(t.category) + '</span>' + (t.bucket ? '<span class="t-bucket ' + String(t.bucket).toLowerCase() + '">' + esc(t.bucket) + '</span>' : '') + '</span></div><span class="t-amt ' + (credit ? 'plus' : 'minus') + '">' + (credit ? '+' : '−') + inr(t.amount) + '</span></div>';
+      return '<button type="button" class="txn" data-i="' + list.indexOf(t) + '"><span class="t-main"><span class="t-party">' + esc(t.counterparty) + '</span><span class="t-tags"><span class="t-cat">' + esc(t.category) + '</span>' + (t.bucket ? '<span class="t-bucket ' + String(t.bucket).toLowerCase() + '">' + esc(t.bucket) + '</span>' : '') + '</span></span><span class="t-amt ' + (credit ? 'plus' : 'minus') + '">' + (credit ? '+' : '−') + inr(t.amount) + '</span><span class="t-chev" aria-hidden="true">›</span></button>';
     }).join('');
     const bits = [];
     if (inSum) bits.push('<span class="plus">in +' + inr(inSum) + '</span>');
@@ -190,6 +219,25 @@ $('#pw').addEventListener('keydown', e => { if (e.key === 'Enter') enter(); });
 $('#lock').addEventListener('click', lock);
 $('#month').addEventListener('change', () => { load($('#month').value).catch(e => { $('#txns').innerHTML = '<p class="empty">' + esc(e.message) + '</p>'; }); });
 $('#q').addEventListener('input', e => { query = e.target.value; renderTxns(); });
+function openDetail(t) {
+  $('#d-party').textContent = t.counterparty || 'Transaction';
+  $('#d-source').textContent = t.source || '—';
+  $('#d-when').textContent = longWhen(t.loggedAt || t.date);
+  const notes = String(t.notes || '').trim();
+  const n = $('#d-notes');
+  n.textContent = notes || 'No notes.';
+  n.classList.toggle('empty-note', !notes);
+  const dlg = $('#detail');
+  if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+}
+$('#txns').addEventListener('click', e => {
+  const btn = e.target.closest('button.txn');
+  if (!btn) return;
+  const t = viewRows[Number(btn.dataset.i)];
+  if (t) openDetail(t);
+});
+$('#d-close').addEventListener('click', () => { const d = $('#detail'); if (typeof d.close === 'function') d.close(); else d.removeAttribute('open'); });
+$('#detail').addEventListener('click', e => { if (e.target !== $('#detail')) return; const d = $('#detail'); if (typeof d.close === 'function') d.close(); else d.removeAttribute('open'); });
 (async () => {
   const saved = sessionStorage.getItem('mom_pw');
   if (!saved) return $('#pw').focus();
