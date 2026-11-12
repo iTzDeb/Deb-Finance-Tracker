@@ -1,4 +1,4 @@
-const CACHE = 'finance-v24';
+const CACHE = 'finance-v25';
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html', './import.html', './manifest.json', './favicon.png', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png'])));
   self.skipWaiting();

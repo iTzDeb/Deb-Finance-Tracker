@@ -130,3 +130,34 @@ test('fromTable parses a Paytm passbook with signed amounts', () => {
   assert.equal(txns[4].direction, 'CREDIT');
   assert.equal(txns[4].party, 'Self Transfer · Bank Of India - 4245');
 });
+
+test('narrationParts extracts SBI transfer payees', () => {
+  const upi = sandbox.narrationParts('DEP TFR   UPI/CR/627498773714/PAYEE A/KKBK/9716714');
+  assert.equal(upi.ref, '627498773714');
+  assert.equal(upi.party, 'PAYEE A');
+  const debit = sandbox.narrationParts('WDL TFR   UPI/DR/664335168378/PAYEE B/YESB/paytmqr6ja');
+  assert.equal(debit.ref, '664335168378');
+  assert.equal(debit.party, 'PAYEE B');
+  const sbiy = sandbox.narrationParts('DEP TFR   SBIY226275104411469280067/M/Transfer to Family or 001 OF X');
+  assert.equal(sbiy.ref, 'SBIY226275104411469280067');
+  assert.equal(sbiy.party, 'SBI Transfer');
+});
+
+test('fromTable parses an SBI statement', () => {
+  const rows = [
+    ['Date', 'Details', 'Ref No/Cheque No', 'Debit', 'Credit', 'Balance'],
+    ['02/10/2026', ' DEP TFR   UPI/CR/627498773714/PAYEE A/KKBK/9716714', '', '', '100.00', '5909.00'],
+    ['02/10/2026', ' WDL TFR   UPI/DR/664335168378/PAYEE B/YESB/paytmqr6ja', '', '60.00', '', '18425.00']
+  ];
+  const txns = sandbox.fromTable(rows, 'Mother SBI current');
+  assert.equal(txns.length, 2);
+  assert.equal(txns[0].direction, 'CREDIT');
+  assert.equal(txns[0].amount, 100);
+  assert.equal(txns[0].party, 'PAYEE A');
+  assert.equal(txns[0].ref, '627498773714');
+  assert.equal(txns[1].direction, 'DEBIT');
+  assert.equal(txns[1].amount, 60);
+  assert.equal(txns[1].party, 'PAYEE B');
+  assert.equal(txns[1].ref, '664335168378');
+  assert.equal(txns[0].source, 'Import-Mother SBI current');
+});

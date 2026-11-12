@@ -18,7 +18,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,system-ui,sans-serif;padding-bottom:calc(28px + env(safe-area-inset-bottom))}button,input,select{font:inherit}:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 60%,transparent);outline-offset:3px}
 .top{position:sticky;top:0;display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top) + 12px) max(16px,calc((100vw - 760px)/2));background:var(--card);border-bottom:1px solid var(--line);z-index:2}.top a{color:var(--brand);text-decoration:none;font-size:15px;font-weight:650}.top b{font-size:17px}main{width:min(100%,760px);margin:0 auto;padding:18px 16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px;font-weight:650}.meta{font-size:13px;color:var(--muted)}.big{font-size:24px;font-weight:720;margin-top:4px}.in{color:var(--green)}
-select,input[type=file]{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:16px}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}td,th{padding:9px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}td.r,th.r{text-align:right;white-space:nowrap}
+select,input[type=file],input[type=password]{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:16px}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}td,th{padding:9px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}td.r,th.r{text-align:right;white-space:nowrap}
 .btn{display:block;width:100%;padding:13px;border:0;border-radius:11px;background:var(--brand);color:#fff;font-size:15px;font-weight:680;margin-top:14px;cursor:pointer;text-align:center;text-decoration:none}.btn:disabled{opacity:.45;cursor:not-allowed}.err{color:var(--red);font-weight:650}.busy{color:var(--brand);font-weight:650}
 @media(min-width:640px){main{padding-top:24px}.card{padding:20px}table{font-size:14px}td,th{padding:10px 8px}}
 </style>
@@ -34,6 +34,8 @@ select,input[type=file]{width:100%;padding:12px;border-radius:11px;border:1px so
     </select>
     <label for="file">Statement file (CSV, Excel or PDF)</label>
     <input id="file" type="file" accept=".csv,.txt,.xlsx,.xls,.pdf">
+    <label for="pass">Password (only for protected files)</label>
+    <input id="pass" type="password" autocomplete="off" placeholder="Statement password">
     <div class="meta" style="margin-top:10px">Entries already in your sheet are skipped. New ones are placed in date and time order.</div>
     <div id="status" class="meta" style="margin-top:12px" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
@@ -105,6 +107,17 @@ function parseAmt(v) {
 //   NEFT     NEFT/SBIN226275322203/SBIN/ITDTAX REFUND
 function narrationParts(v) {
   const s = String(v ?? '').replace(/\s+/g, ' ').trim();
+  // SBI statements prefix transfers with "DEP TFR" (credit) / "WDL TFR" (debit).
+  const sbi = s.replace(/^(?:DEP|WDL)\s*TFR\s+/i, '').trim();
+  if (sbi !== s) {
+    let m = sbi.match(/^UPI\/(?:DR|CR)\/(\d{9,})\/([^\/]+)/i);
+    if (m) return { ref: m[1], party: m[2].trim() };
+    m = sbi.match(/^(SBIY\d{9,})\b/i);
+    if (m) return { ref: m[1].toUpperCase(), party: 'SBI Transfer' };
+    m = sbi.match(/^([A-Z]{4}\d{9,})\b/i);
+    if (m) return { ref: m[1], party: 'Bank Transfer' };
+    return { ref: '', party: sbi };
+  }
   let m = s.match(/^UPI\/(\d{9,})\/(?:DR|CR)\/([^\/]+)/i);
   if (m) return { ref: m[1], party: m[2].trim() };
   m = s.match(/^UPI\/(?:DR|CR)\/(\d{9,})\/([^\/]+)/i);
@@ -189,7 +202,13 @@ function parseCSV(text) {
 async function pdfLines(file) {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+  let pdf;
+  try {
+    pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer(), password: $('#pass').value || undefined }).promise;
+  } catch (err) {
+    if (err && (err.name === 'PasswordException' || /password/i.test(String(err.message)))) throw new Error('This PDF is password-protected. Enter the statement password above.');
+    throw err;
+  }
   const lines = [];
   for (let p = 1; p <= pdf.numPages; p++) {
     const page = await (await pdf.getPage(p)).getTextContent();
@@ -208,11 +227,43 @@ async function pdfLines(file) {
   return lines;
 }
 
+async function base64Of(buf) {
+  const bytes = new Uint8Array(buf);
+  let bin = '';
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  return btoa(bin);
+}
+async function decryptFile(buf, password) {
+  const c = cfg();
+  if (!c.key) throw new Error('Open the Finance app and save its settings first');
+  const res = await fetch('api/decrypt', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ key: c.key, file: await base64Of(buf), password })
+  });
+  let r = null;
+  try { r = await res.json(); } catch (err) { /* not JSON */ }
+  if (!res.ok || !r || !r.ok) throw new Error((r && r.error) || 'Could not open the protected file.');
+  const bin = atob(r.file);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
 async function readRows(file) {
   const n = file.name.toLowerCase();
   if (/\.(csv|txt)$/.test(n)) return parseCSV(await file.text());
   if (/\.(xlsx|xls)$/.test(n)) {
-    const wb = XLSX.read(await file.arrayBuffer(), { type: 'array' });
+    const buf = await file.arrayBuffer();
+    let wb;
+    try { wb = XLSX.read(buf, { type: 'array' }); }
+    catch (err) {
+      if (!/password/i.test(String(err.message || ''))) throw err;
+      const pass = $('#pass').value;
+      if (!pass) throw new Error('This file is password-protected. Enter the statement password above.');
+      wb = XLSX.read(await decryptFile(buf, pass), { type: 'array' });
+    }
     const sheets = wb.SheetNames.map(name => ({
       name,
       rows: XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, raw: false, defval: '' })
@@ -289,8 +340,7 @@ function fromLines(rows, account) {
 }
 
 // ---------- Flow ----------
-$('#file').addEventListener('change', async e => {
-  const f = e.target.files[0];
+async function parseFile(f) {
   if (!f) return;
   $('#preview').innerHTML = '';
   setStatus(`<span class="busy">Reading ${esc(f.name)}…</span>`);
@@ -303,7 +353,9 @@ $('#file').addEventListener('change', async e => {
     txns = [];
     setStatus(`<span class="err">${esc(err.message)}</span>`);
   }
-});
+}
+$('#file').addEventListener('change', e => { const f = e.target.files[0]; if (f) parseFile(f); });
+$('#pass').addEventListener('change', () => { const f = $('#file').files[0]; if (f) parseFile(f); });
 
 function renderPreview(name) {
   const dates = txns.map(t => t.stamp.slice(0, 10)).sort();
