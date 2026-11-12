@@ -152,6 +152,28 @@ test('narrationParts extracts SBI transfer payees', () => {
   assert.equal(sandbox.narrationParts('DEP TFR UPI/REF/186111126600/CR 009 7735162098').party, 'UPI');
 });
 
+test('fromGpayLines maps UPI Circle to the SBI current account', () => {
+  const lines = [
+    ['24 Aug, 2026 Paid to RETAIL FIESTA PRIVATE LIMITED ₹8,327.06'],
+    ['04:09 PM UPI Transaction ID: 128431670289'],
+    ['Paid by Kotak Mahindra Bank 7991'],
+    ['02 Oct, 2026 Paid to KRISHNA KUMAR ₹15'],
+    ['08:14 PM UPI Transaction ID: 627568411254'],
+    ['Paid by UPI Circle']
+  ];
+  const txns = sandbox.fromGpayLines(lines);
+  assert.equal(txns.length, 2);
+  assert.equal(txns[0].party, 'RETAIL FIESTA PRIVATE LIMITED');
+  assert.equal(txns[0].account, 'Kotak');
+  assert.equal(txns[0].source, 'Import-GPay');
+  assert.equal(txns[0].ref, '128431670289');
+  assert.equal(txns[0].stamp, '2026-08-24 16:09');
+  assert.equal(txns[1].party, 'KRISHNA KUMAR');
+  assert.equal(txns[1].account, 'Mother SBI current');
+  assert.equal(txns[1].source, 'Import-GPay');
+  assert.equal(txns[1].stamp, '2026-10-02 20:14');
+});
+
 test('fromTable parses an SBI statement', () => {
   const rows = [
     ['Date', 'Details', 'Ref No/Cheque No', 'Debit', 'Credit', 'Balance'],

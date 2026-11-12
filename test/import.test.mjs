@@ -111,6 +111,14 @@ test('Paytm name/time win over a different existing name', () => {
   assert.deepEqual(out.enrich[0].updates, { counterparty: 'Ravindra Institute Of Indian Civil Services Opc', loggedAt: '2026-11-08 12:44' });
 });
 
+test('Google Pay name and time win over a different existing name', () => {
+  const existing = [stagedTxn({ ref: '664536461256', counterparty: 'Bharat Petrole', date: '2026-10-06', amount: 1116.25, loggedAt: '2026-10-06 00:00', row: 9 })];
+  const staged = [stagedTxn({ ref: '664536461256', counterparty: 'BPCL LOYALTY', date: '2026-10-06', amount: 1116.25, loggedAt: '2026-10-06 13:35', source: 'Import-GPay', account: 'Mother SBI current' })];
+  const out = dedupStaged(staged, existing);
+  assert.equal(out.enrich.length, 1);
+  assert.deepEqual(out.enrich[0].updates, { counterparty: 'BPCL LOYALTY', loggedAt: '2026-10-06 13:35' });
+});
+
 test('Paytm self-transfer label keeps the person name but takes the time', () => {
   const existing = [stagedTxn({ ref: 'ref-1', counterparty: 'DEB ZYOTI DAS', date: '2026-11-08', amount: 200, loggedAt: '2026-11-08 00:00', row: 8 })];
   const staged = [stagedTxn({ ref: 'ref-1', counterparty: 'Self Transfer · Bank Of India - 4245', date: '2026-11-08', amount: 200, loggedAt: '2026-11-08 22:34', source: 'Import-Paytm', account: 'Paytm' })];

@@ -36,6 +36,7 @@ select,input[type=file],input[type=password]{width:100%;padding:12px;border-radi
     <input id="file" type="file" accept=".csv,.txt,.xlsx,.xls,.pdf">
     <label for="pass">Password (only for protected files)</label>
     <input id="pass" type="password" autocomplete="off" placeholder="Statement password">
+    <div class="meta" style="margin-top:6px">Google Pay statements: the account is read from each row (“Paid by …”); UPI Circle → Mother SBI current.</div>
     <div class="meta" style="margin-top:10px">Entries already in your sheet are skipped. New ones are placed in date and time order.</div>
     <div id="status" class="meta" style="margin-top:12px" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
@@ -165,11 +166,11 @@ function cleanParty(v) {
   return narrationParts(v).party;
 }
 
-function mk(day, time, direction, amount, desc, ref, account) {
+function mk(day, time, direction, amount, desc, ref, account, source) {
   return {
     stamp: day + ' ' + (time || '00:00'), direction, amount,
     party: cleanParty(desc), ref: String(ref || '').trim(),
-    account, source: 'Import-' + account
+    account, source: source || ('Import-' + account)
   };
 }
 
@@ -351,13 +352,53 @@ function fromLines(rows, account) {
   return out;
 }
 
+// Google Pay (UPI Circle) statements: each transaction lists "Paid by X", where
+// X is "UPI Circle" (the linked SBI current account), "Kotak … 7991", or "Bank Of India".
+function accountForGpay(paidBy) {
+  const s = String(paidBy || '').trim();
+  if (/upi circle/i.test(s)) return 'Mother SBI current';
+  if (/kotak/i.test(s)) return 'Kotak';
+  if (/bank of india|BOI/i.test(s)) return 'BOI';
+  return 'Other';
+}
+
+// pdf.js groups each transaction into three lines:
+//   "24 Aug, 2026 Paid to NAME ₹amount"
+//   "04:09 PM UPI Transaction ID: <ref>"
+//   "Paid by <account>"
+function fromGpayLines(lines) {
+  const out = [];
+  let cur = null;
+  const push = () => { if (cur && cur.day && cur.amount > 0) out.push(mk(cur.day, cur.time, cur.direction, cur.amount, cur.party, cur.ref, cur.account || 'Other', 'Import-GPay')); };
+  for (const raw of lines) {
+    const line = (Array.isArray(raw) ? raw.join(' ') : String(raw)).replace(/\s+/g, ' ').trim();
+    if (!line) continue;
+    let m = line.match(/^(\d{1,2} \w{3}, \d{4})\s+(Paid to|Received from)\s+(.+?)\s*₹\s*([\d,]+(?:\.\d{2})?)\s*$/i);
+    if (m) {
+      push();
+      cur = { day: parseDate(m[1]), time: '', direction: /received/i.test(m[2]) ? 'CREDIT' : 'DEBIT', party: m[3].trim(), amount: parseAmt(m[4]), ref: '', account: '' };
+      continue;
+    }
+    if (cur) {
+      m = line.match(/^(\d{1,2}:\d{2})\s*(AM|PM)\s*UPI Transaction ID:\s*(\d+)/i);
+      if (m) { cur.time = parseTime(line); cur.ref = m[3]; continue; }
+      m = line.match(/Paid by\s+(.+)$/i);
+      if (m) { cur.account = accountForGpay(m[1]); continue; }
+    }
+  }
+  push();
+  return out;
+}
+
 // ---------- Flow ----------
 async function parseFile(f) {
   if (!f) return;
   $('#preview').innerHTML = '';
   setStatus(`<span class="busy">Reading ${esc(f.name)}…</span>`);
   try {
-    txns = fromTable(await readRows(f), $('#acct').value);
+    const rows = await readRows(f);
+    const gpay = rows.some(r => /UPI Transaction ID/i.test(Array.isArray(r) ? r.join(' ') : String(r)));
+    txns = gpay ? fromGpayLines(rows) : fromTable(rows, $('#acct').value);
     if (!txns.length) throw new Error('No transactions found. The layout may differ; send a sample.');
     setStatus('');
     renderPreview(f.name);
