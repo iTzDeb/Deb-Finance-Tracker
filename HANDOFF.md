@@ -13,7 +13,7 @@ Read this first next session; then only the files the task touches.
 
 - Tabs: `Transactions` (A–T; **T = Hidden**), `Staging`, `Rules`, `BotQuestions`, `BotLog`, `BotState`, `Categories` (Name | Active).
 - **Hidden** hides a row from the family view only; it still counts in your own totals. Toggle in the edit sheet.
-- **History** shows category and bucket as pills; the mom view shows category + bucket pills.
+- **History** shows category and bucket as pills; the mom view shows category + bucket pills with normal font sizes (the phone's system font scaling does the rest).
 - **Family view**: monthly cards + day-grouped transactions + search; green +in / red −out; hidden rows are filtered server-side (search can't see them).
 - **Paytm is the default truth** for matched refs: its counterparty and exact time override bank/SMS values; generic “Self Transfer” labels never overwrite a person name.
 - **Rules** have a `Direction` column (CREDIT/DEBIT/blank = both); the bot sets it from “credits”/“paid”. A direction-specific rule replaces an older both-directions rule for that payee.
