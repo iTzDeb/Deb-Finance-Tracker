@@ -6,7 +6,7 @@ Read this first next session; then only the files the task touches.
 
 - App: **https://deb-finance.vercel.app/** — Vercel is the only host; GitHub Pages is disabled.
 - Family view: **https://deb-finance.vercel.app/mom.html** (the `MOM_PASSWORD` env var is the password).
-- Latest deploy: `3f40eaf` (Vercel READY). `npm test`: **83 pass**.
+- Latest deploy: `0855269` (Vercel READY). `npm test`: **83 pass**.
 - Sheet id is in Vercel env `SPREADSHEET_ID` (title *Expense Tracker 2026*).
 
 ## Current behaviour
@@ -16,6 +16,7 @@ Read this first next session; then only the files the task touches.
 - **History** shows category and bucket as pills; the mom view shows category + bucket pills with normal font sizes (the phone's system font scaling does the rest).
 - **Family view**: monthly cards + day-grouped transactions + search; green +in / red −out; hidden rows are filtered server-side (search can't see them).
 - **Paytm is the default truth** for matched refs: its counterparty and exact time override bank/SMS values; generic “Self Transfer” labels never overwrite a person name.
+- **Paytm credits** are canonicalised to **Paytm Payments Services** (confirmed from the BOI statement: NEFT says “PAYTM PAYMENTS SERVICES”; UPI says “Paytm /UTIB/poweracce”). canonicalPayee maps CREDIT only; debits keep the merchant/person. The 7 existing credits were renamed.
 - **Rules** have a `Direction` column (CREDIT/DEBIT/blank = both); the bot sets it from “credits”/“paid”. A direction-specific rule replaces an older both-directions rule for that payee.
 - **Categories** are dynamic: `Categories` tab, `Active=FALSE` hides; the LLM adds/removes them ("add a category X", "remove X") and auto-adds on apply — no command.
 - **Docs**: README.md is the feature page (no operational details); TECHNICAL.md is the owner's manual (setup, sheet layout, API, deployment, troubleshooting).
