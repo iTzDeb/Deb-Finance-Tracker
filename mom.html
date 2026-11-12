@@ -30,10 +30,11 @@ input{width:100%;font:inherit;padding:11px 14px;border:1px solid var(--line);bor
 .net span{font-size:12px;color:var(--muted)}
 .net strong{font-size:18px;font-variant-numeric:tabular-nums}
 .plus{color:var(--in)}.minus{color:var(--out)}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
-.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:13px}
-.card .k{font-size:11px;color:var(--muted)}
-.card .v{font-size:19px;font-weight:750;margin-top:5px;font-variant-numeric:tabular-nums}
+.summary{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:2px 14px}
+.srow{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.srow:last-child{border-bottom:0}
+.srow span{font-size:13px;color:var(--muted)}
+.srow b{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
 h2{font-size:14.5px;margin:22px 0 10px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 h2 small{font-size:12px;color:var(--muted);font-weight:400}
 .legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin:8px 0 12px}
@@ -50,7 +51,6 @@ button.txn{width:100%;text-align:left;font:inherit;color:inherit;background:tran
 button.txn:last-child{border-bottom:0}
 button.txn:active{background:color-mix(in srgb,var(--brand) 7%,var(--paper))}
 button.txn:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
-.t-chev{flex:none;color:var(--muted);font-size:18px;line-height:1;margin-left:2px}
 .detail{position:fixed;inset:auto 0 0 0;margin:0 auto;width:100%;max-width:640px;border:1px solid var(--line);border-bottom:0;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));background:var(--paper);color:var(--ink);box-shadow:0 -12px 40px rgba(0,0,0,.22)}
 .detail::backdrop{background:rgba(0,0,0,.4)}
 .d-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
@@ -73,7 +73,6 @@ th:first-child,td:first-child{text-align:left}
 th{font-size:12px;color:var(--muted);font-weight:600}
 tr:last-child td{border-bottom:0}
 .hidden{display:none}
-@media(max-width:420px){.grid{grid-template-columns:1fr}.card .v{font-size:18px}}
 </style>
 </head>
 <body>
@@ -90,7 +89,7 @@ tr:last-child td{border-bottom:0}
     <select class="select" id="month" aria-label="Choose month"></select>
     <p class="lead" id="lead"></p>
     <div class="net"><span>Left over this month</span><strong id="net"></strong></div>
-    <div class="grid" id="cards"></div>
+    <div class="summary" id="summary"></div>
     <h2>Money in &amp; out <small id="txCount"></small></h2>
     <input id="q" class="search" type="search" placeholder="Search by name, category or amount" aria-label="Search transactions">
     <div class="legend"><span><i style="background:var(--in)"></i>Green = money in</span><span><i style="background:var(--out)"></i>Red = money out</span></div>
@@ -143,7 +142,7 @@ function render() {
     ['Business expense', m.businessExpense, 'minus'],
     ['Personal expense', m.personalExpense, 'minus']
   ];
-  $('#cards').innerHTML = cards.map(c => '<div class="card"><div class="k">' + c[0] + '</div><div class="v ' + c[2] + '">' + (c[2] === 'plus' ? '+' : '−') + inr(c[1]) + '</div></div>').join('');
+  $('#summary').innerHTML = cards.map(c => '<div class="srow"><span>' + c[0] + '</span><b class="' + c[2] + '">' + (c[2] === 'plus' ? '+' : '−') + inr(c[1]) + '</b></div>').join('');
   renderTxns();
   $('#rows').innerHTML = data.months.map(x => '<tr><td>' + monthLabel(x.month) + '</td><td class="plus">+' + inr(x.incoming) + '</td><td class="minus">−' + inr(x.outgoing) + '</td></tr>').join('');
 }
@@ -178,7 +177,7 @@ function renderTxns() {
     const body = rows.map(t => {
       const credit = t.direction === 'CREDIT';
       if (credit) inSum += Number(t.amount) || 0; else outSum += Number(t.amount) || 0;
-      return '<button type="button" class="txn" data-i="' + list.indexOf(t) + '"><span class="t-main"><span class="t-party">' + esc(t.counterparty) + '</span><span class="t-tags"><span class="t-cat">' + esc(t.category) + '</span>' + (t.bucket ? '<span class="t-bucket ' + String(t.bucket).toLowerCase() + '">' + esc(t.bucket) + '</span>' : '') + '</span></span><span class="t-amt ' + (credit ? 'plus' : 'minus') + '">' + (credit ? '+' : '−') + inr(t.amount) + '</span><span class="t-chev" aria-hidden="true">›</span></button>';
+      return '<button type="button" class="txn" data-i="' + list.indexOf(t) + '"><span class="t-main"><span class="t-party">' + esc(t.counterparty) + '</span><span class="t-tags"><span class="t-cat">' + esc(t.category) + '</span>' + (t.bucket ? '<span class="t-bucket ' + String(t.bucket).toLowerCase() + '">' + esc(t.bucket) + '</span>' : '') + '</span></span><span class="t-amt ' + (credit ? 'plus' : 'minus') + '">' + (credit ? '+' : '−') + inr(t.amount) + '</span></button>';
     }).join('');
     const bits = [];
     if (inSum) bits.push('<span class="plus">in +' + inr(inSum) + '</span>');
