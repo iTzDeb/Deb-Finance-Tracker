@@ -18,6 +18,7 @@ Read this first next session; then only the files the task touches.
 - **Paytm is the default truth** for matched refs: its counterparty and exact time override bank/SMS values; generic “Self Transfer” labels never overwrite a person name.
 - **Rules** have a `Direction` column (CREDIT/DEBIT/blank = both); the bot sets it from “credits”/“paid”. A direction-specific rule replaces an older both-directions rule for that payee.
 - **Categories** are dynamic: `Categories` tab, `Active=FALSE` hides; the LLM adds/removes them ("add a category X", "remove X") and auto-adds on apply — no command.
+- **Docs**: README.md is the plain-English overview and links to TECHNICAL.md (setup, sheet layout, API, deployment, troubleshooting).
 - **Telegram**: /pending /ask /summary /spend /rules /forget /undo /pause /resume /status /help; menu registered via botSetup. Natural language also lists a named payee's transactions, hides/unhides named payees (family view only, undoable), and manages categories. Free-text rules apply to all matching transactions (confirmed included); amount/ref bulk works ("all 13 rupee ...", "all 500312... ...").
 - Pages build failures are GitHub-side; Pages is disabled.
 
