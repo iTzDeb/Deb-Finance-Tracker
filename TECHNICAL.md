@@ -388,6 +388,11 @@ The browser does the parsing; the server only stages and commits.
    - **SBI exports** start with an account/title block; `findHeaderRow` skips it
      because the real header is the first row with `Date` and `Debit/Credit`
      (Date, Details, Ref No/Cheque No, Debit, Credit, Balance).
+   - **Google Pay (UPI Circle) PDFs** are parsed transaction-by-transaction:
+     the "Paid by …" line sets the account (UPI Circle → Mother SBI current,
+     Kotak … → Kotak, Bank Of India → BOI); "Paid to/Received from …" gives the
+     counterparty and "UPI Transaction ID" the ref. The source is `Import-GPay`
+     and the account dropdown is ignored for GPay.
 5. Preview: count, date range, paid/received totals, first 8 rows.
 6. Import sends rows in **chunks of 12** (`importChunk`), then `importCommit`.
 

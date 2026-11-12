@@ -6,7 +6,7 @@ Read this first next session; then only the files the task touches.
 
 - App: **https://deb-finance.vercel.app/** — Vercel is the only host; GitHub Pages is disabled.
 - Family view: **https://deb-finance.vercel.app/mom.html** (the `MOM_PASSWORD` env var is the password).
-- Latest deploy: `ad9b4ac` (Vercel READY). `npm test`: **85 pass**.
+- Latest deploy: `af4eead` (Vercel READY). `npm test`: **87 pass**.
 - Sheet id is in Vercel env `SPREADSHEET_ID` (title *Expense Tracker 2026*).
 
 ## Current behaviour
@@ -27,9 +27,15 @@ Read this first next session; then only the files the task touches.
 
 - **Password-protected statements**: `import.html` has a password field. XLSX/XLS go to `/api/decrypt` (APP_KEY-protected, `officecrypto-tool`) for decryption; PDFs use pdf.js's password. Per-file, in memory only.
 - **SBI export**: the account/title block is skipped; the table is Date | Details | Ref No/Cheque No | Debit | Credit | Balance. `DEP TFR`/`WDL TFR` prefixes and UPI/SBIY narrations are parsed.
-- **Sample (01-10..12-11)**: 138 transactions — 49 credits (₹245,872), 89 debits (₹244,086.45), 113 with refs.
-- **Import**: Import page → Mother SBI current → file → password → preview → Import. The commit reports added/skipped/CHECK. **The sample has not been written to the sheet yet** (bulk write; preview first).
-- Watch double counting: SBI rows may already exist via Gmail-SBI/SMS; ref + SBI composite dedup handles them. Paytm can then enrich names/times.
+- **Sample (01-10..12-11)**: 138 transactions — 49 credits (₹245,872), 89 debits (₹244,086.45), 113 with refs. Imported; the 44 bad counterparties were fixed (SBIY → KAKOLI SAHA, IMPS names, Bill Payment / Cash Deposit / UPI labels, 23 real refs).
+- Watch double counting: SBI rows may already exist via Gmail-SBI/SMS; ref + SBI composite dedup handles them.
+
+## Google Pay (UPI Circle) import (12 Nov)
+
+- `import.html` parses GPay PDFs: each row's "Paid by …" sets the account — UPI Circle → **Mother SBI current**, Kotak … 7991 → **Kotak**, Bank Of India → **BOI**. Source is `Import-GPay`; the account dropdown is ignored for GPay.
+- `lib/import.js` treats **Paytm and Google Pay as rich sources**: their counterparty name always wins (renames included) and their exact date/time is taken.
+- Android `7065777086` (Kotak-linked) and iPhone `7042777086` (BOI-linked); both use UPI Circle on the mother's SBI current.
+- **Dry-run 12 Nov**: 53 staged (49 Android + 4 iPhone) → **49 enrich** the SBI rows (name completion + exact time + the BPCL LOYALTY rename), **4 Kotak 7991 rows (24–26 Aug) are new** and would be added as Kotak.
 
 ## Deferred / open
 
