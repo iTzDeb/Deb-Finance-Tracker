@@ -6,18 +6,19 @@ Read this first next session; then only the files the task touches.
 
 - App: **https://deb-finance.vercel.app/** — Vercel is the only host; GitHub Pages is disabled.
 - Family view: **https://deb-finance.vercel.app/mom.html** (the `MOM_PASSWORD` env var is the password).
-- Latest deploy: `b731f8a` (Vercel READY). `npm test`: **70 pass**.
+- Latest deploy: `6bbc800` (Vercel READY). `npm test`: **76 pass**.
 - Sheet id is in Vercel env `SPREADSHEET_ID` (title *Expense Tracker 2026*).
 
 ## Current behaviour
 
 - Tabs: `Transactions` (A–T; **T = Hidden**), `Staging`, `Rules`, `BotQuestions`, `BotLog`, `BotState`, `Categories` (Name | Active).
 - **Hidden** hides a row from the family view only; it still counts in your own totals. Toggle in the edit sheet.
+- **History** shows category and bucket as pills; the mom view shows a category pill.
 - **Family view**: monthly cards + day-grouped transactions + search; green +in / red −out; hidden rows are filtered server-side (search can't see them).
 - **Paytm is the default truth** for matched refs: its counterparty and exact time override bank/SMS values; generic “Self Transfer” labels never overwrite a person name.
 - **Rules** have a `Direction` column (CREDIT/DEBIT/blank = both); the bot sets it from “credits”/“paid”. A direction-specific rule replaces an older both-directions rule for that payee.
 - **Categories** are dynamic: `Categories` tab, `Active=FALSE` hides; the LLM adds/removes them ("add a category X", "remove X") and auto-adds on apply — no command.
-- **Telegram**: /pending /ask /summary /spend /rules /forget /undo /pause /resume /status /help; menu registered via botSetup. Natural language also lists a named payee's transactions, hides/unhides named payees (family view only, undoable), and manages categories.
+- **Telegram**: /pending /ask /summary /spend /rules /forget /undo /pause /resume /status /help; menu registered via botSetup. Natural language also lists a named payee's transactions, hides/unhides named payees (family view only, undoable), and manages categories. Free-text rules apply to all matching transactions (confirmed included); amount/ref bulk works ("all 13 rupee ...", "all 500312... ...").
 - Pages build failures are GitHub-side; Pages is disabled.
 
 ## Tomorrow: SBI setup
@@ -61,6 +62,10 @@ one message at a time; rebuild the intent layer around a validated action list.
 | "Hide this from family view" | "Which payee(s)?" | no pronoun/last-payee context |
 | "Adarsh kumar" | transactions again | pending clarification not tracked |
 | History times +5:30 vs sheet | wrong times/dates | sheet serials formatted in IST (fixed to UTC wall clock) |
+| "All 13 rupees transactions are for cigarettes" | could not match open payee | no amount selector (bulk added) |
+| "All 500312789665/112026 ... personal; investment" | could not match open payee | numeric/ref payees were skipped (raw/ref matching + bulk added) |
+| "All NAKUL / KSS Mart / KAKOLI ..." | could not match open payee | findPayee only looked at open rows (now any row; scope all) |
+| "Transactions from KSS MART" | create_rule failed | intent classification; transactions lookup improved (engine next) |
 
 ### Target design
 
@@ -80,3 +85,8 @@ one message at a time; rebuild the intent layer around a validated action list.
 3. Fast paths + docs.
 
 Seed the eval set with today's exact messages plus variants (numbers, two payees, corrections, direction, notes, multi-action).
+
+### Status
+
+- Done: memory (user messages), note/hide on create_rule, findPayee any row, scope all, amount/ref bulk + /undo, transactions for numeric refs, pills.
+- Next: the action-array engine + preview + pending clarification + user/bot turns + eval harness.
