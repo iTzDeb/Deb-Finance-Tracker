@@ -347,11 +347,15 @@ The browser does the parsing; the server only stages and commits.
 ### Client-side (`import.html`)
 
 1. Pick the **account** (Kotak, BOI, Mother SBI current, Paytm, Google Pay, Other).
-2. Pick a **CSV, XLSX/XLS or PDF** file.
+2. Pick a **CSV, XLSX/XLS or PDF** file. Protected files ask for a password.
 3. `readRows()`:
    - CSV/TXT → a small quoted-field parser (delimiter detected from the header);
-   - XLSX/XLS → SheetJS from cdnjs (SRI-pinned);
-   - PDF → pdf.js text extraction, grouped into lines by y-position.
+   - XLSX/XLS → SheetJS from cdnjs (SRI-pinned). If SheetJS reports the file is
+     password-protected, the file + password are posted to `/api/decrypt`
+     (APP_KEY-protected; `officecrypto-tool`) and the decrypted bytes are parsed;
+   - PDF → pdf.js text extraction, grouped into lines by y-position. The pdf.js
+     password option opens protected PDFs.
+   - The password is per-file and used in memory only; it is never stored.
 4. `fromTable()` looks for a header row containing a date column and an
    amount/debit/credit/withdraw/deposit column. Then:
    - **Date** — `YYYY-MM-DD`, `dd-mm-yyyy`, `dd/mm/yy`, `dd-Mon-yy`;
@@ -370,6 +374,8 @@ The browser does the parsing; the server only stages and commits.
      | Card | `PCI/0165/PAYPAL *X/…` | `PAYPAL *X` | from the ref column |
      | Charges/interest | `CHRG: …`, `SBInt.Pd:…` | full text | from the ref column |
       | Paytm | `Paid to Sindhu Dixit`, `Received from …`, `Transferred to Self, …` | `Sindhu Dixit`, `Self Transfer · <bank>` | `UPI Ref No.` column |
+     | SBI | `DEP TFR UPI/CR/627…/NAME/…` | `NAME` | `627…` |
+     | SBI internal | `DEP TFR SBIY…` | `SBI Transfer` | `SBIY…` |
    - **Ref priority** — the UPI ref inside the narration wins over the bank's
      ref column (Kotak's column holds `UPI-210039702734`, which SMS alerts never
      use); otherwise the ref column, otherwise none.
@@ -379,6 +385,9 @@ The browser does the parsing; the server only stages and commits.
    - **Multi-sheet workbooks** (Paytm `Summary` + `Passbook Payment History`)
      pick the sheet whose name looks like transactions and has a header (else
      the largest sheet), so the Summary tab is ignored.
+   - **SBI exports** start with an account/title block; `findHeaderRow` skips it
+     because the real header is the first row with `Date` and `Debit/Credit`
+     (Date, Details, Ref No/Cheque No, Debit, Credit, Balance).
 5. Preview: count, date range, paid/received totals, first 8 rows.
 6. Import sends rows in **chunks of 12** (`importChunk`), then `importCommit`.
 

@@ -12,7 +12,7 @@ and what is left — without a spreadsheet full of tabs.
 
 | Feature | What it does |
 | --- | --- |
-| **One inbox for money** | Bank alerts, forwarded emails and statement files (CSV, Excel, PDF) arrive in one queue. |
+| **One inbox for money** | Bank alerts, forwarded emails and statement files (CSV, Excel, PDF) arrive in one queue — password-protected files included. |
 | **Smart categorisation** | Rules and AI suggestions learn your categories; you only confirm what is new. |
 | **Three calm views** | Pending, Month and History — each with a single job. |
 | **Duplicate protection** | Reference, date and amount matching stops the same payment landing twice. |

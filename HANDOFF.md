@@ -6,7 +6,7 @@ Read this first next session; then only the files the task touches.
 
 - App: **https://deb-finance.vercel.app/** — Vercel is the only host; GitHub Pages is disabled.
 - Family view: **https://deb-finance.vercel.app/mom.html** (the `MOM_PASSWORD` env var is the password).
-- Latest deploy: `5040eaf` (Vercel READY). `npm test`: **83 pass**.
+- Latest deploy: `ad9b4ac` (Vercel READY). `npm test`: **85 pass**.
 - Sheet id is in Vercel env `SPREADSHEET_ID` (title *Expense Tracker 2026*).
 
 ## Current behaviour
@@ -23,16 +23,13 @@ Read this first next session; then only the files the task touches.
 - **Telegram**: /pending /ask /summary /spend /rules /forget /undo /pause /resume /status /help; menu registered via botSetup. Natural language also lists a named payee's transactions, hides/unhides named payees (family view only, undoable), and manages categories. Free-text rules apply to all matching transactions (confirmed included); amount/ref bulk works ("all 13 rupee ...", "all 500312... ..."). Free text now runs through the action engine: one message -> actions; mutations preview with Apply/Cancel; missing fields are stored and asked; /undo restores the batch; the eval runner is `scripts/eval-bot.mjs`. **Only the configured `TG_CHAT` can talk to the bot** — checked before any sheet access; the webhook secret is also enforced. Live eval: **12/12 generic fixtures pass** (temporary endpoint, removed).
 - Pages build failures are GitHub-side; Pages is disabled.
 
-## Tomorrow: SBI setup
+## SBI setup (importer done 12 Nov)
 
-1. Get a sample statement first (CSV/XLSX/PDF). Note columns and whether rows have a UPI ref.
-2. Where it lives:
-   - `lib/config.js` — `SBI_ACCOUNT = 'Mother SBI current'`.
-   - `lib/txn.js` — SBI composite dedup (date | direction | amount). Review: no ref means the composite is the main guard; check for same-day/same-amount legit duplicates.
-   - `lib/parse.js` — SBI SMS/Gmail parser (existing Gmail-SBI rows); extend for the statement narration if needed.
-   - `import.html` — `fromTable`/`narrationParts` for the SBI description format.
-3. Procedure: dry-run the sample through the importer harness → compare against the sheet (added/skipped/check) → add a focused test → import → verify sorted → deploy.
-4. Watch for double counting: SBI current rows may already exist via Gmail-SBI/SMS; composite + ref dedup should catch them. Paytm can then enrich names/times.
+- **Password-protected statements**: `import.html` has a password field. XLSX/XLS go to `/api/decrypt` (APP_KEY-protected, `officecrypto-tool`) for decryption; PDFs use pdf.js's password. Per-file, in memory only.
+- **SBI export**: the account/title block is skipped; the table is Date | Details | Ref No/Cheque No | Debit | Credit | Balance. `DEP TFR`/`WDL TFR` prefixes and UPI/SBIY narrations are parsed.
+- **Sample (01-10..12-11)**: 138 transactions — 49 credits (₹245,872), 89 debits (₹244,086.45), 113 with refs.
+- **Import**: Import page → Mother SBI current → file → password → preview → Import. The commit reports added/skipped/CHECK. **The sample has not been written to the sheet yet** (bulk write; preview first).
+- Watch double counting: SBI rows may already exist via Gmail-SBI/SMS; ref + SBI composite dedup handles them. Paytm can then enrich names/times.
 
 ## Deferred / open
 
