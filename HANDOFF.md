@@ -6,7 +6,7 @@ Read this first next session; then only the files the task touches.
 
 - App: **https://deb-finance.vercel.app/** — Vercel is the only host; GitHub Pages is disabled.
 - Family view: **https://deb-finance.vercel.app/mom.html** (the `MOM_PASSWORD` env var is the password).
-- Latest deploy: `fc43ed2` (Vercel READY). `npm test`: **83 pass**.
+- Latest deploy: `3f40eaf` (Vercel READY). `npm test`: **83 pass**.
 - Sheet id is in Vercel env `SPREADSHEET_ID` (title *Expense Tracker 2026*).
 
 ## Current behaviour
@@ -19,7 +19,7 @@ Read this first next session; then only the files the task touches.
 - **Rules** have a `Direction` column (CREDIT/DEBIT/blank = both); the bot sets it from “credits”/“paid”. A direction-specific rule replaces an older both-directions rule for that payee.
 - **Categories** are dynamic: `Categories` tab, `Active=FALSE` hides; the LLM adds/removes them ("add a category X", "remove X") and auto-adds on apply — no command.
 - **Docs**: README.md is the feature page (no operational details); TECHNICAL.md is the owner's manual (setup, sheet layout, API, deployment, troubleshooting).
-- **Telegram**: /pending /ask /summary /spend /rules /forget /undo /pause /resume /status /help; menu registered via botSetup. Natural language also lists a named payee's transactions, hides/unhides named payees (family view only, undoable), and manages categories. Free-text rules apply to all matching transactions (confirmed included); amount/ref bulk works ("all 13 rupee ...", "all 500312... ..."). Free text now runs through the action engine: one message -> actions; mutations preview with Apply/Cancel; missing fields are stored and asked; /undo restores the batch; the eval runner is `scripts/eval-bot.mjs`. **Only the configured `TG_CHAT` can talk to the bot** — checked before any sheet access; the webhook secret is also enforced.
+- **Telegram**: /pending /ask /summary /spend /rules /forget /undo /pause /resume /status /help; menu registered via botSetup. Natural language also lists a named payee's transactions, hides/unhides named payees (family view only, undoable), and manages categories. Free-text rules apply to all matching transactions (confirmed included); amount/ref bulk works ("all 13 rupee ...", "all 500312... ..."). Free text now runs through the action engine: one message -> actions; mutations preview with Apply/Cancel; missing fields are stored and asked; /undo restores the batch; the eval runner is `scripts/eval-bot.mjs`. **Only the configured `TG_CHAT` can talk to the bot** — checked before any sheet access; the webhook secret is also enforced. Live eval: **12/12 generic fixtures pass** (temporary endpoint, removed).
 - Pages build failures are GitHub-side; Pages is disabled.
 
 ## Tomorrow: SBI setup
@@ -37,7 +37,7 @@ Read this first next session; then only the files the task touches.
 
 - **N–R columns**: N–Q (suggested bucket/category/property, AI confidence) are still used; **R (AI Source)** and **S (Accept)** are unused. Hide them or remove later.
 - **Bot per-transaction tagging**: the bot is still payee-level ("this one only" is not wired); replies that name one amount/date create a payee rule or clarify.
-- 7 duplicate BOI rows (9, 19, 35, 98, 155, 191, 299) — cleanup not approved.
+- **BOI duplicates cleaned (12 Nov)**: 7 IMP-copy rows (14, 28, 44, 127, 201, 267, 403) deleted; keepers have the real refs. Backup is the `Cleanup` tab; Transactions now 539 data rows.
 - `dsh-plugin-finance-data` is blocked by a runtime mismatch (nothing installed).
 - Old Pages PWA on the phone: uninstall and install from the Vercel URL.
 
@@ -89,5 +89,5 @@ Seed the eval set with today's exact messages plus variants (numbers, two payees
 
 ### Status
 
-- Done: memory (user messages), note/hide on create_rule, findPayee any row, scope all, amount/ref bulk + /undo, transactions for numeric refs, pills, action schema + planner (lib/actions.js) with tests, family bucket pill, the full wiring (prompt `{actions:[...]}`, preview/Apply, pending clarification, combined /undo, eval runner with 12 fixtures), the TG_CHAT allowlist, and the clean feature README.
-- Next: run `DEEPSEEK_KEY=... node scripts/eval-bot.mjs` and live-test the batch; SBI setup needs a sample statement.
+- Done: memory (user messages), note/hide on create_rule, findPayee any row, scope all, amount/ref bulk + /undo, transactions for numeric refs, pills, action schema + planner (lib/actions.js) with tests, family bucket pill, the full wiring (prompt `{actions:[...]}`, preview/Apply, pending clarification, combined /undo, eval runner with 12 fixtures), the TG_CHAT allowlist, the clean feature README, the live eval (12/12), and the BOI duplicate cleanup.
+- Next: live-test the batch from Telegram; SBI setup needs a sample statement. Optional: store bot turns (pending covers the current need) and add deterministic fast paths (phase 3).
