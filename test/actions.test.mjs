@@ -28,6 +28,18 @@ test('planAction resolves bulk amount/ref', () => {
   assert.equal(planAction({ type: 'bulk', match_ref: '500312789665', bucket: 'Personal', category: 'Investment' }, rows).targets.length, 1);
 });
 
+test('planAction lists by category and checks without mutating', () => {
+  const list = planAction({ type: 'transactions', category_query: 'Cigarettes' }, rows);
+  assert.equal(list.needs.length, 0);
+  assert.match(list.summary, /Cigarettes/);
+  const check = planAction({ type: 'check', match_amount: 13, bucket: 'Personal', category: 'Cigarettes' }, rows);
+  assert.equal(check.targets.length, 1);
+  assert.equal(check.needs.length, 0);
+  assert.equal(planAction({ type: 'check' }, rows).needs.length, 1);
+  assert.equal(actionToIntent({ type: 'check' }).intent, 'check');
+  assert.equal(planAction({ type: 'transactions' }, rows).needs.length, 1);
+});
+
 test('actionToIntent maps read-only actions', () => {
   assert.equal(actionToIntent({ type: 'transactions', payees: ['X'] }).intent, 'transactions');
   assert.equal(actionToIntent({ type: 'rule', payee: 'X' }).intent, 'create_rule');
