@@ -25,7 +25,7 @@ tinted paper, and generous rhythm.
   precise sans for controls and data.
 - **One accent family.** Green carries brand + positive. Amber and red are
   semantic only. No purple, no neon, no gradient washes.
-- **Touch first.** Every control is at least 40 px tall on a phone, and the
+- **Touch first.** Every control is at least 44 px tall on a phone, and the
   bottom dock respects the safe area.
 
 ### Key characteristics
@@ -139,7 +139,7 @@ Rules
 Sticky, canvas background with `backdrop-filter: blur(14px)` and a hairline
 divider. Brand mark 38 px rounded 11 px with the avatar; wordmark in Instrument
 Serif 20 px; status line 12 px muted with a live dot when updated. Right side:
-three 40 px icon buttons (import, refresh, settings), inline SVG at 1.7 stroke,
+three 44 px icon buttons (import, refresh, settings), inline SVG at 1.7 stroke,
 hover `--paper-2`, pressed scale .97.
 
 ### Bottom dock
@@ -157,14 +157,14 @@ Three tabs, 44 px tall, icon over label, active tab `--brand-soft` with
   followed by one paper "sheet" whose rows are divided by hairlines.
 - Transaction row: 42 px tinted category icon (inline SVG), payee 15 px/650,
   account + note meta 12 px, amount right aligned tabular, direction micro-label,
-  status pill + suggestion line, then a two-button action row (primary confirm,
-  ghost edit). Actions inset to align under the text, not under the icon.
+  status pill + suggestion line with a low-key confidence word (not colour alone),
+  then a two-button action row (primary confirm, ghost edit). Actions inset to align under the text, not under the icon.
 - Empty state: 48 px circle icon, 17 px title, one line of copy, one action.
 - Skeleton: two 120 px shimmer blocks matching the list shape, never a spinner.
 
 ### Month view
-- Month navigation: two 36 px square buttons beside a serif month title.
-- Hero: forest card (`--brand` in light, `--brand-dark` surface in dark) with a
+- Month navigation: two 44 px square buttons beside a serif month title.
+- Hero: forest card (`--hero-bg #123f30` in light, `#173e2f` in dark) with a
   soft radial emerald highlight, 13 px label, 44 px amount, one line of context,
   then a hairline-separated foot with income and business spend. No gradient
   rainbow; one hue, one light source.

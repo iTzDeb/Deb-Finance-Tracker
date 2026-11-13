@@ -211,6 +211,7 @@ main{width:min(100%,1040px);margin:0 auto;padding:26px 20px 40px}
 .suggestion{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 0;padding:10px 12px;border-radius:10px;background:var(--paper-2)}
 .suggestion-label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.01em}
 .sug{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.conf{font-size:10.5px;font-weight:550;color:var(--muted);margin-left:2px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
 .dot.high{background:var(--green)}
 .dot.medium{background:var(--amber)}
@@ -237,7 +238,7 @@ main{width:min(100%,1040px);margin:0 auto;padding:26px 20px 40px}
 .link:hover{color:var(--brand-dark)}
 
 /* ---------- Empty states ---------- */
-#view.is-empty .review-count,#view.is-empty .overview-strip,#view.is-empty .filter-row,#view.is-empty .pending-view-toggle,#view.is-empty #q{display:none}
+#view.is-empty .review-count,#view.is-empty .overview-strip,#view.is-empty .filter-row,#view.is-empty .pending-view-toggle,#view.is-empty #q,#view.is-empty .history-totals,#view.is-empty .history-breakdown,#view.is-empty .history-internal,#view.is-empty .history-chips,#view.is-empty .history-search{display:none}
 .empty.error::before{content:"!";font-family:var(--font-ui);font-weight:650;font-size:20px;background:var(--red-soft);color:var(--red)}
 .empty{margin:18px 0;padding:38px 20px;text-align:center;border:1px dashed color-mix(in srgb,var(--line-strong) 85%,transparent);border-radius:var(--r-md);background:color-mix(in srgb,var(--paper) 58%,transparent);color:var(--muted);font-size:13px;line-height:1.55;text-wrap:pretty}
 .empty::before{content:"₹";display:grid;place-items:center;width:46px;height:46px;margin:0 auto 13px;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-family:var(--font-display);font-size:25px;line-height:1}
@@ -825,7 +826,7 @@ function card(i) {
     ? '<span class="pill amber">Suggested</span>'
     : '<span class="pill red">Needs review</span>';
   const sug = hasSug
-    ? `<span class="sug"><i class="dot ${esc(i.confidence)}"></i>${esc(i.sBucket)} · ${esc(i.sCategory)}${i.sProperty ? ' · ' + esc(i.sProperty) : ''}<span class="sr-only"> ${esc(i.confidence)} confidence</span></span>`
+    ? `<span class="sug"><i class="dot ${esc(i.confidence)}"></i>${esc(i.sBucket)} · ${esc(i.sCategory)}${i.sProperty ? ' · ' + esc(i.sProperty) : ''}<span class="conf">· ${esc(i.confidence)}</span></span>`
     : '<span class="sug">Choose a category in Edit</span>';
   return `<article class="txn-row">
     <div class="txn-top">
@@ -930,9 +931,9 @@ function openEdit(ref) {
     <div class="label">Category</div>
     <div class="chips choice-chips" id="ct" data-choice-group="category"></div>
     <label class="label" for="f_prop">Property (unit number)</label>
-    <input id="f_prop" inputmode="numeric" value="${esc(ctx.property)}" placeholder="e.g. 170, or leave blank">
+    <input id="f_prop" name="property" inputmode="numeric" value="${esc(ctx.property)}" placeholder="e.g. 170, or leave blank">
     <label class="label" for="f_notes">Notes</label>
-    <textarea id="f_notes" rows="2">${esc(ctx.notes)}</textarea>
+    <textarea id="f_notes" name="notes" rows="2">${esc(ctx.notes)}</textarea>
     <label class="check-row" for="f_hidden"><input type="checkbox" id="f_hidden" ${item.hidden ? 'checked' : ''}><span><b>Hide from family view</b><span class="meta">Not shown to mom</span></span></label>
     <div class="actions">
       <button class="btn ghost" data-act="close">Cancel</button>
@@ -953,7 +954,7 @@ async function loadSummary() {
     renderSummary(r.summary);
     setStatus('Month · ' + monthLabel(state.month));
   } catch (e) {
-    $('#view').innerHTML = `<div class="empty error"><b>Couldn't load the month</b>${esc(e.message)}</div>`;
+    $('#view').innerHTML = `<div class="empty error"><b>Couldn't load the month</b>${esc(e.message)}<br><br><button class="btn primary" data-act="month-retry">Try again</button></div>`;
     setStatus('Not connected');
   }
 }
@@ -1079,7 +1080,7 @@ function openHistoryDateSheet() {
     <div class="label">Recent months</div>
     <div class="history-date-months">${months.map(month => `<button class="history-date-option" data-history-month="${month}">${esc(monthLabel(month))}</button>`).join('')}</div>
     <div class="label">Custom range</div>
-    <div class="history-date-fields"><div><label class="label" for="historyFrom">From</label><input id="historyFrom" type="date" value="${esc(from)}"></div><div><label class="label" for="historyTo">To</label><input id="historyTo" type="date" value="${esc(to)}"></div></div>
+    <div class="history-date-fields"><div><label class="label" for="historyFrom">From</label><input id="historyFrom" name="history-from" type="date" value="${esc(from)}"></div><div><label class="label" for="historyTo">To</label><input id="historyTo" name="history-to" type="date" value="${esc(to)}"></div></div>
     <div class="actions"><button class="btn ghost" data-act="close">Cancel</button><button class="btn primary" data-act="history-apply-range">Apply</button></div>`);
 }
 
@@ -1475,7 +1476,7 @@ function renderHistory() {
   const rangeLabel = state.historyPeriod ? state.historyPeriod.label : 'All dates';
   $('#view').innerHTML = `
     <div class="page-head">
-      <div><h1>History${historyHasLive ? '<span class="history-live">Live</span>' : ''}</h1></div>
+      <div><h1>History ${historyHasLive ? '<span class="history-live" aria-hidden="true">Live</span>' : ''}</h1></div>
       <div class="history-date-control"><button type="button" class="history-date-chip" data-act="history-dates" aria-label="Choose date range"><span>${esc(rangeLabel)}</span><span aria-hidden="true">⌄</span></button>${state.historyPeriod ? '<button type="button" class="history-date-clear" data-act="history-reset-date" aria-label="Clear date range">×</button>' : ''}</div>
     </div>
     <section class="history-totals" aria-label="Transaction totals for ${esc(rangeLabel)}">
@@ -1487,6 +1488,7 @@ function renderHistory() {
     <div class="history-chips" id="historyTypeFilters" role="group" aria-label="Filter payment history"></div>
     <input class="search history-search" id="historySearch" name="history-search" type="search" autocomplete="off" aria-label="Search payment history" placeholder="Search payee or amount" value="${esc(state.historyQuery)}">
     <div id="historyList" aria-live="polite"></div>`;
+  $('#view').classList.toggle('is-empty', !historyItems.length && !historyLoading && !historyAppendLoading);
   const filters = $('#historyTypeFilters');
   renderHistoryFilters(filters);
   filters.addEventListener('click', event => {
@@ -1712,6 +1714,7 @@ document.addEventListener('click', async e => {
     case 'history-more': loadHistory(true); break;
     case 'pending-more': pendingVisibleCount += 40; renderList(); break;
     case 'history-retry': loadHistory(); break;
+    case 'month-retry': loadSummary(); break;
     case 'accept': {
       const item = items.find(x => x.ref === el.dataset.ref);
       if (item && item.sBucket) {
