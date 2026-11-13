@@ -58,10 +58,14 @@ confirmed by you first.
 
 ## Design
 
-The interface has a small, documented visual system: warm paper, forest ink, one
-emerald accent, Instrument Sans for controls and data, Instrument Serif for
-titles. Tokens, components and do/don'ts live in **[DESIGN.md](DESIGN.md)**. The
-fonts are self-hosted in `fonts/` (SIL OFL) so the PWA keeps its look offline.
+The interface runs two documented engines. **Classic Ledger** is warm paper,
+forest ink, one emerald accent, Instrument Serif titles. **Cyber Command** is an
+obsidian HUD with neo-emerald glow, mono micro-labels, and the same accounting
+logic. First visit opens Cyber Command; the header toggle flips to Classic and
+remembers the choice (saved as `deb_fin_theme`). The Family view always stays in
+the calm paper engine. Tokens, components and do/don'ts
+live in **[DESIGN.md](DESIGN.md)**. The fonts are self-hosted in `fonts/` (SIL
+OFL) so the PWA keeps its look offline.
 
 ## Under the hood
 

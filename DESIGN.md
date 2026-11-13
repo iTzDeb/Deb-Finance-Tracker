@@ -1,40 +1,47 @@
 # Deb Finance Tracker — DESIGN.md
 
 > The design system for the two pages that matter: **My view** (`index.html`) and
-> **Family view** (`mom.html`). A private, calm ledger for everyday Indian
-> business-and-home money. The interface should feel like a well-kept account
-> book: quiet surfaces, confident numbers, one honest accent.
+> **Family view** (`mom.html`). A private ledger for everyday Indian
+> business-and-home money. My view runs two engines — **Classic Ledger** (warm
+> paper) and **Cyber Command** (obsidian HUD) — while Family view always stays in
+> the calm paper engine. Same numbers, two atmospheres.
 
 Inspired by the structure of [awesome-design-md](https://github.com/sweetkey/awesome-design-md)
-(Wise and Revolut finance references) and shaped with the
-[taste skill](https://github.com/kesslerio/taste-skill) redesign audit.
+(Wise and Revolut finance references), shaped with the
+[taste skill](https://github.com/kesslerio/taste-skill) redesign audit, and
+extended with the **Stitch "Deb Finance // Core"** dual-engine direction
+(Classic Ledger / Cyber Command).
 
 ---
 
 ## 1. Visual Theme & Atmosphere
 
-**"Ledger paper."** Warm ivory paper instead of clinical white. Deep forest ink
-instead of pure black. One emerald accent that appears only where the product
-wants a decision: the active tab, the primary action, the brand mark, the
-business result. Money in is a living green; money out is a brick red. Nothing
-glows. Nothing floats on heavy shadows. Depth comes from hairline rules, warm
-tinted paper, and generous rhythm.
+**"Ledger paper, command console."** Classic Ledger is warm ivory paper, deep
+forest ink, and one emerald accent. Cyber Command is the same accounting logic
+reframed as an obsidian telemetry HUD: neo-emerald glow, mono micro-labels,
+gridded canvas. Money in is a living green; money out is a brick red. Classic
+does not glow; Cyber glows only at live edges (hero, primary action, active tab).
+Depth comes from hairline rules, tinted surfaces, and generous rhythm.
 
 - **Calm, not sleepy.** Clear hierarchy and strong numerals, but no shouting.
 - **Editorial, not templated.** A serif wordmark and large page titles; a
   precise sans for controls and data.
-- **One accent family.** Green carries brand + positive. Amber and red are
-  semantic only. No purple, no neon, no gradient washes.
+- **One accent family per engine.** Green carries brand + positive. Amber and
+  red are semantic only. Cyber adds emerald glow; classic stays matte. No purple,
+  no rainbow gradients.
+- **Two engines, one truth.** The theme never changes data or layout priority —
+  only tokens, type treatment, and glow.
 - **Touch first.** Every control is at least 44 px tall on a phone, and the
   bottom dock respects the safe area.
 
 ### Key characteristics
-- Warm paper canvas (`#f5f2e9`) with a near-black forest ink (`#1b2621`).
-- Emerald brand (`#14654c`) and a softer positive green (`#177a52`).
-- Instrument Serif for the wordmark + page titles; Instrument Sans for every
-  control, label, number and paragraph.
-- Hairline warm borders; no drop-shadow stacks. One soft, tinted shadow for the
-  bottom sheet and the floating dock only.
+- Classic: warm paper (`#f5f2e9`), forest ink (`#1b2621`), emerald brand
+  (`#14654c`), Instrument Serif titles.
+- Cyber: obsidian (`#070d0a`), mint ink (`#eefbf4`), neo-emerald (`#10b981`),
+  Instrument Sans 700 titles, mono micro-labels, 32 px grid.
+- Instrument Serif + Instrument Sans are the only families; no webfont CDN.
+- Hairline borders, no drop-shadow stacks. Classic uses one soft tinted shadow
+  for sheets/dock; Cyber uses a controlled emerald glow.
 - Rounded but not bubbly: 10 / 14 / 18 px radii, pills only for chips.
 
 ## 2. Color
@@ -71,6 +78,35 @@ tinted paper, and generous rhythm.
 | `--amber` | `#e6b96b` |
 | `--red` | `#f0978f` |
 
+### Cyber Command (`html.theme-cyber`, the first-visit default)
+| Token | Value |
+| --- | --- |
+| `--bg` | `#070d0a` |
+| `--paper` | `#0e1613` |
+| `--paper-2` | `#131f1a` |
+| `--ink` | `#eefbf4` |
+| `--muted` | `#7c9689` (5.76:1 on paper) |
+| `--line` | `#1b2c24` |
+| `--brand` | `#10b981` |
+| `--brand-dark` | `#059669` |
+| `--brand-soft` | `rgba(16,185,129,.12)` |
+| `--green` | `#34d399` |
+| `--amber` | `#fbbf24` |
+| `--red` | `#f87171` |
+| `--hero-bg` | `#081a13` |
+
+Dual-engine rules
+- The switcher lives in the header (`#btnTheme`), persists in
+  `localStorage['deb_fin_theme']` as `classic` or `cyber`, and flips a
+  `theme-cyber` class on `<html>` before first paint.
+- First visit opens **Cyber Command**; Classic is one tap away.
+- Family view is never cyber: no toggle, no dark HUD, no glow.
+- Cyber headings use Instrument Sans 700; classic headings use Instrument Serif.
+- Cyber micro-labels use `ui-monospace` with uppercase tracking. Never use mono
+  for amounts or body copy.
+- Cyber glow is one light source: primary action, hero rim, active dock item.
+  No glow on static rows or every card.
+
 Rules
 - Never use pure `#000` or `#fff` for large surfaces.
 - Semantic colour is never decorative. Green = value gained. Red = value spent.
@@ -104,7 +140,9 @@ Rules
 Rules
 - All amounts and counts: `font-variant-numeric: tabular-nums`.
 - Headlines use `text-wrap: balance`; paragraphs `text-wrap: pretty`.
-- No all-caps labels, no letter-spaced eyebrows. Sentence case everywhere.
+- Classic: sentence case, no all-caps labels, no letter-spaced eyebrows.
+- Cyber: mono micro-labels may be uppercase with +0.045em tracking; never
+  uppercase body copy, amounts, or button labels.
 - Body line length ≤ 65 characters (`max-width: 46ch` for descriptions).
 - Minimum readable size: 11px only for pill/meta labels; never for body.
 
@@ -137,21 +175,32 @@ Rules
 
 ### Top bar
 Sticky, canvas background with `backdrop-filter: blur(14px)` and a hairline
-divider. Brand mark 38 px rounded 11 px with the avatar; wordmark in Instrument
-Serif 20 px; status line 12 px muted with a live dot when updated. Right side:
-three 44 px icon buttons (import, refresh, settings), inline SVG at 1.7 stroke,
-hover `--paper-2`, pressed scale .97.
+divider. Brand mark 38 px rounded 11 px with the avatar; status line 12 px muted.
+Classic wordmark is Instrument Serif 20 px; Cyber wordmark is Instrument Sans
+700 17 px + mono status. Right side: **four** 44 px icon buttons (import,
+refresh, theme, settings), inline SVG at 1.7 stroke, hover `--paper-2`, pressed
+scale .97. Below 380 px they shrink to 36 px and the status line hides so the
+wordmark keeps its space.
+
+### Theme switcher
+One `#btnTheme` icon button toggles Classic ↔ Cyber. It shows a bolt in Classic
+and a sun in Cyber, flips `html.theme-cyber` before first paint (inline head
+script), persists `deb_fin_theme`, updates `aria-pressed` / `aria-label`, and
+keeps both `theme-color` metas in sync. Never animate the whole page on toggle;
+only background/colour transition, 250 ms.
 
 ### Bottom dock
 Fixed, centered, max 420 px, `--paper` with blur + hairline + L2 shadow.
-Three tabs, 44 px tall, icon over label, active tab `--brand-soft` with
-`--brand` text; `aria-pressed` already drives the state. Safe-area aware.
+Four items — Pending, Month, History, Family (link to `mom.html`) — 44 px tall,
+icon over label, active tab `--brand-soft` with `--brand` text; `aria-pressed`
+drives the view state. Safe-area aware. Cyber adds a single emerald rim glow.
 
 ### Pending view
-- Page head: serif h1 + one-line description; a compact "n need review" count
-  pill on the right (amber dot, tabular number).
+- Page head: classic serif h1 / cyber sans-700 h1 + one-line description; a
+  compact "n need review" count pill on the right (amber dot, tabular number).
 - Overview strip: three paper cards; the first is tinted amber (decision
-  waiting), numbers tabular; labels sentence case.
+  waiting), numbers tabular; labels sentence case in classic, mono uppercase in
+  cyber.
 - Segmented filter + segmented view toggle: shared pill-in-track pattern.
 - Day group: 14 px day heading (Today / Yesterday / weekday) with a count,
   followed by one paper "sheet" whose rows are divided by hairlines.
@@ -225,14 +274,17 @@ Respects `prefers-reduced-motion`.
 ## 10. Do / Don't
 
 **Do**
-- Change one thing at a time and screenshot at 390 px before moving on.
+- Change one thing at a time and screenshot at 390 px in **both** engines.
 - Keep DOM ids/classes used by JS — restyle, don't restructure.
 - Prefer a hairline + spacing over a new card.
-- Keep two type families: serif for human titles, sans for everything machine.
+- Keep two type families: serif for classic human titles, sans for everything
+  machine; cyber switches titles to sans 700 but keeps the same scale.
+- Keep the emerald glow to live edges: hero rim, primary action, active dock.
 
 **Don't**
-- Don't introduce purple, neon, glassmorphism everywhere, or rainbow gradients.
+- Don't apply Cyber to `mom.html`, and don't give it a theme toggle.
+- Don't introduce purple, rainbow gradients, or glassmorphism everywhere.
 - Don't use emoji as UI icons; use the inline SVG set.
-- Don't add shadows to static cards.
-- Don't change API calls, storage keys, or the app's behaviour in a redesign pass.
+- Don't add shadows to static cards, and don't glow every border.
+- Don't change API calls, storage keys, or the app's behaviour in a design pass.
 - Don't use `100vh`; use `100dvh` for full-height blocks.
