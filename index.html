@@ -931,7 +931,7 @@ function card(i) {
     ? '<span class="pill amber">Suggested</span>'
     : '<span class="pill red">Needs review</span>';
   const sug = hasSug
-    ? `<span class="sug"><i class="dot ${esc(i.confidence)}"></i>${esc(i.sBucket)} · ${esc(i.sCategory)}${i.sProperty ? ' · ' + esc(i.sProperty) : ''}<span class="conf">· ${esc(i.confidence)}</span></span>`
+    ? `<span class="sug"><i class="dot ${esc(i.confidence)}"></i>${esc(i.sBucket)} · ${esc(i.sCategory)}${i.sProperty ? ' · ' + esc(i.sProperty) : ''}${i.confidence ? '<span class="conf">· ' + esc(i.confidence) + '</span>' : ''}</span>`
     : '<span class="sug">Choose a category in Edit</span>';
   return `<article class="txn-row">
     <div class="txn-top">
