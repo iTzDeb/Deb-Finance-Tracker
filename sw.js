@@ -1,6 +1,6 @@
-const CACHE = 'finance-v27';
+const CACHE = 'finance-v28';
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html', './import.html', './manifest.json', './favicon.png', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png'])));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html', './import.html', './manifest.json', './favicon.png', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './fonts/instrument-sans-latin.woff2', './fonts/instrument-serif-latin.woff2'])));
   self.skipWaiting();
 });
 self.addEventListener('activate', e => {

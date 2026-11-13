@@ -56,6 +56,13 @@ confirmed by you first.
 - Questions are read-only — asking "is this all correct?" never changes a row.
 - Nothing is deleted silently; every action can be undone.
 
+## Design
+
+The interface has a small, documented visual system: warm paper, forest ink, one
+emerald accent, Instrument Sans for controls and data, Instrument Serif for
+titles. Tokens, components and do/don'ts live in **[DESIGN.md](DESIGN.md)**. The
+fonts are self-hosted in `fonts/` (SIL OFL) so the PWA keeps its look offline.
+
 ## Under the hood
 
 A static PWA, a small serverless API, Google Sheets as the database, Telegram for

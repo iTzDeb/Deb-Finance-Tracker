@@ -4,23 +4,72 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#1177cc">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f2e9">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0e1512">
+<meta name="color-scheme" content="light dark">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="icon-180.png?v=7">
+<link rel="preload" href="fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/instrument-serif-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="apple-mobile-web-app-title" content="Finance">
 <title>Import statement</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous"></script>
 <style>
-:root{color-scheme:light;--bg:#f5f7f8;--card:#fff;--ink:#17212b;--muted:#667482;--line:#e1e7eb;--brand:#1177cc;--green:#16845b;--red:#b42318}
-@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#0e1420;--card:#171f2d;--ink:#edf1f7;--muted:#a0adbb;--line:#293545;--brand:#63b6fa;--green:#56c895;--red:#ff8b86}}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,system-ui,sans-serif;padding-bottom:calc(28px + env(safe-area-inset-bottom))}button,input,select{font:inherit}:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 60%,transparent);outline-offset:3px}
-.top{position:sticky;top:0;display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top) + 12px) max(16px,calc((100vw - 760px)/2));background:var(--card);border-bottom:1px solid var(--line);z-index:2}.top a{color:var(--brand);text-decoration:none;font-size:15px;font-weight:650}.top b{font-size:17px}main{width:min(100%,760px);margin:0 auto;padding:18px 16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px;font-weight:650}.meta{font-size:13px;color:var(--muted)}.big{font-size:24px;font-weight:720;margin-top:4px}.in{color:var(--green)}
-select,input[type=file],input[type=password]{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:16px}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}td,th{padding:9px 5px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}td.r,th.r{text-align:right;white-space:nowrap}
-.btn{display:block;width:100%;padding:13px;border:0;border-radius:11px;background:var(--brand);color:#fff;font-size:15px;font-weight:680;margin-top:14px;cursor:pointer;text-align:center;text-decoration:none}.btn:disabled{opacity:.45;cursor:not-allowed}.err{color:var(--red);font-weight:650}.busy{color:var(--brand);font-weight:650}
-@media(min-width:640px){main{padding-top:24px}.card{padding:20px}table{font-size:14px}td,th{padding:10px 8px}}
+/* Ledger paper system — shared with index.html / mom.html (see DESIGN.md) */
+@font-face{font-family:"Instrument Sans";src:url("fonts/instrument-sans-latin.woff2") format("woff2");font-weight:400 700;font-style:normal;font-display:swap}
+@font-face{font-family:"Instrument Serif";src:url("fonts/instrument-serif-latin.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+:root{color-scheme:light;
+  --bg:#f5f2e9;--paper:#fffdf7;--paper-2:#efece1;--ink:#1b2621;--muted:#616c64;--line:#e0dccd;--line-strong:#d3cfbf;
+  --brand:#14654c;--brand-dark:#0c4737;--brand-soft:#e2ede5;--brand-contrast:#f8fbf6;
+  --green:#177a52;--amber:#9a5d12;--red:#b23b32;
+  --shadow:inset 0 1px 0 rgba(255,255,255,.6);
+  --font-ui:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-display:"Instrument Serif",ui-serif,Georgia,"Times New Roman",serif}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;
+  --bg:#0e1512;--paper:#151f1a;--paper-2:#1b2821;--ink:#eef3ec;--muted:#a0b1a6;--line:#2a3830;--line-strong:#3a4a40;
+  --brand:#7fd0ac;--brand-dark:#b7e8d3;--brand-soft:#1c3028;--brand-contrast:#0e1512;
+  --green:#6fd3a2;--amber:#e6b96b;--red:#f0978f;--shadow:none}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100dvh;padding-bottom:calc(28px + env(safe-area-inset-bottom));
+  background-color:var(--bg);
+  background-image:radial-gradient(900px 460px at 96% -10%,color-mix(in srgb,var(--brand) 7%,transparent),transparent 62%);
+  background-repeat:no-repeat;color:var(--ink);font-family:var(--font-ui);font-size:15.5px;line-height:1.5;letter-spacing:-.005em;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:8px}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;
+  padding:calc(env(safe-area-inset-top) + 12px) max(18px,calc((100vw - 760px)/2)) 12px;
+  background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(16px) saturate(1.08);backdrop-filter:blur(16px) saturate(1.08);
+  border-bottom:1px solid color-mix(in srgb,var(--line) 72%,transparent)}
+.top a{display:inline-flex;align-items:center;gap:4px;min-height:38px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--brand-dark);text-decoration:none;font-size:12.5px;font-weight:600;transition:background .16s ease,border-color .16s ease}
+.top a:hover{background:var(--paper-2);border-color:var(--line-strong)}
+.top b{font-family:var(--font-display);font-weight:400;font-size:21px;line-height:1.05;letter-spacing:.005em}
+main{width:min(100%,760px);margin:0 auto;padding:22px 18px 34px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:var(--shadow)}
+label{display:block;font-size:12.5px;color:var(--muted);margin:14px 0 6px;font-weight:600}
+select,input[type=file],input[type=password]{width:100%;min-height:48px;padding:12px 13px;border-radius:10px;border:1px solid var(--line);background:var(--paper-2);color:var(--ink);font-size:16px;transition:border-color .16s ease,box-shadow .16s ease,background .16s ease}
+select:focus,input[type=file]:focus,input[type=password]:focus{outline:none;border-color:var(--brand);background:var(--paper);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 15%,transparent)}
+input[type=file]{padding:9px 11px;font-size:14px}
+input[type=file]::file-selector-button{margin-right:10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);padding:8px 11px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.meta{font-size:12px;color:var(--muted);line-height:1.55}
+.big{font-family:var(--font-display);font-size:30px;font-weight:400;line-height:1.05;letter-spacing:-.01em;margin-top:5px}
+.in{color:var(--green)}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:12px;font-variant-numeric:tabular-nums}
+td,th{padding:10px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-size:11px;color:var(--muted);font-weight:600}
+td.r,th.r{text-align:right;white-space:nowrap}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:46px;padding:12px;border:1px solid transparent;border-radius:10px;background:var(--brand);color:var(--brand-contrast);font-size:14px;font-weight:650;margin-top:15px;cursor:pointer;text-align:center;text-decoration:none;transition:background .16s ease,transform .09s ease}
+.btn:hover{background:var(--brand-dark);color:var(--brand-contrast)}
+.btn:active{transform:scale(.99)}
+.btn:disabled{opacity:.6;cursor:not-allowed;box-shadow:none}
+.err{color:var(--red);font-weight:600}
+.busy{color:var(--brand);font-weight:600}
+@media(min-width:640px){main{padding-top:30px}.card{padding:22px}table{font-size:13px}td,th{padding:10px 8px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
 </style>
 </head>
 <body>
@@ -46,7 +95,7 @@ select,input[type=file],input[type=password]{width:100%;padding:12px;border-radi
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const inr = n => '₹' + (Number(n) || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+const inr = n => { const value = Number(n) || 0; const digits = Number.isInteger(value) ? 0 : 2; return '₹' + value.toLocaleString('en-IN', { minimumFractionDigits: digits, maximumFractionDigits: 2 }); };
 const pad = n => String(n).padStart(2, '0');
 const DEFAULT_WEB_APP_URL = 'https://deb-finance.vercel.app/api/exec';
 const cfg = () => { const saved = JSON.parse(localStorage.getItem('fin_cfg') || '{}'); return { ...saved, url: saved.url || DEFAULT_WEB_APP_URL }; };
