@@ -14,8 +14,7 @@
 <link rel="preload" href="fonts/instrument-serif-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="apple-mobile-web-app-title" content="Finance">
 <title>Import statement</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous"></script>
+
 <style>
 /* Ledger paper system — shared with index.html / mom.html (see DESIGN.md) */
 @font-face{font-family:"Instrument Sans";src:url("fonts/instrument-sans-latin.woff2") format("woff2");font-weight:400 700;font-style:normal;font-display:swap}
@@ -262,8 +261,6 @@ function parseCSV(text) {
 }
 
 async function pdfLines(file) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   let pdf;
   try {
     pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer(), password: $('#pass').value || undefined }).promise;
@@ -313,10 +310,27 @@ async function decryptFile(buf, password) {
   return out;
 }
 
+const LIB_SOURCES = { xlsx: 'vendor/xlsx.full.min.js', pdf: 'vendor/pdf.min.js' };
+const libPromises = {};
+// Loads the heavy readers only when the chosen file needs one.
+function loadLib(name) {
+  if (!libPromises[name]) {
+    libPromises[name] = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = LIB_SOURCES[name];
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('Could not load the ' + name + ' reader. Refresh and try again.'));
+      document.head.appendChild(script);
+    });
+  }
+  return libPromises[name];
+}
+
 async function readRows(file) {
   const n = file.name.toLowerCase();
   if (/\.(csv|txt)$/.test(n)) return parseCSV(await file.text());
   if (/\.(xlsx|xls)$/.test(n)) {
+    await loadLib('xlsx');
     const buf = await file.arrayBuffer();
     let wb;
     try { wb = XLSX.read(buf, { type: 'array' }); }
@@ -332,7 +346,11 @@ async function readRows(file) {
     }));
     return (pickSheet(sheets) || sheets[0]).rows;
   }
-  if (/\.pdf$/.test(n)) return pdfLines(file);
+  if (/\.pdf$/.test(n)) {
+    await loadLib('pdf');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdf.worker.min.js';
+    return pdfLines(file);
+  }
   throw new Error('Use a CSV, Excel or PDF file');
 }
 

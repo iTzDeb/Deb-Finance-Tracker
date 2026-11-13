@@ -1,4 +1,4 @@
-const CACHE = 'finance-v28';
+const CACHE = 'finance-v29';
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html', './import.html', './manifest.json', './favicon.png', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './fonts/instrument-sans-latin.woff2', './fonts/instrument-serif-latin.woff2'])));
   self.skipWaiting();
@@ -10,8 +10,18 @@ self.addEventListener('activate', e => {
 });
 self.addEventListener('fetch', e => {
   const url = e.request.url;
+  const path = new URL(url).pathname;
   // Never cache data requests; they always go to the network
-  if (e.request.method !== 'GET' || url.includes('script.google.com') || url.includes('googleusercontent') || url.includes('vercel.app') || url.includes('callback=')) return;
+  if (e.request.method !== 'GET' || path.startsWith('/api/') || url.includes('script.google.com') || url.includes('googleusercontent') || url.includes('callback=')) return;
+  // Large readers are cached the first time a file needs them.
+  if (path.includes('/vendor/')) {
+    e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(res => {
+      const copy = res.clone();
+      caches.open(CACHE).then(c => c.put(e.request, copy));
+      return res;
+    })));
+    return;
+  }
   // Navigations are network-first so a deploy is picked up without a cache bump.
   if (e.request.mode === 'navigate') {
     e.respondWith(fetch(e.request).then(res => {

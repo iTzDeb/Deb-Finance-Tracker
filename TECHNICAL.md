@@ -350,11 +350,13 @@ The browser does the parsing; the server only stages and commits.
 2. Pick a **CSV, XLSX/XLS or PDF** file. Protected files ask for a password.
 3. `readRows()`:
    - CSV/TXT → a small quoted-field parser (delimiter detected from the header);
-   - XLSX/XLS → SheetJS from cdnjs (SRI-pinned). If SheetJS reports the file is
+   - XLSX/XLS → SheetJS, self-hosted in `vendor/xlsx.full.min.js` and loaded
+     only when an Excel file is chosen. If SheetJS reports the file is
      password-protected, the file + password are posted to `/api/decrypt`
      (APP_KEY-protected; `officecrypto-tool`) and the decrypted bytes are parsed;
-   - PDF → pdf.js text extraction, grouped into lines by y-position. The pdf.js
-     password option opens protected PDFs.
+   - PDF → pdf.js text extraction, self-hosted in `vendor/pdf.min.js` +
+     `vendor/pdf.worker.min.js` and loaded only for PDFs; lines are grouped by
+     y-position. The pdf.js password option opens protected PDFs.
    - The password is per-file and used in memory only; it is never stored.
 4. `fromTable()` looks for a header row containing a date column and an
    amount/debit/credit/withdraw/deposit column. Then:
@@ -645,7 +647,7 @@ dispatch): Node 26, `npm ci`, `npm test`.
 - **No secrets in the repo.** `.env` is gitignored; Vercel holds the secrets.
 - The service-account key grants edit access to the sheet — treat it as a
   password; never commit it.
-- CDN scripts in `import.html` are pinned with **SRI** hashes.
+- The importer's heavy readers (`vendor/xlsx.full.min.js`, `vendor/pdf.min.js`, `vendor/pdf.worker.min.js`) are self-hosted and loaded on demand — no third-party script origin at runtime. The service worker caches them after first use; CSV imports need no reader at all.
 - All API responses are `cache-control: no-store`.
 - **Telegram webhook** — `/api/telegram` accepts only POSTs carrying
   `X-Telegram-Bot-Api-Secret-Token` (derived from `APP_KEY` unless

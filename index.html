@@ -256,10 +256,12 @@ textarea{min-height:88px;resize:vertical}
 .secure-note b{color:var(--ink);font-weight:650}
 
 /* ---------- Checkbox row ---------- */
-.check-row{display:flex;align-items:flex-start;gap:11px;margin-top:16px;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:var(--paper-2);cursor:pointer}
-.check-row input[type=checkbox]{appearance:none;-webkit-appearance:none;width:24px;height:24px;min-height:24px;flex:none;margin:0;padding:0;border:1.5px solid var(--line-strong);border-radius:6px;background:var(--paper);display:grid;place-items:center;box-shadow:none}
-.check-row input[type=checkbox]:checked{background:var(--brand);border-color:var(--brand)}
-.check-row input[type=checkbox]:checked::after{content:"";width:10px;height:6px;border-left:2px solid var(--brand-contrast);border-bottom:2px solid var(--brand-contrast);transform:rotate(-45deg) translateY(-1px)}
+.check-row{display:flex;align-items:center;gap:11px;margin-top:16px;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:var(--paper-2);cursor:pointer}
+.check-row input[type=checkbox]{appearance:none;-webkit-appearance:none;position:relative;width:44px;height:44px;min-height:44px;flex:none;margin:0;padding:0;border:0;background:transparent;box-shadow:none}
+.check-row input[type=checkbox]::before{content:"";position:absolute;left:10px;top:10px;width:24px;height:24px;border:1.5px solid var(--line-strong);border-radius:7px;background:var(--paper);transition:background .15s ease,border-color .15s ease}
+.check-row input[type=checkbox]:checked::before{background:var(--brand);border-color:var(--brand)}
+.check-row input[type=checkbox]::after{content:"";position:absolute;left:17px;top:19px;width:10px;height:5px;border-left:2px solid var(--brand-contrast);border-bottom:2px solid var(--brand-contrast);transform:rotate(-45deg);opacity:0;transition:opacity .12s ease}
+.check-row input[type=checkbox]:checked::after{opacity:1}
 .check-row b{display:block;font-size:13px;font-weight:600;color:var(--ink)}
 .check-row .meta{display:block;margin-top:2px;font-size:11.5px;color:var(--muted)}
 
