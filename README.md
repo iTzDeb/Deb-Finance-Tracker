@@ -12,11 +12,11 @@ and what is left — without a spreadsheet full of tabs.
 
 | Feature | What it does |
 | --- | --- |
-| **One inbox for money** | Bank alerts, forwarded emails and statement files (CSV, Excel, PDF) arrive in one queue — password-protected files included. |
-| **Smart categorisation** | Rules and AI suggestions learn your categories; you only confirm what is new. |
+| **One inbox for money** | Bank alerts, forwarded emails and statement files (CSV, Excel, PDF) arrive in one queue — password-protected files included, and statements that mix accounts are split row by row. |
+| **Smart categorisation** | Rules and AI suggestions learn your categories. When a merchant keeps landing under a generic category, or the same note repeats, it asks *"create this category?"* — never a silent change. |
 | **Three calm views** | Pending, Month and History — each with a single job. |
 | **Duplicate protection** | Reference, date and amount matching stops the same payment landing twice. |
-| **Plain-English Telegram assistant** | Text it like a person; it previews changes, asks when unsure, and undoes in one tap. |
+| **Plain-English Telegram assistant** | Text it like a person — "note – golgappe" after a confirmation, "list all cigarettes", or "confirm if the ₹13 ones are personal, cigarettes". It previews changes, answers checks without touching data, asks when unsure, and undoes in one tap. |
 | **Shareable summary** | A password-protected, read-only page for the people who need the headline, not the keyboard. |
 | **Offline-ready PWA** | Install it on your phone; the shell opens instantly. |
 | **Your data, your sheet** | Stored in your own Google Sheet — no vendor lock-in. |
@@ -28,6 +28,16 @@ and what is left — without a spreadsheet full of tabs.
 2. **Confirm** — Pending asks only for the bucket and category it does not know; one tap.
 3. **Understand** — Month and History show money in, money out, what is left, and where it went.
 4. **Share (optional)** — a password-protected summary for family or a partner.
+
+## Statement import
+
+Drop in a CSV, Excel or PDF from a bank, wallet or payment app. Protected files
+ask for the password once; the preview shows every row before anything is
+written. A statement that mixes accounts (a wallet's own account plus a shared
+one) is split to the right account automatically, duplicates are skipped, and a
+richer source completes truncated counterparty names and exact times — without
+counting the payment twice. Categories suggested from repeated notes are always
+confirmed by you first.
 
 ## The three views
 
@@ -43,6 +53,7 @@ and what is left — without a spreadsheet full of tabs.
 - Plain language, not accounting jargon.
 - Green for money in, red for money out.
 - Notes, categories, and a hide-from-shared-view flag when you need them.
+- Questions are read-only — asking "is this all correct?" never changes a row.
 - Nothing is deleted silently; every action can be undone.
 
 ## Under the hood
